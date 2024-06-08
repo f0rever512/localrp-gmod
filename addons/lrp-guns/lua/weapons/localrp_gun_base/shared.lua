@@ -83,9 +83,8 @@ end
 
 function SWEP:GetShootPos()
     local ply = self:GetOwner()
-    local lookAtt = ply:LookupAttachment('anim_attachment_rh')
-    if lookAtt then
-        local att = ply:GetAttachment(lookAtt)
+	local att = ply:GetAttachment(ply:LookupAttachment('anim_attachment_rh'))
+    if IsValid(att) then
         local mPos, mAng = self.MuzzlePos, self.MuzzleAng
         if not mPos then
             if self:GetClass() == 'localrp_air_pistol' then

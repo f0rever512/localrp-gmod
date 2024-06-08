@@ -106,19 +106,21 @@ end)
 hook.Add("HUDPaint", "AmmoCheck", function()
 	local ply = LocalPlayer()
 	local wep = ply:GetActiveWeapon()
+	local hand = ply:GetAttachment(ply:LookupAttachment("anim_attachment_rh"))
 
 	if ply:InVehicle() then return end
+	if !ply:Alive() then return end
+	if !IsValid(hand) then return end
 	if GetConVarNumber("hud_type") == 1 then return end
 	if GetConVarNumber("lrp_view") == 0 then return end
 
 	if wep.LRPGuns then
-		if wep:GetReloading() or ply:KeyDown(IN_WALK) then
+		if (wep:GetReloading() or ply:KeyDown(IN_WALK)) then
 			local ammo = wep:Clip1()
 			local reserve = ply:GetAmmoCount( wep:GetPrimaryAmmoType() )
 			
 			local x, y = ScrW() / 2.0, ScrH() / 2.0
 			
-			local hand = ply:GetAttachment(ply:LookupAttachment("anim_attachment_rh"))
 			if wep.Sight == "revolver" or wep.Sight == "pistol" or wep.Sight == "duel" then
 				textpos = (hand.Pos + hand.Ang:Forward() * 5 + hand.Ang:Up() * 4.8 + hand.Ang:Right() * -1.1):ToScreen()
 			elseif wep.Sight == "ar2" then

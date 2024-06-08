@@ -137,21 +137,25 @@ hook.Add("CalcView", "lrpview", function(ply, pos, angles, fov)
                     
                     local handAtt = ply:GetAttachment(ply:LookupAttachment("anim_attachment_rh"))
         
-                    local worldVector, worldAngle = LocalToWorld(wep.AimPos, wep.AimAng, handAtt.Pos, handAtt.Ang)
+                    if IsValid(handAtt) then
+                        local worldVector, worldAngle = LocalToWorld(wep.AimPos, wep.AimAng, handAtt.Pos, handAtt.Ang)
 
-                    org = LerpVector(t, eye.Pos + eye.Ang:Forward() * 2 - eye.Ang:Up(), worldVector)
-                    angl = LerpAngle(t, angles, worldAngle)
+                        org = LerpVector(t, eye.Pos + eye.Ang:Forward() * 2 - eye.Ang:Up(), worldVector)
+                        angl = LerpAngle(t, angles, worldAngle)
+                    end
                 elseif !handview then
                     local e = math.Approach(wep.aimProgress or 1, 0, FrameTime() * 1.3)
                     wep.aimProgress = e
                     local t = inOutQuad(e, 0, 1, 1)
 
                     local handAtt = ply:GetAttachment(ply:LookupAttachment("anim_attachment_rh"))
-                    
-                    local worldVector, worldAngle = LocalToWorld(wep.AimPos, wep.AimAng, handAtt.Pos, handAtt.Ang)
 
-                    org = LerpVector(t, eye.Pos + eye.Ang:Forward() * 2 - eye.Ang:Up(), worldVector)
-                    angl = LerpAngle(t, angles, worldAngle)
+                    if IsValid(handAtt) then
+                        local worldVector, worldAngle = LocalToWorld(wep.AimPos, wep.AimAng, handAtt.Pos, handAtt.Ang)
+
+                        org = LerpVector(t, eye.Pos + eye.Ang:Forward() * 2 - eye.Ang:Up(), worldVector)
+                        angl = LerpAngle(t, angles, worldAngle)
+                    end
                 end
                 if IsValid(wep) and ply.CalcView then
                     local e = ply:CalcView(ply, pos, ang, fov)
@@ -274,7 +278,7 @@ hook.Add("PostDrawTranslucentRenderables", "lrpcrosshair", function()
         end
     end
 
-    if !ply:InVehicle() and ply:GetViewEntity() == ply then
+    if !ply:InVehicle() and ply:GetViewEntity() == ply and IsValid(aim) then
         local endpos = pos + aim * 1800
         tr = util.TraceLine({
             start = pos,
@@ -315,13 +319,13 @@ hook.Add("PostDrawHUD", "BlackScreen", function()
     if GetConVarNumber("lrp_view") == 0 then return end
     if ply:Alive() and IsValid(wep) and table.HasValue(BlackListWeapons, ply:GetActiveWeapon():GetClass()) then return end
     local eye = ply:GetAttachment(ply:LookupAttachment("eyes"))
-    local posHand = ply:GetAttachment(ply:LookupAttachment("anim_attachment_rh")).Pos
+    local hand = ply:GetAttachment(ply:LookupAttachment("anim_attachment_rh"))
 
-    if wep.LRPGuns and handview and ply:KeyDown( IN_ATTACK2 ) and ply:KeyDownLast( IN_ATTACK2 ) and ply:IsValid() and ply:Alive() and IsValid(ply) and IsValid(LocalPlayer():GetActiveWeapon()) then
+    if wep.LRPGuns and handview and ply:KeyDown( IN_ATTACK2 ) and ply:KeyDownLast( IN_ATTACK2 ) and ply:IsValid() and ply:Alive() and IsValid(ply) and IsValid(wep) and IsValid(hand) then
 
         local tr = {
-            start = posHand,
-            endpos = posHand,
+            start = hand.Pos,
+            endpos = hand.Pos,
             mins = Vector( -1, -1, 0 ),
             maxs = Vector( 1, 1, 1 )
         }
@@ -402,35 +406,37 @@ hook.Add("PostDrawOpaqueRenderables", "Sight", function()
         local a = t:LookupAttachment('anim_attachment_rh')
         if not a then return end
         local t = t:GetAttachment(a)
-        local l, a = LocalToWorld(wep.SightPos, wep.SightAng, t.Pos, t.Ang)
-        local t = e / -2
-        cam.Start3D2D(l, a, wep.SightSize / e * 1.1)
-            cam.IgnoreZ(true)
-            render.ClearStencil()
-            render.SetStencilEnable(true)
-            render.SetStencilTestMask(255)
-            render.SetStencilWriteMask(255)
-            render.SetStencilReferenceValue(42)
-            render.SetStencilCompareFunction(STENCIL_ALWAYS)
-            render.SetStencilFailOperation(STENCIL_KEEP)
-            render.SetStencilPassOperation(STENCIL_REPLACE)
-            render.SetStencilZFailOperation(STENCIL_KEEP)
-            surface.SetDrawColor(0,0,0,1)
-            draw.NoTexture()
-            surface.DrawPoly(n)
-            render.SetStencilCompareFunction(STENCIL_EQUAL)
-            render.SetStencilFailOperation(STENCIL_ZERO)
-            render.SetStencilZFailOperation(STENCIL_ZERO)
-            o:SetTexture('$basetexture',r)
-            o:SetFloat('$alpha',math.Clamp(math.Remap(wep.aimProgress,.1,1,0,1),0,1))
-            surface.SetMaterial(o)
-            surface.DrawTexturedRect(t,t,e,e)
-            surface.SetDrawColor(255,255,255)
-            surface.SetMaterial(ply:GetActiveWeapon().SightMat)
-            surface.DrawTexturedRect(t-10,t-10,e+20,e+20)
-            render.SetStencilEnable(false)
-            cam.IgnoreZ(false)
-        cam.End3D2D()
+        if IsValid(t) then
+            local l, a = LocalToWorld(wep.SightPos, wep.SightAng, t.Pos, t.Ang)
+            local t = e / -2
+            cam.Start3D2D(l, a, wep.SightSize / e * 1.1)
+                cam.IgnoreZ(true)
+                render.ClearStencil()
+                render.SetStencilEnable(true)
+                render.SetStencilTestMask(255)
+                render.SetStencilWriteMask(255)
+                render.SetStencilReferenceValue(42)
+                render.SetStencilCompareFunction(STENCIL_ALWAYS)
+                render.SetStencilFailOperation(STENCIL_KEEP)
+                render.SetStencilPassOperation(STENCIL_REPLACE)
+                render.SetStencilZFailOperation(STENCIL_KEEP)
+                surface.SetDrawColor(0,0,0,1)
+                draw.NoTexture()
+                surface.DrawPoly(n)
+                render.SetStencilCompareFunction(STENCIL_EQUAL)
+                render.SetStencilFailOperation(STENCIL_ZERO)
+                render.SetStencilZFailOperation(STENCIL_ZERO)
+                o:SetTexture('$basetexture',r)
+                o:SetFloat('$alpha',math.Clamp(math.Remap(wep.aimProgress,.1,1,0,1),0,1))
+                surface.SetMaterial(o)
+                surface.DrawTexturedRect(t,t,e,e)
+                surface.SetDrawColor(255,255,255)
+                surface.SetMaterial(LocalPlayer():GetActiveWeapon().SightMat)
+                surface.DrawTexturedRect(t-10,t-10,e+20,e+20)
+                render.SetStencilEnable(false)
+                cam.IgnoreZ(false)
+            cam.End3D2D()
+        end
     end
 end)
 
