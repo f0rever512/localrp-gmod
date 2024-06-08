@@ -109,8 +109,8 @@ hook.Add("HUDPaint", "AmmoCheck", function()
 	local hand = ply:GetAttachment(ply:LookupAttachment("anim_attachment_rh"))
 
 	if ply:InVehicle() then return end
-	if !ply:Alive() then return end
-	if !IsValid(hand) then return end
+	if not ply:Alive() then return end
+	if not hand then return end
 	if GetConVarNumber("hud_type") == 1 then return end
 	if GetConVarNumber("lrp_view") == 0 then return end
 
