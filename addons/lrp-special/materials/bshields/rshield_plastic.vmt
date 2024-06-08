@@ -1,0 +1,5 @@
+VertexLitGeneric
+{
+	$basetexture "bshields/rshield_plastic"
+	$surfaceprop "plastic"
+}

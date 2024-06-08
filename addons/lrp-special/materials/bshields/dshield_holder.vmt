@@ -1,0 +1,5 @@
+VertexLitGeneric
+{
+	$basetexture "bshields/dshield_holder"
+	$surfaceprop "metal"
+}

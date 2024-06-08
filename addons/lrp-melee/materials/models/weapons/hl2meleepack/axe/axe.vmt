@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "Models/weapons/HL2meleepack/axe/axe"
+	"$envmap" "env_cubemap"
+	"$envmapmask" "Models/weapons/HL2meleepack/axe/axe_ref"
+}

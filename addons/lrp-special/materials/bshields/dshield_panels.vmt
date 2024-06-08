@@ -1,0 +1,5 @@
+VertexLitGeneric
+{
+	$basetexture "bshields/dshield_panels"
+	$surfaceprop "metalpanel"
+}

@@ -1,0 +1,6 @@
+VertexLitGeneric
+{
+	$basetexture "bshields/hshield_window"
+	$translucent 1
+	$surfaceprop "glass"
+}

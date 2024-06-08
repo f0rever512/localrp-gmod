@@ -1,0 +1,6 @@
+VertexLitGeneric
+{
+	$basetexture "bshields/hshield_custom"
+	$translucent 1
+	$surfaceprop "metal"
+}
