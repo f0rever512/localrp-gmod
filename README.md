@@ -4,10 +4,10 @@ English
 LocalRP — build for Garry's Mod, consisting of a gamemode and modules (addons). Build has the following features:
 - Elements of RP and realism
 - Settings that make the game more enjoyable
-- Sandbox-based gamemode
+- Sandbox-based gamemode (soon)
 - Modules that work independently of each other
 
-[Collection in Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=2837278729)
+[Steam collection](https://steamcommunity.com/sharedfiles/filedetails/?id=2837278729)
 
 ---
 Русский
@@ -15,7 +15,7 @@ LocalRP — build for Garry's Mod, consisting of a gamemode and modules (addons)
 LocalRP — сборка для Garry's Mod, состоящая из режима и модулей (аддонов). В сборке есть следующие функции:
 - Элементы RP и реализма
 - Настройки, делающие игру приятней
-- Свой режим, базированный на Sandbox
+- Режим, базированный на Sandbox (скоро)
 - Модули, работающие независимо друг от друга
 
-[Коллекция в Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=2837278729)
+[Steam коллекция](https://steamcommunity.com/sharedfiles/filedetails/?id=2837278729)
