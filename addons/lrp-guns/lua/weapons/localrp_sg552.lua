@@ -8,6 +8,7 @@ SWEP.Passive = 'passive'
 SWEP.Sight = 'ar2'
 
 SWEP.ReloadTime = 2.2
+
 SWEP.Primary.Sound = Sound( 'weapons/sg552/sg552-1.wav' )
 SWEP.Primary.Damage = 23
 SWEP.Primary.RPM = 750
@@ -22,7 +23,6 @@ SWEP.ClipoutSound = 'weapons/sg552/sg552_clipout.wav'
 SWEP.ClipinSound = 'weapons/sg552/sg552_clipin.wav'
 SWEP.SlideSound = 'weapons/sg552/sg552_boltpull.wav'
 
-SWEP.Icon = 'icons/guns/rifle3.png'
 SWEP.WorldModel = 'models/weapons/w_rif_sg552.mdl'
 
 SWEP.Slot = 3

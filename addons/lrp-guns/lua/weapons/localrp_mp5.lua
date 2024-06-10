@@ -22,7 +22,6 @@ SWEP.ClipoutSound = 'weapons/mp5navy/mp5_clipout.wav'
 SWEP.ClipinSound = 'weapons/mp5navy/mp5_clipin.wav'
 SWEP.SlideSound = 'weapons/mp5navy/mp5_slideback.wav'
 
-SWEP.Icon = 'icons/guns/smg.png'
 SWEP.WorldModel = 'models/weapons/w_smg_mp5.mdl'
 
 SWEP.Slot = 2

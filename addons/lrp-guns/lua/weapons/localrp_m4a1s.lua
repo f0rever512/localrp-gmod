@@ -7,6 +7,7 @@ SWEP.PrintName = 'M4A1-S'
 SWEP.Passive = 'passive'
 SWEP.Sight = 'ar2'
 
+SWEP.Silent = true
 SWEP.ReloadTime = 2.1
 SWEP.Primary.Sound = Sound("Weapon_M4A1.Silenced")
 SWEP.Primary.Damage = 22
@@ -22,7 +23,6 @@ SWEP.ClipoutSound = 'weapons/m4a1/m4a1_clipout.wav'
 SWEP.ClipinSound = 'weapons/m4a1/m4a1_clipin.wav'
 SWEP.SlideSound = 'weapons/m4a1/m4a1_boltpull.wav'
 
-SWEP.Icon = 'icons/guns/rifle2.png'
 SWEP.WorldModel = 'models/weapons/w_rif_m4a1_silencer.mdl'
 
 SWEP.Slot = 3
@@ -30,8 +30,3 @@ SWEP.SlotPos = 1
 
 SWEP.AimPos = Vector(-8, -1.02, 5.9)
 SWEP.AimAng = Angle(-9, 0, 0)
-
-function SWEP:FireAnimationEvent( pos, ang, event, options )
-	if ( event == 21 ) then return true end	
-	if ( event == 5003 ) then return true end
-end

@@ -8,6 +8,7 @@ SWEP.Passive = 'normal'
 SWEP.Sight = 'revolver'
 
 SWEP.ReloadTime = 2.4
+
 SWEP.Primary.Sound = Sound( 'weapons/usp/usp_unsil-1.wav' )
 SWEP.Primary.Damage = 29
 SWEP.Primary.RPM = 700
@@ -23,7 +24,6 @@ SWEP.ClipoutSound = ''
 SWEP.ClipinSound = ''
 SWEP.SlideSound = 'weapons/usp/usp_slideback2.wav'
 
-SWEP.Icon = 'icons/guns/pistol.png'
 SWEP.WorldModel = 'models/weapons/w_pist_usp.mdl'
 
 SWEP.Slot = 1

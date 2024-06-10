@@ -22,7 +22,6 @@ SWEP.ClipoutSound = 'weapons/m4a1/m4a1_clipout.wav'
 SWEP.ClipinSound = 'weapons/m4a1/m4a1_clipin.wav'
 SWEP.SlideSound = 'weapons/m4a1/m4a1_boltpull.wav'
 
-SWEP.Icon = 'icons/guns/rifle2.png'
 SWEP.WorldModel = 'models/weapons/w_rif_m4a1.mdl'
 
 SWEP.Slot = 3

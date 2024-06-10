@@ -23,7 +23,6 @@ SWEP.ClipoutSound = 'weapons/p90/p90_clipout.wav'
 SWEP.ClipinSound = 'weapons/p90/p90_clipin.wav'
 SWEP.SlideSound = 'weapons/p90/p90_boltpull.wav'
 
-SWEP.Icon = 'icons/guns/smg.png'
 SWEP.WorldModel = 'models/weapons/w_smg_p90.mdl'
 
 SWEP.Slot = 2

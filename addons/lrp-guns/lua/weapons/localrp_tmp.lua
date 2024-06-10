@@ -7,7 +7,9 @@ SWEP.PrintName = 'TMP'
 SWEP.Passive = 'passive'
 SWEP.Sight = 'ar2'
 
+SWEP.Silent = true
 SWEP.ReloadTime = 2.2
+
 SWEP.Primary.Sound = Sound( 'weapons/tmp/tmp-1.wav' )
 SWEP.Primary.Damage = 16
 SWEP.Primary.RPM = 1150
@@ -22,7 +24,6 @@ SWEP.ClipoutSound = 'weapons/tmp/tmp_clipout.wav'
 SWEP.ClipinSound = 'weapons/tmp/tmp_clipin.wav'
 SWEP.SlideSound = 'weapons/mp5navy/mp5_slideback.wav'
 
-SWEP.Icon = 'icons/guns/smg.png'
 SWEP.WorldModel = 'models/weapons/w_smg_tmp.mdl'
 
 SWEP.Slot = 2

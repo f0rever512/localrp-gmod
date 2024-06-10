@@ -25,7 +25,6 @@ SWEP.ClipoutSound = ''
 SWEP.ClipinSound = 'weapons/m3/m3_insertshell.wav'
 SWEP.SlideSound = 'weapons/m3/m3_pump.wav'
 
-SWEP.Icon = 'icons/guns/shotgun.png'
 SWEP.WorldModel = 'models/weapons/w_shot_m3super90.mdl'
 
 SWEP.Slot = 2

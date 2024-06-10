@@ -23,7 +23,7 @@ SWEP.ClipoutSound = ''
 SWEP.ClipinSound = ''
 SWEP.SlideSound = 'weapons/deagle/de_slideback.wav'
 
-SWEP.Icon = 'icons/guns/pistol.png'
+
 SWEP.WorldModel = 'models/weapons/w_pist_deagle.mdl'
 
 SWEP.Slot = 1

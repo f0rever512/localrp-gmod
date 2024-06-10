@@ -29,6 +29,8 @@ SWEP.Secondary.Automatic = false
 SWEP.Secondary.Ammo = 'none'
 
 SWEP.LRPGuns = true
+SWEP.Silent = false
+SWEP.ShootAnimOff = false
 SWEP.ReloadTime = 1
 
 SWEP.DrawAmmo = true
@@ -55,6 +57,7 @@ end
 function SWEP:Initialize()
     self:SetReady(false)
     self:SetReloading(false)
+	handview = true
 end
 
 function SWEP:Holster()
@@ -206,51 +209,33 @@ function SWEP:SecondaryAttack()
     return
 end
 
-function SWEP:ShotBullet(dmg, numbul, cone)
-    if not IsValid(self:GetOwner()) then return end
+if SERVER then
+    util.AddNetworkString('custommuzzle')
+else
+    net.Receive('custommuzzle', function()
+        local weap = net.ReadEntity()
+        if not IsValid(weap) then return end
 
-    numbul = numbul or 1
-    cone = cone or 0.01
-
-    local bullet = {}
-    local pos, dir = self:GetShootPos()
-    bullet.Num = numbul or 1
-    bullet.Src = pos -- self:GetOwner():GetShootPos()
-    bullet.Dir = dir -- self.Owner:GetEyeTraceNoCursor().Normal --self.Owner:GetAimVector()
-    bullet.Spread = Vector(cone, cone, 0)
-    bullet.Tracer = 4
-    bullet.Force = 5
-    bullet.Damage = dmg
-
-    self:GetOwner():FireBullets(bullet)
-    self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
-    self:GetOwner():MuzzleFlash()
-    self:GetOwner():SetAnimation(PLAYER_ATTACK1)
-    
-    local anglo1 = Angle(math.Rand(-self.Primary.KickDown, -self.Primary.KickUp), math.Rand(-self.Primary.KickHorizontal, self.Primary.KickHorizontal), 0)
-    self.Owner:ViewPunch(anglo1)
-
-    if SERVER and game.SinglePlayer() and not self.Owner:IsNPC() then
-        local offlineeyes = self.Owner:EyeAngles()
-        offlineeyes.pitch = offlineeyes.pitch + anglo1.pitch
-        offlineeyes.yaw = offlineeyes.yaw + anglo1.yaw
-        self.Owner:SetEyeAngles(offlineeyes)
-    end
-
-    if CLIENT and not game.SinglePlayer() and not self.Owner:IsNPC() then
-        local anglo = Angle(math.Rand(-self.Primary.KickDown, -self.Primary.KickUp), math.Rand(-self.Primary.KickHorizontal, self.Primary.KickHorizontal), 0)
-        local eyes = self.Owner:EyeAngles()
-        eyes.pitch = eyes.pitch + (anglo.pitch / 3)
-        eyes.yaw = eyes.yaw + (anglo.yaw / 3)
-        self.Owner:SetEyeAngles(eyes)
-    end
+        local dlight = DynamicLight( weap:EntIndex() )
+        if dlight then
+            dlight.pos = weap:GetShootPos()
+            dlight.r = 255
+            dlight.g = 145
+            dlight.b = 10
+            dlight.brightness = 1
+            dlight.Decay = 5000
+            dlight.Size = 256
+            dlight.DieTime = CurTime() + 0.2
+        end
+    end)
 end
 
---[[function SWEP:MuzzleFlashCustom()
+function SWEP:MuzzleFlashCustom()
+	if self.Silent then return end
 	if SERVER then
-		net.Start('qwb.muzzleFlashLight')
+		net.Start('custommuzzle')
 			net.WriteEntity(self)
-		net.SendPVS(self:GetBulletSourcePos())
+		net.SendPVS(self:GetShootPos())
 
 		return
 	end
@@ -261,28 +246,10 @@ end
 
 	util.Effect('MuzzleFlash', effectData)
 end
-SWEP.ShellType = '9mm'
 
-function SWEP:ShellEffect()
-	if SERVER then return end
-	if self.NoShell then return end
-
-	local shellType = self.ShellType
-
-	local effectData = EffectData()
-
-	local pos = self:GetPos()
-	if self.ShellOffset then
-		local att = self:GetAttachment( self:LookupAttachment('muzzle') )
-		if att then
-			pos = LocalToWorld(self.ShellOffset, angle_zero, att.Pos, att.Ang)
-		end
-	end
-
-	effectData:SetOrigin(pos)
-	effectData:SetFlags(self.ShellVelocity or 75)
-
-	util.Effect('EjectBrass_' .. shellType, effectData)
+function SWEP:FireAnimationEvent( pos, ang, event, options )
+	if ( event == 21 ) then return true end	
+	if ( event == 5003 ) then return true end
 end
 
 function SWEP:ShotBullet(dmg, numbul, cone)
@@ -303,11 +270,11 @@ function SWEP:ShotBullet(dmg, numbul, cone)
 
     self:GetOwner():FireBullets(bullet)
     self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
-    self:GetOwner():MuzzleFlash()
-    self:MuzzleFlashCustom()
-	self:ShellEffect()
-    self.RecoilAnimBack = nil
-	self:GetOwner().RecoilAnim = true
+    --self:GetOwner():MuzzleFlash()
+	if not self.ShootAnimOff then
+    	self:GetOwner():SetAnimation(PLAYER_ATTACK1)
+	end
+	self:MuzzleFlashCustom()
     
     local anglo1 = Angle(math.Rand(-self.Primary.KickDown, -self.Primary.KickUp), math.Rand(-self.Primary.KickHorizontal, self.Primary.KickHorizontal), 0)
     self.Owner:ViewPunch(anglo1)
@@ -326,7 +293,7 @@ function SWEP:ShotBullet(dmg, numbul, cone)
         eyes.yaw = eyes.yaw + (anglo.yaw / 3)
         self.Owner:SetEyeAngles(eyes)
     end
-end]]
+end
 
 hook.Add('SetupMove', 'WeaponSetupMove', function(ply, mv)
     local w = ply:GetActiveWeapon()

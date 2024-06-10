@@ -8,6 +8,7 @@ SWEP.Passive = 'passive'
 SWEP.Sight = 'ar2'
 
 SWEP.ReloadTime = 2.4
+
 SWEP.Primary.Sound = Sound( 'weapons/awp/awp1.wav' )
 SWEP.Primary.Damage = 80
 SWEP.Primary.RPM = 60
@@ -23,7 +24,6 @@ SWEP.ClipoutSound = 'weapons/awp/awp_clipout.wav'
 SWEP.ClipinSound = 'weapons/awp/awp_clipin.wav'
 SWEP.SlideSound = 'weapons/awp/awp_bolt.wav'
 
-SWEP.Icon = 'icons/guns/sniper.png'
 SWEP.WorldModel = 'models/weapons/w_snip_awp.mdl'
 
 SWEP.Slot = 3

@@ -22,7 +22,6 @@ SWEP.ClipoutSound = 'weapons/ak47/ak47_clipout.wav'
 SWEP.ClipinSound = 'weapons/ak47/ak47_clipin.wav'
 SWEP.SlideSound = 'weapons/ak47/ak47_boltpull.wav'
 
-SWEP.Icon = 'icons/guns/rifle.png'
 SWEP.WorldModel = 'models/weapons/w_rif_ak47.mdl'
 
 SWEP.Slot                       = 3

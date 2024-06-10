@@ -24,7 +24,7 @@ SWEP.ClipoutSound = ''
 SWEP.ClipinSound = ''
 SWEP.SlideSound = 'weapons/fiveseven/fiveseven_sliderelease.wav'
 
-SWEP.Icon = 'icons/guns/pistol.png'
+
 SWEP.WorldModel = 'models/weapons/w_pist_fiveseven.mdl'
 
 SWEP.Slot = 1

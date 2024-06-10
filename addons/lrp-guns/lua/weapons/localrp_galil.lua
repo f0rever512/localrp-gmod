@@ -8,6 +8,7 @@ SWEP.Passive = 'passive'
 SWEP.Sight = 'ar2'
 
 SWEP.ReloadTime = 2.2
+
 SWEP.Primary.Sound = Sound( 'weapons/galil/galil-1.wav' )
 SWEP.Primary.Damage = 21
 SWEP.Primary.RPM = 800
@@ -23,7 +24,6 @@ SWEP.ClipoutSound = 'weapons/galil/galil_clipout.wav'
 SWEP.ClipinSound = 'weapons/galil/galil_clipin.wav'
 SWEP.SlideSound = 'weapons/galil/galil_boltpull.wav'
 
-SWEP.Icon = 'icons/guns/rifle.png'
 SWEP.WorldModel = 'models/weapons/w_rif_galil.mdl'
 
 SWEP.Slot = 3

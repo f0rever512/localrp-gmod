@@ -23,7 +23,7 @@ SWEP.ClipoutSound = 'weapons/g3sg1/g3sg1_clipout.wav'
 SWEP.ClipinSound = 'weapons/g3sg1/g3sg1_clipin.wav'
 SWEP.SlideSound = 'weapons/g3sg1/g3sg1_slide.wav'
 
-SWEP.Icon = 'icons/guns/sniper.png'
+
 SWEP.WorldModel = 'models/weapons/w_snip_g3sg1.mdl'
 
 SWEP.Slot = 3

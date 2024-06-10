@@ -7,7 +7,9 @@ SWEP.PrintName = 'Пневмат. ПП'
 SWEP.Passive = 'passive'
 SWEP.Sight = 'smg'
 
+SWEP.Silent = true
 SWEP.ReloadTime = 2.3
+
 SWEP.Primary.Sound = Sound( 'weapons/p228/p228_sliderelease.wav' )
 SWEP.Primary.Damage = 1.25
 SWEP.Primary.RPM = 725
@@ -24,7 +26,6 @@ SWEP.ClipoutSound = ''
 SWEP.ClipinSound = ''
 SWEP.SlideSound = ''
 
-SWEP.Icon = 'icons/guns/air.png'
 SWEP.WorldModel = 'models/weapons/w_smg1.mdl'
 
 SWEP.Slot = 1
@@ -32,8 +33,3 @@ SWEP.SlotPos = 1
 
 SWEP.AimPos = Vector(-7.5, -0.15, 5.9)
 SWEP.AimAng = Angle(-10, 0, -3)
-
-function SWEP:FireAnimationEvent( pos, ang, event, options )
-	if ( event == 21 ) then return true end	
-	if ( event == 5003 ) then return true end
-end

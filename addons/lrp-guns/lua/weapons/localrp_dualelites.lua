@@ -7,15 +7,17 @@ SWEP.PrintName = 'Dual-Elites'
 SWEP.Passive = 'normal'
 SWEP.Sight = 'duel'
 
+SWEP.ShootAnimOff = true
 SWEP.ReloadTime = 2.8
+
 SWEP.Primary.Sound = Sound( 'weapons/elite/elite-1.wav' )
-SWEP.Primary.Damage = 26
-SWEP.Primary.RPM = 900
+SWEP.Primary.Damage = 21
+SWEP.Primary.RPM = 950
 SWEP.Primary.ClipSize = 30
 SWEP.Primary.DefaultClip = 0
-SWEP.Primary.KickUp = 0.5
-SWEP.Primary.KickDown = 0.2
-SWEP.Primary.KickHorizontal = 0
+SWEP.Primary.KickUp = 7
+SWEP.Primary.KickDown = 5
+SWEP.Primary.KickHorizontal = 4
 SWEP.Primary.Ammo = 'ammo_pist'
 SWEP.Primary.Automatic = false
 
@@ -23,7 +25,6 @@ SWEP.ClipoutSound = ''
 SWEP.ClipinSound = ''
 SWEP.SlideSound = 'weapons/elite/elite_sliderelease.wav'
 
-SWEP.Icon = 'icons/guns/pistol.png'
 SWEP.WorldModel = 'models/weapons/w_pist_elite.mdl'
 
 SWEP.Slot = 1

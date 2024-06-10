@@ -23,9 +23,8 @@ SWEP.Primary.Automatic = true
 
 SWEP.ClipoutSound = ''
 SWEP.ClipinSound = 'weapons/xm1014/xm1014_insertshell.wav'
-SWEP.SlideSound = ''
+SWEP.SlideSound = 'weapons/m249/m249_coverup.wav'
 
-SWEP.Icon = 'icons/guns/shotgun.png'
 SWEP.WorldModel = 'models/weapons/w_shot_xm1014.mdl'
 
 SWEP.Slot = 2

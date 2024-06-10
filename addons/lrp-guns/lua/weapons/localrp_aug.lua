@@ -8,6 +8,7 @@ SWEP.Passive = 'passive'
 SWEP.Sight = 'smg'
 
 SWEP.ReloadTime = 2.2
+
 SWEP.Primary.Sound = Sound( 'weapons/aug/aug-1.wav' )
 SWEP.Primary.Damage = 23
 SWEP.Primary.RPM = 825
@@ -22,7 +23,6 @@ SWEP.ClipoutSound = 'weapons/aug/aug_clipout.wav'
 SWEP.ClipinSound = 'weapons/aug/aug_clipin.wav'
 SWEP.SlideSound = 'weapons/aug/aug_boltpull.wav'
 
-SWEP.Icon = 'icons/guns/rifle3.png'
 SWEP.WorldModel = 'models/weapons/w_rif_aug.mdl'
 
 SWEP.Slot = 3
