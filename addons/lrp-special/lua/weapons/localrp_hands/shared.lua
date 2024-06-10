@@ -57,7 +57,8 @@ local CarryClass = {
 	["func_breakable"] = true,
 	["prop_dynamic"] = true,
 	["player"] = true,
-	["gmod_sent_vehicle_fphysics_wheel"] = true
+	["gmod_sent_vehicle_fphysics_wheel"] = true,
+	['gmod_sent_vehicle_fphysics_base'] = true
 }
 
 local DoorClass = {
@@ -192,16 +193,16 @@ local function doKnock(ply, sound)
 end
 
 function SWEP:PrimaryAttack()
-	local trace = self:GetOwner():GetEyeTrace()
-	if table.HasValue(DoorClass, trace.Entity:GetClass()) then
+	local eyetrace = self:GetOwner():GetEyeTrace()
+	if IsValid(eyetrace.Entity) and table.HasValue(DoorClass, eyetrace.Entity:GetClass()) then
 		
-		if not lookingAtLockable(self:GetOwner(), trace.Entity) then return end
+		if not lookingAtLockable(self:GetOwner(), eyetrace.Entity) then return end
 		
 		self:SetNextPrimaryFire(CurTime() + 2)
 
 		if CLIENT then return nil end
 		
-		lock(trace.Entity)
+		lock(eyetrace.Entity)
 		lockUnlockAnimation(self:GetOwner(), self.SoundDoor)
 	end
 
@@ -211,7 +212,7 @@ function SWEP:PrimaryAttack()
 
 	if SERVER then
 		self:SetCarrying()
-		if((IsValid(tr.Entity))and(self:CanPickup(tr.Entity))and not(tr.Entity:IsPlayer()))then
+		if IsValid(tr.Entity) and self:CanPickup(tr.Entity) and not tr.Entity:IsPlayer() then
 			local Dist=(self.Owner:GetShootPos()-tr.HitPos):Length()
 			if (Dist < self.CarryDistance) then
 				if (tr.Entity.ContactPoisoned) then
@@ -239,15 +240,15 @@ function SWEP:PrimaryAttack()
 end
 
 function SWEP:SecondaryAttack()
-	local trace = self:GetOwner():GetEyeTrace()
-	if table.HasValue(DoorClass, trace.Entity:GetClass()) then
-		if not lookingAtLockable(self:GetOwner(), trace.Entity) then return end
+	local eyetrace = self:GetOwner():GetEyeTrace()
+	if IsValid(eyetrace.Entity) and table.HasValue(DoorClass, eyetrace.Entity:GetClass()) then
+		if not lookingAtLockable(self:GetOwner(), eyetrace.Entity) then return end
 		
 		self:SetNextSecondaryFire(CurTime() + 2)
 
 		if CLIENT then return nil end
 		
-		unlock(trace.Entity)
+		unlock(eyetrace.Entity)
 		lockUnlockAnimation(self:GetOwner(), self.SoundDoor)
 	end
 
@@ -260,12 +261,12 @@ function SWEP:SecondaryAttack()
 end
 
 function SWEP:Reload()
-	local trace = self:GetOwner():GetEyeTrace()
-	if table.HasValue(DoorClass, trace.Entity:GetClass()) then
+	local eyetrace = self:GetOwner():GetEyeTrace()
+	if IsValid(eyetrace.Entity) and table.HasValue(DoorClass, eyetrace.Entity:GetClass()) then
 		if self.NextReloadFire > CurTime() then return end
-		local trace = self:GetOwner():GetEyeTrace()
+		local eyetrace = self:GetOwner():GetEyeTrace()
 
-		if not lookingAtLockable(self:GetOwner(), trace.Entity) then return end
+		if not lookingAtLockable(self:GetOwner(), eyetrace.Entity) then return end
 
 		self.NextReloadFire = CurTime() + 0.8
 
@@ -307,7 +308,7 @@ function SWEP:ApplyForce()
 		if(self.CarryPos)then TargetPos=self.CarryEnt:LocalToWorld(self.CarryPos) end
 		local vec = target - TargetPos
 		local len,mul = vec:Length(),self.CarryEnt:GetPhysicsObject():GetMass()
-		if((len>self.CarryDistance)or(mul>500))then
+		if (len > self.CarryDistance) or (mul > 500) then
 			self:SetCarrying()
 			self:SetHoldType(self.HoldTypePassive)
 			return
@@ -333,8 +334,9 @@ function SWEP:ApplyForce()
 	if IsValid(ragphys) and (self.CarryEnt:GetClass()=="prop_ragdoll") then
 		local ragvec = ragtarget - ragphys:GetPos()
 		local raglen = ragvec:Length()
-		if raglen > 150 then
+		if raglen > 75 then
 			self:SetCarrying()
+			self:SetHoldType(self.HoldTypePassive)
 			return
 		end
 		ragvec:Normalize()
@@ -342,7 +344,7 @@ function SWEP:ApplyForce()
 		local ragtvec = ragvec * raglen * 15
 		local ragavec = ragtvec - ragphys:GetVelocity()
 		ragavec = ragavec:GetNormal() * math.min(37, ragavec:Length())
-		ragavec = ragavec / ragphys:GetMass() * 40
+		ragavec = ragavec / ragphys:GetMass() * 15
 		
 		ragphys:AddVelocity(ragavec)
 	end
@@ -398,16 +400,16 @@ function SWEP:IsEntSoft(ent)
 	return ((ent:IsNPC())or(ent:IsPlayer()))
 end
 
-hook.Add("SetupMove", "HandsSpeed", function(ply, mv)
-    local wep = ply:GetActiveWeapon()
+-- hook.Add("SetupMove", "HandsSpeed", function(ply, mv)
+--     local wep = ply:GetActiveWeapon()
     
-    if !ply:Alive() then return end
-    if !IsValid(wep) then return end
+--     if !ply:Alive() then return end
+--     if !IsValid(wep) then return end
 
-    if wep:GetClass() == 'localrp_hands' and wep.GetCarrying && wep:GetCarrying() then
-        mv:SetMaxClientSpeed(mv:GetMaxClientSpeed() * .8)
-    end
-end)
+--     if wep:GetClass() == 'localrp_hands' and wep.GetCarrying && wep:GetCarrying() then
+--         mv:SetMaxClientSpeed(mv:GetMaxClientSpeed() * .8)
+--     end
+-- end)
 
 -- local playerMeta = FindMetaTable( "Player" )
 
