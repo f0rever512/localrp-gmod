@@ -202,10 +202,10 @@ hook.Add("PlayerSpawn", "RemoveDeath", function(ply)
     hook.Remove("CalcView", "DeathView", DeathView)
 end)
 
-hook.Add("HUDShouldDraw", "HideCross", function(name)
+hook.Add("HUDShouldDraw", "HideCross", function( name, ply )
     local ply = LocalPlayer()
-    local wep = ply:GetActiveWeapon()
-    if ply:Alive() then
+    if ply and ply:IsValid() and ply:Alive() and ply.GetActiveWeapon then
+        local wep = ply:GetActiveWeapon()
         if IsValid(wep) and table.HasValue(BlackListWeapons, wep:GetClass()) or GetConVarNumber("lrp_view") == 0 then
             if name == "CHudCrosshair" then
                 return true
