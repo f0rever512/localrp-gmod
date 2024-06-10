@@ -117,7 +117,6 @@ function lrpchat.buildBox()
 			if lrpchat.TypeSelector < 1 then lrpchat.TypeSelector = 3 end
 			
 			lrpchat.ChatType = types[lrpchat.TypeSelector]
-
 			timer.Simple(0.001, function() lrpchat.entry:RequestFocus() end)
 
 		elseif code == KEY_ENTER then
@@ -151,11 +150,20 @@ function lrpchat.buildBox()
 	end
 	lrpchat.chatLog.Think = function( self )
 		if lrpchat.lastMessage then
-			if CurTime() - lrpchat.lastMessage > 12 then
-				self:SetVisible( false )
-			else
-				self:SetVisible( true )
+			local elapsedTime = CurTime() - lrpchat.lastMessage
+			local fadeOutTime = 2	
+			local alpha = 255
+	
+			if elapsedTime > 5 then
+				alpha = Lerp((elapsedTime - 5) / fadeOutTime, 255, 0)
+				if alpha <= 0 then
+					self:SetVisible(false)
+					return
+				end
 			end
+	
+			self:SetAlpha(alpha)
+			self:SetVisible(true)
 		end
 	end
 	lrpchat.chatLog.PerformLayout = function( self )
