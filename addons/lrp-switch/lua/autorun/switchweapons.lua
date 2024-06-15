@@ -1,4 +1,8 @@
-CreateConVar("silentswitch", 0, FCVAR_ARCHIVE, "Enables/disables silent switch weapon", 0, 1)
+if SERVER then
+    CreateConVar("lrp_silentswitch", 0, FCVAR_ARCHIVE, "Enables/disables silent switch weapon", 0, 1)
+else
+    CreateClientConVar('lrp_switchpos', '0', true, false)
+end
 
 -- Time to equip the weapon in seconds.
 local EquipTime = 1
@@ -25,7 +29,6 @@ end
 
 local FAS_Temp_Fix = falsed
 
--- Weapons that will skip the timer.
 local whitelist = {
     "weapon_physgun",
     "gmod_tool",
@@ -38,15 +41,16 @@ local whitelist = {
 }
 
 local differenttime = {
-    {"localrp_air_pistol", 0.5},
-    {"localrp_air_revolver", 0.5},
+    {"localrp_air_pistol", 0.7},
+    {"localrp_air_revolver", 0.7},
     {"localrp_air_shotgun", 1},
     {"localrp_air_smg", 1},
     {"localrp_awp", 2},
-    {"localrp_beanbag", 1},
+    {'localrp_aug', 1.8},
+    {'localrp_g3sg1', 2},
     {"localrp_m249para", 2.5},
     {"localrp_scout", 2},
-    {"localrp_xm1014", 2},
+    {'localrp_sg550', 2},
     {"localrp_taser", 0.75},
     {"localrp_grenade_smoke", 0.4},
     {"localrp_grenade_frag", 0.4},
@@ -85,7 +89,7 @@ if SERVER then
         for _, holdtype in pairs(lrpgunstime) do
             for _, weapon in pairs(differenttime) do
                 if NewWeapon:GetClass() != weapon[1] then
-                    if NewWeapon.GunsR then
+                    if NewWeapon.LRPGuns then
                         if NewWeapon.Sight == holdtype[1] then
                             NewEquipTime = holdtype[2]
                         end
@@ -124,16 +128,12 @@ if SERVER then
         ply.SwitchingToWeapon = weapon
         ply.SwitchingFromWeapon = oldweapon
 
-        if ply.SwitchingFromWeapon.GunsR then
-            timer.Remove( "clipinsound" .. ply:SteamID())
-            timer.Remove( "slidesound" .. ply:SteamID())
-            timer.Remove( "reload_act2" .. ply:SteamID())
-            ply:SetVar('Reloading', false)
+        if ply.SwitchingFromWeapon.LRPGuns then
             ply:GetActiveWeapon():SetReloading(false)
         end
         
         local NewEquipTime = GetEquipTime(ply, weapon)
-        if GetConVarNumber("silentswitch") == 1 then
+        if GetConVarNumber("lrp_silentswitch") == 1 then
             NewEquipTime = NewEquipTime + 2.5
         end
         net.Start("WepSwitch_Switching")
@@ -330,6 +330,7 @@ if CLIENT then
 
     hook.Add('CreateMove', 'CoolMovePro', function(cmd)
         if Switching then
+            cmd:RemoveKey(IN_ATTACK)
             cmd:RemoveKey(IN_ATTACK2)
         end
     end)
@@ -367,7 +368,7 @@ local function postDrawTranslucentRenderables()
     --local eyes = ply:GetAttachment(ply:LookupAttachment("eyes"))
     if not tr then
         local pos = ply:GetShootPos() --eyes.Pos
-        local endpos = pos + aim * 2000
+        local endpos = pos + aim * 2200
         tr = util.TraceLine({
             start = pos,
             endpos = endpos,
@@ -447,7 +448,12 @@ hook.Add('dbg-view.chPaint', 'octolib.delay', function(tr, icon)
         --local text = data.text .. ('.'):rep(math.floor(CurTime() * 2 % 4))
         --draw.SimpleText(text, 'switch-font-sh', 0 + 60, -20, color_black, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         --draw.SimpleText(text, 'switch-font', 0 + 60, -20, Color(255, 255, 255, 200), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-        draw.SimpleTextOutlined("R - Отмена", 'switchfont', 0, 80, Color(255, 255, 255, 200), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 2, Color(0, 0, 0, 200))
+        if GetConVarNumber('lrp_switchpos') == 0 then
+            draw.SimpleTextOutlined("R - Отмена", 'switchfont', 70, 0, Color(255, 255, 255, 200), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, 2, Color(0, 0, 0, 200))
+        else
+            draw.SimpleTextOutlined("R - Отмена", 'switchfont', 0, 80, Color(255, 255, 255, 200), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 2, Color(0, 0, 0, 200))
+        end
+
         draw.NoTexture()
         surface.SetDrawColor(0, 0, 0, 200)
         surface.DrawPoly(p1)
@@ -566,7 +572,7 @@ local function OnWeaponSwitch(ply, old, new)
     else
     
         if SERVER then
-            if GetConVarNumber("silentswitch") == 0 then
+            if GetConVarNumber("lrp_silentswitch") == 0 then
                 ply:EmitSound( "npc/combine_soldier/gear5.wav", 60, 100 )
             end
 
