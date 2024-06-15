@@ -161,7 +161,7 @@ function lrpchat.buildBox()
 					return
 				end
 			end
-	
+
 			self:SetAlpha(alpha)
 			self:SetVisible(true)
 		end
@@ -249,6 +249,7 @@ end
 function lrpchat.showBox()
 	lrpchat.frame.Paint = lrpchat.oldPaint
 	lrpchat.chatLog.Paint = lrpchat.oldPaint2
+	lrpchat.chatLog:SetAlpha(255)
 	
 	lrpchat.chatLog:SetVerticalScrollbarEnabled( true )
 	lrpchat.lastMessage = nil
