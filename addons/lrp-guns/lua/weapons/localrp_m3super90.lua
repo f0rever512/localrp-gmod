@@ -7,6 +7,8 @@ SWEP.PrintName = 'M3 Super 90'
 SWEP.Passive = 'passive'
 SWEP.Sight = 'ar2'
 
+SWEP.ReloadTime = 2.3
+
 SWEP.Primary.Sound = Sound( 'weapons/m3/m3-1.wav' )
 SWEP.Primary.Damage = 10
 SWEP.Primary.RPM = 100
@@ -15,7 +17,6 @@ SWEP.Primary.DefaultClip = 0
 SWEP.Primary.NumShots = 8
 SWEP.Primary.KickUp = 10
 SWEP.Primary.KickDown = 7.8
-SWEP.ReloadTime = 2.3
 SWEP.Primary.KickHorizontal = math.random(15,19)
 SWEP.Primary.Spread = 0.1
 SWEP.Primary.Ammo = 'ammo_shot'

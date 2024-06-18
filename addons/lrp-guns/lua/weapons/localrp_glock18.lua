@@ -8,21 +8,21 @@ SWEP.Passive = 'normal'
 SWEP.Sight = 'revolver'
 
 SWEP.ReloadTime = 2.4
+
 SWEP.Primary.Sound = Sound( 'Weapon_Glock.Single' )
 SWEP.Primary.Damage = 26
-SWEP.Primary.RPM = 650
+SWEP.Primary.RPM = 700
 SWEP.Primary.ClipSize = 17
 SWEP.Primary.DefaultClip = 0
-SWEP.Primary.KickUp = 0.3
-SWEP.Primary.KickDown = 0.3
-SWEP.Primary.KickHorizontal = 0.3
+SWEP.Primary.KickUp = 0.9
+SWEP.Primary.KickDown = 0.5
+SWEP.Primary.KickHorizontal = 0.4
 SWEP.Primary.Ammo = 'ammo_pist'
 SWEP.Primary.Automatic	= false
 
 SWEP.ClipoutSound = ''
 SWEP.ClipinSound = ''
 SWEP.SlideSound = 'weapons/glock/glock_sliderelease.wav'
-
 
 SWEP.WorldModel = 'models/weapons/w_pist_glock18.mdl'
 

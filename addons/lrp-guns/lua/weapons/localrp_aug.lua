@@ -34,4 +34,4 @@ SWEP.SightPos = Vector(-3.2, -0.67, 5.87)
 SWEP.SightAng = Angle(0, -90, 100)
 SWEP.SightSize = 0.92
 SWEP.SightFOV = 18
-SWEP.SightMat = Material('materials/scopes/scope_aug.png')
+SWEP.SightMat = Material('materials/scopes/aug.png')

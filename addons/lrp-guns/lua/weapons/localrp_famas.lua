@@ -8,6 +8,7 @@ SWEP.Passive = 'passive'
 SWEP.Sight = 'ar2'
 
 SWEP.ReloadTime = 2.2
+
 SWEP.Primary.Sound = Sound( 'weapons/famas/famas-1.wav' )
 SWEP.Primary.Damage = 23
 SWEP.Primary.RPM = 950
@@ -22,7 +23,6 @@ SWEP.ClipoutSound = 'weapons/famas/famas_clipout.wav'
 SWEP.ClipinSound = 'weapons/famas/famas_clipin.wav'
 SWEP.SlideSound = 'weapons/famas/famas_forearm.wav'
 
-SWEP.Icon = 'icons/guns/rifle2.png'
 SWEP.WorldModel = 'models/weapons/w_rif_famas.mdl'
 
 SWEP.Slot			= 3

@@ -125,37 +125,41 @@ function SWEP:GunReloading()
             self:EmitSound(self.ClipoutSound, 60, 100)
 
             timer.Create('reload_act' .. self:GetOwner():SteamID(), 0.1, 1, function()
-                timer.Create("clipinsound" .. self:GetOwner():SteamID(), self.ReloadTime - 1.25, 1, function()
-                    self:EmitSound(self.ClipinSound, 60, 100)
-                end)
-                timer.Create("slidesound" .. self:GetOwner():SteamID(), self.ReloadTime - 0.75, 1, function()
-                    self:EmitSound(self.SlideSound, 60, 100)
-                end )
+				if self:GetOwner():Alive() then
+					timer.Create("clipinsound" .. self:GetOwner():SteamID(), self.ReloadTime - 1.25, 1, function()
+						self:EmitSound(self.ClipinSound, 60, 100)
+					end)
+					timer.Create("slidesound" .. self:GetOwner():SteamID(), self.ReloadTime - 0.75, 1, function()
+						self:EmitSound(self.SlideSound, 60, 100)
+					end )
 
-                self:SetReady(false)
-                self:SetReloading(true)
-                self:SetHoldType(self.Sight)
-                self:GetOwner():SetAnimation(PLAYER_RELOAD)
+					self:SetReady(false)
+					self:SetReloading(true)
+					self:SetHoldType(self.Sight)
+					self:GetOwner():SetAnimation(PLAYER_RELOAD)
 
-                timer.Create('reload_act2' .. self:GetOwner():SteamID(), self.ReloadTime, 1, function()
-                    if self:Ammo1() < self.Primary.ClipSize then
-                        self:SetClip1(self:Ammo1())
-                    else
-                        self:SetClip1(self.Primary.ClipSize)
-                    end
+					timer.Create('reload_act2' .. self:GetOwner():SteamID(), self.ReloadTime, 1, function()
+						if self:GetOwner():Alive() then
+							if self:Ammo1() < self.Primary.ClipSize then
+								self:SetClip1(self:Ammo1())
+							else
+								self:SetClip1(self.Primary.ClipSize)
+							end
 
-                    self:GetOwner():SetAmmo(self:Ammo1() - self.Primary.ClipSize, self.Primary.Ammo)
+							self:GetOwner():SetAmmo(self:Ammo1() - self.Primary.ClipSize, self.Primary.Ammo)
 
-                    if self:GetOwner():KeyDown(IN_ATTACK2) then
-                        self:SetReady(true)
-                        self:SetReloading(false)
-                    end
+							if self:GetOwner():KeyDown(IN_ATTACK2) then
+								self:SetReady(true)
+								self:SetReloading(false)
+							end
 
-                    if not self:GetOwner():KeyDown(IN_ATTACK2) then
-                        self:SetReady(false)
-                        self:SetReloading(false)
-                    end
-                end)
+							if not self:GetOwner():KeyDown(IN_ATTACK2) then
+								self:SetReady(false)
+								self:SetReloading(false)
+							end
+						end
+					end)
+				end
             end)
         end
     end

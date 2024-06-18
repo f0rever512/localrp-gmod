@@ -11,13 +11,13 @@ SWEP.Silent = true
 SWEP.ReloadTime = 2.4
 
 SWEP.Primary.Sound = Sound( 'weapons/usp/usp1.wav' )
-SWEP.Primary.Damage = 27
+SWEP.Primary.Damage = 28
 SWEP.Primary.RPM = 700
 SWEP.Primary.ClipSize = 12
 SWEP.Primary.DefaultClip = 0
-SWEP.Primary.KickUp = 2
-SWEP.Primary.KickDown = 2
-SWEP.Primary.KickHorizontal = 2
+SWEP.Primary.KickUp = 1.9
+SWEP.Primary.KickDown = 1.7
+SWEP.Primary.KickHorizontal = 1.9
 SWEP.Primary.Ammo = 'ammo_pist'
 SWEP.Primary.Automatic = false
 

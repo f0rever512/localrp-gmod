@@ -8,9 +8,10 @@ SWEP.Passive = 'normal'
 SWEP.Sight = 'revolver'
 
 SWEP.ReloadTime = 2.4
+
 SWEP.Primary.Sound = Sound( 'weapons/p228/p228-1.wav' )
-SWEP.Primary.Damage = 28
-SWEP.Primary.RPM = 550
+SWEP.Primary.Damage = 30
+SWEP.Primary.RPM = 600
 SWEP.Primary.ClipSize = 13
 SWEP.Primary.DefaultClip = 0
 SWEP.Primary.KickUp = math.random(2,3)

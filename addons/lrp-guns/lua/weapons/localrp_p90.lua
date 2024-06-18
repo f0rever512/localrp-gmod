@@ -8,6 +8,7 @@ SWEP.Passive = 'passive'
 SWEP.Sight = 'smg'
 
 SWEP.ReloadTime = 2.2
+
 SWEP.Primary.Sound = Sound( 'weapons/p90/p90-1.wav' )
 SWEP.Primary.Damage = 19
 SWEP.Primary.RPM	= 1000
@@ -16,7 +17,7 @@ SWEP.Primary.DefaultClip	= 0
 SWEP.Primary.KickUp = math.random(1,3)
 SWEP.Primary.KickDown = 4
 SWEP.Primary.KickHorizontal = 2
-SWEP.Primary.Spread = 0.06
+SWEP.Primary.Spread = 0.05
 SWEP.Primary.Ammo = 'ammo_smg'
 
 SWEP.ClipoutSound = 'weapons/p90/p90_clipout.wav'

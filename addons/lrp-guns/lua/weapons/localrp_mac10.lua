@@ -8,16 +8,17 @@ SWEP.Passive = 'normal'
 SWEP.Sight = 'pistol'
 
 SWEP.ShootAnimOff = true
-SWEP.ReloadTime = 1.9
+SWEP.ReloadTime = 1.5
 
 SWEP.Primary.Sound = Sound( 'weapons/mac10/mac10-1.wav' )
-SWEP.Primary.Damage = 21
+SWEP.Primary.Damage = 20
 SWEP.Primary.RPM = 950
 SWEP.Primary.ClipSize = 30
 SWEP.Primary.DefaultClip = 0
 SWEP.Primary.KickUp = 6
 SWEP.Primary.KickDown = 3
 SWEP.Primary.KickHorizontal = 2
+SWEP.Primary.Spread = 0.015
 SWEP.Primary.Ammo = 'ammo_smg'
 
 SWEP.ClipoutSound = 'weapons/mac10/mac10_clipout.wav'

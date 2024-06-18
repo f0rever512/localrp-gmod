@@ -8,22 +8,22 @@ SWEP.Passive = 'passive'
 SWEP.Active = 'ar2'
 
 SWEP.ReloadTime = 2.65
+
 SWEP.Primary.Sound = Sound( 'weapons/m249/m249-1.wav' )
-SWEP.Primary.Damage = 30
+SWEP.Primary.Damage = 18
 SWEP.Primary.RPM = 820
-SWEP.Primary.ClipSize = 100
+SWEP.Primary.ClipSize = 80
 SWEP.Primary.DefaultClip = 0
 SWEP.Primary.KickUp = 6
 SWEP.Primary.KickDown = 2.3
 SWEP.Primary.KickHorizontal = 2
-SWEP.Primary.Spread = 0.01
+SWEP.Primary.Spread = 0.05
 SWEP.Primary.Ammo = 'ammo_assault'
 
 SWEP.ClipoutSound = 'weapons/m249/m249_boxout.wav'
 SWEP.ClipinSound = 'weapons/m249/m249_boxin.wav'
 SWEP.SlideSound = 'weapons/m249/m249_coverdown.wav'
 
-SWEP.Icon = 'icons/guns/machine.png'
 SWEP.WorldModel = 'models/weapons/w_mach_m249para.mdl' 
 
 SWEP.Slot = 2

@@ -9,7 +9,7 @@ SWEP.Sight = 'revolver'
 
 SWEP.ReloadTime = 2.4
 SWEP.Primary.Sound = Sound( 'weapons/fiveseven/fiveseven-1.wav' )
-SWEP.Primary.Damage = 25,5
+SWEP.Primary.Damage = 25
 SWEP.Primary.RPM = 800
 SWEP.Primary.ClipSize = 20
 SWEP.Primary.DefaultClip = 0
