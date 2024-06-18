@@ -1,0 +1,7 @@
+"localrp"
+{
+	"base"		"base"
+	"title"		"LocalRP"
+	"category"	"rp"
+	"menusystem"	"1"
+}
