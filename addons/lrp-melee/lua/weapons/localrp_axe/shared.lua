@@ -1,9 +1,9 @@
 if SERVER then
-	AddCSLuaFile( "shared.lua" )
+	AddCSLuaFile("shared.lua")
 else
-	SWEP.PrintName	                = "Топор"
-	SWEP.Category		= "LocalRP - Melee"
-	SWEP.DrawAmmo                  = false
+	SWEP.PrintName = "Топор"
+	SWEP.Category = "LocalRP - Melee"
+	SWEP.DrawAmmo = false
 end
 
 SWEP.Base				= "localrp_melee_base"
@@ -20,7 +20,7 @@ SWEP.UseHands = true
 
 SWEP.DrawCrosshair = true
 
-SWEP.Weight				= 1 
+SWEP.Weight	= 1
 		 
 SWEP.Primary.Damage			= 40						 			  
 SWEP.Primary.ClipSize		= -1		
