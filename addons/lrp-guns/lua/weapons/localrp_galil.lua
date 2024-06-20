@@ -18,7 +18,7 @@ SWEP.Primary.KickUp = 5
 SWEP.Primary.KickDown = 0.3
 SWEP.Primary.KickHorizontal = 0.3
 SWEP.Primary.Spread = 0.01
-SWEP.Primary.Ammo = 'ammo_assault'
+SWEP.Primary.Ammo = 'ammo_large'
 
 SWEP.ClipoutSound = 'weapons/galil/galil_clipout.wav'
 SWEP.ClipinSound = 'weapons/galil/galil_clipin.wav'

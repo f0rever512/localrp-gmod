@@ -17,7 +17,7 @@ SWEP.Primary.KickUp = math.random(2,4)
 SWEP.Primary.KickDown = 2.3
 SWEP.Primary.KickHorizontal = math.random(1,2)
 SWEP.Primary.Spread = 0.01
-SWEP.Primary.Ammo = 'ammo_pist'
+SWEP.Primary.Ammo = 'ammo_small'
 SWEP.Primary.Automatic = false
 
 SWEP.ClipoutSound = ''

@@ -17,7 +17,7 @@ SWEP.Primary.DefaultClip = 0
 SWEP.Primary.KickUp = 2.8
 SWEP.Primary.KickDown = 0.3
 SWEP.Primary.KickHorizontal = 0.3
-SWEP.Primary.Ammo = 'ammo_assault'
+SWEP.Primary.Ammo = 'ammo_large'
 
 SWEP.ClipoutSound = 'weapons/m4a1/m4a1_clipout.wav'
 SWEP.ClipinSound = 'weapons/m4a1/m4a1_clipin.wav'

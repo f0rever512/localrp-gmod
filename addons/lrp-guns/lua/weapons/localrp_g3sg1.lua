@@ -17,7 +17,7 @@ SWEP.Primary.KickUp = math.random(3,4)
 SWEP.Primary.KickDown = 1.3
 SWEP.Primary.KickHorizontal = math.random(2,3)
 SWEP.Primary.Spread = 0.001
-SWEP.Primary.Ammo = 'ammo_snip'
+SWEP.Primary.Ammo = 'ammo_large'
 
 SWEP.ClipoutSound = 'weapons/g3sg1/g3sg1_clipout.wav'
 SWEP.ClipinSound = 'weapons/g3sg1/g3sg1_clipin.wav'

@@ -18,7 +18,7 @@ SWEP.Primary.KickUp = math.random(1,3)
 SWEP.Primary.KickDown = 4
 SWEP.Primary.KickHorizontal = 2
 SWEP.Primary.Spread = 0.05
-SWEP.Primary.Ammo = 'ammo_smg'
+SWEP.Primary.Ammo = 'ammo_small'
 
 SWEP.ClipoutSound = 'weapons/p90/p90_clipout.wav'
 SWEP.ClipinSound = 'weapons/p90/p90_clipin.wav'

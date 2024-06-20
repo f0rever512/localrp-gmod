@@ -2,13 +2,15 @@ SWEP.Base = 'localrp_gun_base'
 SWEP.Category = 'LocalRP - Guns'
 SWEP.Spawnable = true
 SWEP.DrawCrosshair = false
-SWEP.PrintName = 'Пневмат. пистолет'
+if CLIENT then
+    SWEP.PrintName = language.GetPhrase('lrp_guns.pistol')
+end
 
 SWEP.Passive = 'normal'
 SWEP.Sight = 'revolver'
 
 SWEP.Silent = true
-SWEP.ReloadTime = 2.45
+SWEP.ReloadTime = 2.4
 
 SWEP.Primary.Sound = Sound( 'weapons/glock/glock_slideback.wav' )
 SWEP.Primary.Damage = 2.5

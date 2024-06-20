@@ -1,12 +1,12 @@
 if SERVER then
 	AddCSLuaFile("shared.lua")
 else
-	SWEP.PrintName = "Топор"
+	SWEP.PrintName = language.GetPhrase('lrp_melee.Axe')
 	SWEP.Category = "LocalRP - Melee"
 	SWEP.DrawAmmo = false
 end
 
-SWEP.Base				= "localrp_melee_base"
+SWEP.Base = 'lrp_melee_base'
 
 SWEP.Spawnable			= true
 SWEP.AdminSpawnable		= true

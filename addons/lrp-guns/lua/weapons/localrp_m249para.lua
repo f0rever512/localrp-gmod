@@ -18,7 +18,7 @@ SWEP.Primary.KickUp = 6
 SWEP.Primary.KickDown = 2.3
 SWEP.Primary.KickHorizontal = 2
 SWEP.Primary.Spread = 0.05
-SWEP.Primary.Ammo = 'ammo_assault'
+SWEP.Primary.Ammo = 'ammo_large'
 
 SWEP.ClipoutSound = 'weapons/m249/m249_boxout.wav'
 SWEP.ClipinSound = 'weapons/m249/m249_boxin.wav'

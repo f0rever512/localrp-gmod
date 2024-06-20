@@ -1,18 +1,14 @@
-local ammotable = {}
-ammotable["ammo_air"] = "Пневматические"
-ammotable["ammo_pist"] = "Пистолетные"
-ammotable["ammo_smg"] = "Патроны для ПП"
-ammotable["ammo_assault"] = "Винтовочные"
-ammotable["ammo_snip"] = "Снайперские"
-ammotable["ammo_shot"] = "Дробь"
+local addammo = {
+    'ammo_air',
+    'ammo_large',
+    'ammo_shot',
+    'ammo_small',
+}
 
-for v, k in pairs(ammotable) do
+for _, ammo in pairs(addammo) do
     game.AddAmmoType({
-        name = v,
+        name = ammo,
         dmgtype = DMG_BULLET,
         tracer = TRACER_LINE_AND_WHIZ
     })
-    if CLIENT then
-        language.Add( v .. "_ammo", k )
-    end
 end

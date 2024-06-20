@@ -18,7 +18,7 @@ SWEP.Primary.DefaultClip = 0
 SWEP.Primary.KickUp = 1.9
 SWEP.Primary.KickDown = 1.7
 SWEP.Primary.KickHorizontal = 1.9
-SWEP.Primary.Ammo = 'ammo_pist'
+SWEP.Primary.Ammo = 'ammo_small'
 SWEP.Primary.Automatic = false
 
 SWEP.ClipoutSound = ''

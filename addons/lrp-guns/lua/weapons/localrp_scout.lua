@@ -17,7 +17,7 @@ SWEP.Primary.DefaultClip = 0
 SWEP.Primary.KickUp = 10
 SWEP.Primary.KickDown = 2.3
 SWEP.Primary.KickHorizontal = math.random(2,3)
-SWEP.Primary.Ammo = 'ammo_snip'
+SWEP.Primary.Ammo = 'ammo_large'
 SWEP.Primary.Automatic = false
 
 SWEP.ClipoutSound = 'weapons/scout/scout_clipout.wav'

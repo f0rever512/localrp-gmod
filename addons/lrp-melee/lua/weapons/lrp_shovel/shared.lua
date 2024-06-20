@@ -1,28 +1,28 @@
 if SERVER then
 	AddCSLuaFile( "shared.lua" )
 else
-	SWEP.PrintName	                = "Кирка"
+	SWEP.PrintName = language.GetPhrase('lrp_melee.Shovel')
 	SWEP.Category		= "LocalRP - Melee"
 	SWEP.DrawAmmo                  = false
 end
 
-SWEP.Base				= "localrp_melee_base"
+SWEP.Base = 'lrp_melee_base'
 
 SWEP.Spawnable			= true
 SWEP.AdminSpawnable		= true
 
 SWEP.HoldType = "melee2"
 
-SWEP.ViewModel		= "models/weapons/HL2meleepack/v_pickaxe.mdl"
-SWEP.WorldModel		= "models/weapons/HL2meleepack/w_pickaxe.mdl"
-SWEP.ViewModelFOV = 68
+SWEP.ViewModel		= "models/weapons/HL2meleepack/v_shovel.mdl"	 
+SWEP.WorldModel		= "models/weapons/HL2meleepack/w_shovel.mdl"
+SWEP.ViewModelFOV = 70
 SWEP.UseHands				= true
 
 SWEP.DrawCrosshair              = true
 
 SWEP.Weight				= 1 
 		 
-SWEP.Primary.Damage			= 40
+SWEP.Primary.Damage	= 40
 SWEP.Primary.ClipSize		= -1		
 SWEP.Primary.Delay			= 1.5
 SWEP.Primary.DefaultClip	= 1		 

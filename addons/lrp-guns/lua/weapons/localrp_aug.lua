@@ -17,7 +17,7 @@ SWEP.Primary.DefaultClip = 0
 SWEP.Primary.KickUp = 2
 SWEP.Primary.KickDown = 1
 SWEP.Primary.KickHorizontal = 2
-SWEP.Primary.Ammo = 'ammo_assault'
+SWEP.Primary.Ammo = 'ammo_large'
 
 SWEP.ClipoutSound = 'weapons/aug/aug_clipout.wav'
 SWEP.ClipinSound = 'weapons/aug/aug_clipin.wav'

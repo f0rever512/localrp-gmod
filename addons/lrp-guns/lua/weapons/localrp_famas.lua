@@ -17,7 +17,7 @@ SWEP.Primary.DefaultClip = 0
 SWEP.Primary.KickUp = math.random(2,3)
 SWEP.Primary.KickDown = 2.3
 SWEP.Primary.KickHorizontal = 2
-SWEP.Primary.Ammo = 'ammo_assault'
+SWEP.Primary.Ammo = 'ammo_large'
 
 SWEP.ClipoutSound = 'weapons/famas/famas_clipout.wav'
 SWEP.ClipinSound = 'weapons/famas/famas_clipin.wav'

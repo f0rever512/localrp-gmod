@@ -1,21 +1,21 @@
 if SERVER then
 	AddCSLuaFile( "shared.lua" )
 else
-	SWEP.PrintName = "Нож"
+	SWEP.PrintName = language.GetPhrase('lrp_melee.Broken')
 	SWEP.Category = "LocalRP - Melee"
-	SWEP.DrawAmmo                  = false
+	SWEP.DrawAmmo = false
 end
 
-SWEP.Base				= "localrp_melee_base"
+SWEP.Base = 'lrp_melee_base'
 
 SWEP.Spawnable			= true
 SWEP.AdminSpawnable		= true
 
 SWEP.HoldType = "knife"
 
-SWEP.ViewModel		= "models/weapons/cstrike/c_knife_t.mdl"
-SWEP.WorldModel		= "models/weapons/w_knife_t.mdl"
-SWEP.ViewModelFOV = 60
+SWEP.ViewModel		= "models/weapons/HL2meleepack/v_brokenbottle.mdl"
+SWEP.WorldModel		= "models/weapons/HL2meleepack/w_brokenbottle.mdl"
+SWEP.ViewModelFOV = 65
 SWEP.UseHands				= true
 
 SWEP.DrawCrosshair              = true
@@ -40,6 +40,6 @@ SWEP.Dist = 60
 
 SWEP.ViewPunch = Angle( 0, 2, -2 )
 
-SWEP.MissSound = Sound( "Weapon_Knife.Slash" )
-SWEP.WallSound = Sound( "Weapon_Knife.HitWall" )
-SWEP.PlayerSound = Sound( "Weapon_Knife.Hit" )
+SWEP.MissSound 	= Sound( "WeaponFrag.Roll" )
+SWEP.WallSound 	= Sound( "GlassBottle.ImpactHard" )
+SWEP.PlayerSound = Sound( "Flesh_Bloody.ImpactHard" )

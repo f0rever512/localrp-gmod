@@ -19,7 +19,7 @@ SWEP.Primary.KickUp = 6
 SWEP.Primary.KickDown = 3
 SWEP.Primary.KickHorizontal = 2
 SWEP.Primary.Spread = 0.015
-SWEP.Primary.Ammo = 'ammo_smg'
+SWEP.Primary.Ammo = 'ammo_small'
 
 SWEP.ClipoutSound = 'weapons/mac10/mac10_clipout.wav'
 SWEP.ClipinSound = 'weapons/mac10/mac10_clipin.wav'

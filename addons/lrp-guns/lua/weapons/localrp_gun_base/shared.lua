@@ -115,7 +115,8 @@ end
 function SWEP:Reload() return end
 
 function SWEP:GunReloading()
-    if (IsValid(self) and IsValid(self:GetOwner())) and self:GetOwner():Alive() and IsValid(self:GetOwner():GetActiveWeapon()) then
+	local w = self:GetOwner():GetActiveWeapon()
+    if (IsValid(self) and IsValid(self:GetOwner())) and self:GetOwner():Alive() and IsValid(w) then
         if self:Ammo1() == 0 and self:GetOwner():KeyPressed(IN_RELOAD) then return end
 
         if self:Clip1() < self.Primary.ClipSize and self:GetOwner():KeyPressed(IN_RELOAD) and self:GetReloading() == false then
@@ -125,7 +126,7 @@ function SWEP:GunReloading()
             self:EmitSound(self.ClipoutSound, 60, 100)
 
             timer.Create('reload_act' .. self:GetOwner():SteamID(), 0.1, 1, function()
-				if self:GetOwner():Alive() then
+				if self:GetOwner():Alive() and IsValid(w) then
 					timer.Create("clipinsound" .. self:GetOwner():SteamID(), self.ReloadTime - 1.25, 1, function()
 						self:EmitSound(self.ClipinSound, 60, 100)
 					end)
@@ -139,7 +140,7 @@ function SWEP:GunReloading()
 					self:GetOwner():SetAnimation(PLAYER_RELOAD)
 
 					timer.Create('reload_act2' .. self:GetOwner():SteamID(), self.ReloadTime, 1, function()
-						if self:GetOwner():Alive() then
+						if self:GetOwner():Alive() and IsValid(w) then
 							if self:Ammo1() < self.Primary.ClipSize then
 								self:SetClip1(self:Ammo1())
 							else

@@ -15,7 +15,6 @@ ENT.AmmoAmount 			= 0
 ENT.AmmoModel			= ""
 
 function ENT:Initialize()
-
 	if SERVER then
 		self:SetModel(self.AmmoModel)
 		self:PhysicsInit(SOLID_VPHYSICS)
@@ -50,8 +49,7 @@ if CLIENT then
 		size = 43,
 		weight = 300,
 		antialias = true,
-		extended = true,
-		shadow = false
+		extended = true
 	})
 
 	function ENT:Draw()
@@ -74,9 +72,9 @@ if CLIENT then
 		
 		cam.Start3D2D(TargetPos, FixAngles, .07)
 			if self.AmmoModel == "models/Items/BoxBuckshot.mdl" then
-				draw.RoundedBox( 15, -60, -25, 120, 50, Color( 0, 100, 80, 200) )
+				draw.RoundedBox(15, -60, -25, 120, 50, Color( 0, 100, 80, 220))
 			else
-				draw.RoundedBox( 15, -125, -25, 250, 50, Color( 0, 100, 80, 200) )
+				draw.RoundedBox(15, -125, -25, 250, 50, Color( 0, 100, 80, 220))
 			end
 			draw.SimpleText(self.PrintName, "AmmoFont", 0, 0, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		cam.End3D2D()
