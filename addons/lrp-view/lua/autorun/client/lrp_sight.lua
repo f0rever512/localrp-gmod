@@ -47,7 +47,7 @@ local function i(wep)
     a = false
 end
 
-hook.Add("PostDrawOpaqueRenderables", "Sight", function()
+hook.Add("PostDrawOpaqueRenderables", 'lrp-view.sight', function()
     if not handview then return end
     local wep = LocalPlayer():GetActiveWeapon()
     if wep.SightPos and wep.aimProgress and wep.aimProgress > 0 and wep:GetReady() then
@@ -87,7 +87,7 @@ hook.Add("PostDrawOpaqueRenderables", "Sight", function()
     end
 end)
 
-hook.Add('PreDrawEffects', 'predrawguns', function()
+hook.Add('PreDrawEffects', 'lrp-view.predrawsight', function()
     if a then return end
     local ply = LocalPlayer()
     local wep = ply:GetActiveWeapon()
@@ -96,7 +96,7 @@ hook.Add('PreDrawEffects', 'predrawguns', function()
     end
 end)
 
-hook.Add("RenderScene", "renderguns", function(pos, angle, fov)
+hook.Add("RenderScene", 'lrp-view.rendersight', function(pos, angle, fov)
     local ply = LocalPlayer()
     if ply:InVehicle() then return end
     if not ply:Alive() then return end

@@ -1,4 +1,4 @@
-include('lrp_renderguns.lua')
+include('lrp_sight.lua')
 
 CreateClientConVar("lrp_view", "1", true, false)
 CreateClientConVar('lrp_view_crosshair', 1, true, false)
@@ -6,120 +6,88 @@ CreateClientConVar('lrp_view_crosshair_color_r', 255, true, false)
 CreateClientConVar('lrp_view_crosshair_color_g', 255, true, false)
 CreateClientConVar('lrp_view_crosshair_color_b', 255, true, false)
 CreateClientConVar("lrp_view_lock", "1", true, false)
-CreateClientConVar("lrp_view_lock_max", "70", true, false)
+CreateClientConVar("lrp_view_lock_max", '75', true, false)
 
-local blacklistwep = {
+local blackList = {
     'weapon_physgun',
     'gmod_tool',
     'gmod_camera'
 }
 
-hook.Add('CreateMove', 'gunsview', function(cmd)
-    local ply = LocalPlayer()
-    local wep = ply:GetActiveWeapon()
-
-    if not wep.LRPGuns then return end
-
-    if input.WasMousePressed(109) and ply:KeyDown(IN_ATTACK2) and not wep:GetReloading() then
-        if not handview then
-            timer.Simple(0.2, function()
-                handview = true
-            end)
-        elseif handview then
-            timer.Simple(0.2, function()
-                handview = false
-            end)
-        end
-    end
-
-    if handview and input.WasMousePressed(108) and not wep:GetReloading() then
-        handview = false
-        timer.Simple(0.35, function()
-            handview = true
-        end)
-    end
-end)
---local functions
 local function wepclass(list)
     local wep = LocalPlayer():GetActiveWeapon()
     return table.HasValue(list, wep:GetClass())
 end
 
-local function inOutQuad(t, b, c, d)
-    t = t / d * 2
-    if t < 1 then return c / 2 * math.pow(t, 2) + b end
-    return -c / 2 * ((t - 1) * (t - 3) - 1) + b
-end
-
-hook.Add("CalcView", "lrpview", function(ply, pos, angles, fov)
-    if GetConVarNumber("lrp_view") == 0 then
-        ply:ManipulateBoneScale(ply:LookupBone("ValveBiped.Bip01_Head1"), Vector(1, 1, 1))
-        return
-    end
-    if not ply:Alive() then return end
-
+hook.Add("CalcView", 'lrp-view', function(ply, pos, angles, fov)
     local head = ply:LookupBone("ValveBiped.Bip01_Head1")
     local eye = ply:GetAttachment(ply:LookupAttachment("eyes"))
-
+    if GetConVarNumber("lrp_view") == 0 then
+        ply:ManipulateBoneScale(head, Vector(1, 1, 1))
+        return
+    end
+    
     if not eye then return end
 
     local wep = ply:GetActiveWeapon()
     local org, angl = eye.Pos, angles
-
-    if IsValid(ply) and IsValid(wep) then
-        if wepclass(blacklistwep) then 
-            ply:ManipulateBoneScale(head, Vector(1, 1, 1))
+    if IsValid(ply) and IsValid(wep) and ply:Alive() then
+        if wepclass(blackList) then
             return
         end
     end
 
     if ply:GetViewEntity() == ply then
-        if not ply:InVehicle() then
-            if handview and wep.LRPGuns and ply:KeyDown(IN_ATTACK2) and not wep:GetReloading() then
-                ply:ManipulateBoneScale(head, Vector(0.3, 0.3, 0.3))
-            else
+        if ply:Alive() then
+            if not ply:InVehicle() then
                 org = eye.Pos + eye.Ang:Forward() * 2 - eye.Ang:Up()
                 ply:ManipulateBoneScale(head, Vector(1, 1, 1))
+            else
+                org = eye.Pos + eye.Ang:Forward() * 1.5
+                ply:ManipulateBoneScale(head, Vector(0.2, 0.2, 0.2))
             end
-        else
-            org = eye.Pos + eye.Ang:Forward() * 1.5
-            ply:ManipulateBoneScale(head, Vector(0.2, 0.2, 0.2))
-        end
-
-        if IsValid(wep) and wep.LRPGuns then
-            if wep:GetReady() then
+            if IsValid(wep) and wep.LRPGuns then
                 local hand = ply:GetAttachment(ply:LookupAttachment("anim_attachment_rh"))
-                if hand then
-                    if not wep.AimPos then
-                        return
+                local worldVector, worldAngle = LocalToWorld(wep.AimPos, wep.AimAng, hand.Pos, hand.Ang)
+                local function switchaiming(x, y)
+                    local function inOutQuad(t, b, c, d)
+                        t = t / d * 2
+                        if t < 1 then return c / 2 * math.pow(t, 2) + b end
+                        return -c / 2 * ((t - 1) * (t - 3) - 1) + b
                     end
-                    if handview then
-                        local e = math.Approach(wep.aimProgress or 0, 1, FrameTime() * 1.4)
-                        wep.aimProgress = e
-                        local t = inOutQuad(e, 0, 1, 1)
-
-                        if hand then
-                            local worldVector, worldAngle = LocalToWorld(wep.AimPos, wep.AimAng, hand.Pos, hand.Ang)
-
-                            org = LerpVector(t, eye.Pos + eye.Ang:Forward() * 2 - eye.Ang:Up(), worldVector)
-                            angl = LerpAngle(t, angles, worldAngle)
-                        end
+                    if not wep:GetReady() or wep:GetReloading() then
+                        coef = 2.5
                     elseif not handview then
-                        local e = math.Approach(wep.aimProgress or 1, 0, FrameTime() * 1.4)
-                        wep.aimProgress = e
-                        local t = inOutQuad(e, 0, 1, 1)
-
-                        if hand then
-                            local worldVector, worldAngle = LocalToWorld(wep.AimPos, wep.AimAng, hand.Pos, hand.Ang)
-
-                            org = LerpVector(t, eye.Pos + eye.Ang:Forward() * 2 - eye.Ang:Up(), worldVector)
-                            angl = LerpAngle(t, angles, worldAngle)
-                        end
+                        coef = 1.6
+                    end
+                    local e = math.Approach(wep.aimProgress or x, y, FrameTime() * coef)
+                    wep.aimProgress = e
+                    local t = inOutQuad(e, 0, 1, 1)
+                    org = LerpVector(t, eye.Pos + eye.Ang:Forward() * 2 - eye.Ang:Up(), worldVector)
+                    angl = LerpAngle(t, angles, worldAngle)
+                end
+                if hand then
+                    if wep:GetReady() and handview then
+                        ply:ManipulateBoneScale(head, Vector(0.3, 0.3, 0.3))
+                        switchaiming(0, 1)
+                    elseif not wep:GetReady() or not handview or wep:GetReloading() then
+                        timer.Simple( 0.2, function()
+                            ply:ManipulateBoneScale(head, Vector(1, 1, 1))
+                        end)
+                        switchaiming(1, 0)
                     end
                 else
                     handview = false
                 end
             end
+        else
+            local ragdoll = ply:GetRagdollEntity()
+            if not ragdoll or not ragdoll:IsValid() then return end
+
+            local eye = ragdoll:GetAttachment(ragdoll:LookupAttachment("eyes"))
+            if not eye then return end
+            
+            org, angl = eye.Pos, eye.Ang
         end
 
         local view = {
@@ -133,12 +101,12 @@ hook.Add("CalcView", "lrpview", function(ply, pos, angles, fov)
     end
 end)
 
-hook.Add("CreateMove", "lrplockview", function(ucmd)
+hook.Add("CreateMove", 'lrp-view.lock', function(ucmd)
     local ply = LocalPlayer()
     local wep = ply:GetActiveWeapon()
 
     if GetConVarNumber("lrp_view") == 0 or GetConVarNumber("lrp_view_lock") <= 0 or not ply:Alive() then return end
-    if ply:Alive() and IsValid(wep) and wepclass(blacklistwep) then return end
+    if ply:Alive() and IsValid(wep) and wepclass(blackList) then return end
 
     EA = ucmd:GetViewAngles()
     down = math.Clamp(-GetConVarNumber("lrp_view_lock_max") + 5, -90, -70)
@@ -151,34 +119,11 @@ hook.Add("CreateMove", "lrplockview", function(ucmd)
     end
 end)
 
-hook.Add("CalcView", "DeathView", function(ply, origin, angles, fov)
-    if GetConVarNumber("lrp_view") == 0 then return end
-    if ply:Alive() then return end
-
-    local ragdoll = ply:GetRagdollEntity()
-    if not ragdoll or not ragdoll:IsValid() then return end
-
-    local eyes = ragdoll:GetAttachment(ragdoll:LookupAttachment("eyes"))
-    if not eyes then return end
-
-    local view = {
-        origin = eyes.Pos,
-        angles = eyes.Ang,
-        fov = fov,
-    }
-
-    return view
-end)
-
-hook.Add("PlayerSpawn", "RemoveDeath", function(ply)
-    hook.Remove("CalcView", "DeathView", DeathView)
-end)
-
-hook.Add("HUDShouldDraw", "HideCross", function(name)
+hook.Add("HUDShouldDraw", 'lrp-view.hidecross', function(name)
     local ply = LocalPlayer()
     if ply and ply:IsValid() and ply:Alive() and ply.GetActiveWeapon then
         local wep = ply:GetActiveWeapon()
-        if IsValid(wep) and wepclass(blacklistwep) or GetConVarNumber("lrp_view") == 0 then
+        if IsValid(wep) and wepclass(blackList) or GetConVarNumber("lrp_view") == 0 then
             if name == "CHudCrosshair" then
                 return true
             end
@@ -190,7 +135,7 @@ hook.Add("HUDShouldDraw", "HideCross", function(name)
     end
 end)
 
-hook.Add("PostDrawTranslucentRenderables", "lrpcrosshair", function()
+hook.Add("PostDrawTranslucentRenderables", 'lrp-view.cross', function()
     local handmatentity = {
         "player",
         "func_door",
@@ -233,12 +178,12 @@ hook.Add("PostDrawTranslucentRenderables", "lrpcrosshair", function()
     if GetConVarNumber("lrp_view_crosshair") == 0 or GetConVarNumber("lrp_view") == 0 then return end
     if not ply:Alive() then return end
     if not IsValid(wep) then return end
-    if IsValid(wep) and wepclass(blacklistwep) then return end
+    if IsValid(wep) and wepclass(blackList) then return end
 
     local crosshair_mat = Material("materials/lrp_dot.png")
     local hand_mat = Material("materials/lrp_hand.png")
 
-    --local eyes = ply:GetAttachment(ply:LookupAttachment("eyes"))
+    --local eye = ply:GetAttachment(ply:LookupAttachment("eyes"))
     --local hand = ply:GetAttachment(ply:LookupAttachment("anim_attachment_rh"))
 
     local pos, aim
@@ -248,7 +193,7 @@ hook.Add("PostDrawTranslucentRenderables", "lrpcrosshair", function()
                 pos, aim = wep:GetShootPos()
             elseif wep.DrawCrosshair or wepclass(hl2wep) then
                 aim = ply:EyeAngles():Forward()
-                pos = ply:GetShootPos() --eyes.Pos
+                pos = ply:GetShootPos() --eye.Pos
             else
                 return
             end
@@ -292,11 +237,11 @@ hook.Add("PostDrawTranslucentRenderables", "lrpcrosshair", function()
     end
 end)
 
-hook.Add("PostDrawHUD", "BlackScreen", function()
+hook.Add("PostDrawHUD", 'lrp-view.blackscreen', function()
     local ply = LocalPlayer()
     local wep = ply:GetActiveWeapon()
     if GetConVarNumber("lrp_view") == 0 then return end
-    if ply:Alive() and IsValid(wep) and wepclass(blacklistwep) then return end
+    if ply:Alive() and IsValid(wep) and wepclass(blackList) then return end
     local eye = ply:GetAttachment(ply:LookupAttachment("eyes"))
     local hand = ply:GetAttachment(ply:LookupAttachment("anim_attachment_rh"))
 
@@ -325,5 +270,31 @@ hook.Add("PostDrawHUD", "BlackScreen", function()
         if hullTrace.Hit and hullTrace.Entity:GetClass() ~= "player" and hullTrace.Entity:GetClass() ~= "gmod_sent_vehicle_fphysics_base" and LocalPlayer():GetMoveType() ~= MOVETYPE_NOCLIP then
             draw.RoundedBox(0, -1, -1, ScrW() + 1, ScrH() + 1, Color(0, 0, 0, 255))
         end
+    end
+end)
+
+hook.Add('CreateMove', 'lrp-view.handview', function(cmd)
+    local ply = LocalPlayer()
+    local wep = ply:GetActiveWeapon()
+
+    if not wep.LRPGuns then return end
+
+    if input.WasMousePressed(109) and wep:GetReady() then
+        if not handview then
+            timer.Simple(0.2, function()
+                handview = true
+            end)
+        elseif handview then
+            timer.Simple(0.2, function()
+                handview = false
+            end)
+        end
+    end
+
+    if handview and input.WasMousePressed(108) then
+        handview = false
+        timer.Simple(0.35, function()
+            handview = true
+        end)
     end
 end)
