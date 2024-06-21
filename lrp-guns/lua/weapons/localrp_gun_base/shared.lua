@@ -57,7 +57,7 @@ end
 function SWEP:Initialize()
     self:SetReady(false)
     self:SetReloading(false)
-	handview = true
+	self.aimProgress = 0
 end
 
 function SWEP:Holster()
@@ -179,12 +179,10 @@ function SWEP:Think()
         end
 
         if not self:GetReady() and self:GetOwner():KeyDown(IN_ATTACK2) then
-            self.aimProgress = 0
             self:SetReady(true)
         end
 
         if self:GetReady() and self:GetOwner():KeyReleased(IN_ATTACK2) then
-            self.aimProgress = 0
             self:SetReady(false)
         end
     end
