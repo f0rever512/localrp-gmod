@@ -3,7 +3,7 @@ SWEP.Category = 'LocalRP - Guns'
 SWEP.Spawnable = true
 SWEP.DrawCrosshair		= false
 if CLIENT then
-    SWEP.PrintName = language.GetPhrase('lrp_guns.shotgun')
+    SWEP.PrintName = 'Пневмат. дробовик'
 end
 
 SWEP.Passive = 'passive'

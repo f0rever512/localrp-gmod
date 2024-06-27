@@ -1,7 +1,7 @@
 if SERVER then
 	AddCSLuaFile( "shared.lua" )
 else
-	SWEP.PrintName = language.GetPhrase('lrp_melee.Crowbar')
+	SWEP.PrintName = 'Монтировка'
 	SWEP.Category		= "LocalRP - Melee"
 	SWEP.DrawAmmo                  = false
 end

@@ -1,4 +1,4 @@
-if (SERVER) then
+if SERVER then
 	AddCSLuaFile( "shared.lua" )
 else
 	SWEP.PrintName = "LocalRP Melee"
@@ -55,7 +55,7 @@ end
 function SWEP:PrimaryAttack()
 	local wp = self.Owner:GetActiveWeapon()
 	local vm = self.Owner:GetViewModel()
-	if wp:GetClass() == 'localrp_knife' then
+	if wp:GetClass() == 'lrp_knife' then
 		vm:SendViewModelMatchingSequence(vm:LookupSequence("midslash1"))
 	else
 		vm:SendViewModelMatchingSequence(vm:LookupSequence("misscenter1"))
@@ -108,10 +108,10 @@ function SWEP:PrimaryAttack()
 			end
 		end
 		if SERVER then
-			if IsValid(wp) and wp:GetClass() == 'localrp_bottle' then
-				self.Owner:Give("localrp_brokenbottle")
-				self.Owner:SelectWeapon("localrp_brokenbottle")
-				self.Owner:StripWeapon("localrp_bottle")
+			if IsValid(wp) and wp:GetClass() == 'lrp_bottle' then
+				self.Owner:Give("lrp_brokenbottle")
+				self.Owner:SelectWeapon("lrp_brokenbottle")
+				self.Owner:StripWeapon("lrp_bottle")
 			end
 		end
 	else

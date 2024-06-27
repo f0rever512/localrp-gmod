@@ -1,9 +1,8 @@
 ENT.Type 				= "anim"
 ENT.Base 				= "ent_ammo_base"
 if CLIENT then
-    ENT.PrintName = language.GetPhrase('lrp_guns.shotgunammo')
+    ENT.PrintName = 'Дробь'
 end
-
 
 ENT.Spawnable 			= true
 ENT.AdminSpawnable		= false

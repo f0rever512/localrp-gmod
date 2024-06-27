@@ -1,7 +1,7 @@
 ENT.Type 				= "anim"
 ENT.Base 				= "ent_ammo_base"
 if CLIENT then
-    ENT.PrintName = language.GetPhrase('lrp_guns.small')
+    ENT.PrintName = 'Малый калибр'
 end
 
 ENT.Spawnable 			= true
