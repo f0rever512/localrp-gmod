@@ -5,7 +5,6 @@ hook.Add("AddToolMenuTabs", "LRPScoreboard", function()
 		
 		pnl:AddControl("Label", {Text = "Настройки таблицы счета (таба)"})
 
-		pnl:AddControl("CheckBox", {Label = "Минималистичное отображение счета", Command = "lrp_sbminimal"})
 		pnl:AddControl("CheckBox", {Label = "Заголовок LocalRP", Command = "lrp_sbtitle"})
 	end)
 end)
