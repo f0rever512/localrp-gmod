@@ -53,7 +53,7 @@ local function ToggleScoreboard(toggle)
 
         local fill = vgui.Create("DPanel", SBPanel)
         fill:Dock(FILL)
-        fill:DockMargin(6, 0, 6, 6)
+        fill:DockMargin(6, GetConVar("lrp_sbtitle"):GetBool() and 0 or 6, 6, 6)
         fill:DockPadding(0, 6, 0, 6)
         fill.Paint = function(self, w, h)
             draw.RoundedBox(corner, 0, 0, w, h, second)
