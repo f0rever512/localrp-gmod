@@ -1,6 +1,7 @@
+local blurMaterial = Material('pp/blurscreen')
+local blurAmount = 0.8
+
 function LRPBlur()
-    local blurMaterial = Material('pp/blurscreen')
-    local blurAmount = .8
     if blurAmount > 0 then
         local tab = {
             ['$pp_colour_addr'] = 0,
@@ -9,14 +10,15 @@ function LRPBlur()
             ['$pp_colour_mulr'] = 0,
             ['$pp_colour_mulg'] = 0,
             ['$pp_colour_mulb'] = 0,
-            ['$pp_colour_brightness'] = -blurAmount * .2,
-            ['$pp_colour_contrast'] = 1 + .5 * blurAmount,
+            ['$pp_colour_brightness'] = -blurAmount * 0.2,
+            ['$pp_colour_contrast'] = 1 + 0.5 * blurAmount,
             ['$pp_colour_colour'] = 1 - blurAmount,
         }
 
         DrawColorModify(tab)
         surface.SetDrawColor(255, 255, 255, blurAmount * 255)
         surface.SetMaterial(blurMaterial)
+        
         for i = 1, 3 do 
             blurMaterial:SetFloat('$blur', blurAmount * i * 2)
             blurMaterial:Recompute() 
