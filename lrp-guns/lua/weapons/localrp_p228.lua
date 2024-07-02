@@ -20,8 +20,6 @@ SWEP.Primary.KickHorizontal = math.random(2,3)
 SWEP.Primary.Ammo = 'ammo_small'
 SWEP.Primary.Automatic = false
 
-SWEP.ClipoutSound = ''
-SWEP.ClipinSound = ''
 SWEP.SlideSound = 'weapons/p228/p228_sliderelease.wav'
 
 SWEP.WorldModel = 'models/weapons/w_pist_p228.mdl'

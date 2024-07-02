@@ -19,8 +19,6 @@ SWEP.Primary.KickHorizontal = 3.5
 SWEP.Primary.Ammo = 'ammo_small'
 SWEP.Primary.Automatic = false
 
-SWEP.ClipoutSound = ''
-SWEP.ClipinSound = ''
 SWEP.SlideSound = 'weapons/deagle/de_slideback.wav'
 
 

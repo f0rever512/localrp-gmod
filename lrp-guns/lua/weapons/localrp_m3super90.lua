@@ -22,7 +22,6 @@ SWEP.Primary.Spread = 0.1
 SWEP.Primary.Ammo = 'ammo_shot'
 SWEP.Primary.Automatic = false
 
-SWEP.ClipoutSound = ''
 SWEP.ClipinSound = 'weapons/m3/m3_insertshell.wav'
 SWEP.SlideSound = 'weapons/m3/m3_pump.wav'
 

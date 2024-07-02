@@ -20,8 +20,6 @@ SWEP.Primary.KickHorizontal = 2
 SWEP.Primary.Ammo = 'ammo_small'
 SWEP.Primary.Automatic = false
 
-SWEP.ClipoutSound = ''
-SWEP.ClipinSound = ''
 SWEP.SlideSound = 'weapons/usp/usp_slideback2.wav'
 
 SWEP.WorldModel = 'models/weapons/w_pist_usp.mdl'

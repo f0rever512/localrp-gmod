@@ -25,14 +25,12 @@ SWEP.Primary.Spread = 0.1
 SWEP.Primary.Ammo = 'ammo_air'
 SWEP.Primary.Automatic	= true
 
-SWEP.ClipoutSound = ''
-SWEP.ClipinSound = ''
-SWEP.SlideSound = ''
-
 SWEP.WorldModel = 'models/weapons/w_shotgun.mdl'
 
 SWEP.Slot = 1
 SWEP.SlotPos = 1
 
+SWEP.MuzzlePos = Vector(25, -0.9, 7.5)
+SWEP.MuzzleAng = Angle(-6, -1.2, 0)
 SWEP.AimPos = Vector(-5.3, -0.1, 6.4)
 SWEP.AimAng = Angle(-5.6, -1.3, -3)

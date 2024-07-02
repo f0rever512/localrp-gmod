@@ -22,8 +22,6 @@ SWEP.Primary.Spread = 0.015
 SWEP.Primary.Ammo = 'ammo_small'
 SWEP.Primary.Automatic = false
 
-SWEP.ClipoutSound = ''
-SWEP.ClipinSound = ''
 SWEP.SlideSound = 'weapons/elite/elite_sliderelease.wav'
 
 SWEP.WorldModel = 'models/weapons/w_pist_elite.mdl'

@@ -23,14 +23,12 @@ SWEP.Primary.KickHorizontal = 0
 SWEP.Primary.Ammo = 'ammo_air'
 SWEP.Primary.Automatic	= false
 
-SWEP.ClipoutSound = ''
-SWEP.ClipinSound = ''
-SWEP.SlideSound = ''
-
 SWEP.WorldModel = 'models/weapons/w_357.mdl'
 
 SWEP.Slot = 1
 SWEP.SlotPos = 1
 
+SWEP.MuzzlePos = Vector(10, -1, 5.3)
+SWEP.MuzzleAng = Angle(-3.75, -0.6, 0)
 SWEP.AimPos = Vector(-10.5, -0.75, 4.75)
 SWEP.AimAng = Angle(-3.75, -0.5, 5)
