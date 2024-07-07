@@ -173,7 +173,7 @@ net.Receive( "Cuffs_TiePlayers", function(_,ply)
 	if (not IsValid(ply)) or ply:IsHandcuffed() then return end
 	
 	local DraggedCuffs = {}
-	for _,c in pairs(ents.FindByClass("localrp_cuff_handcuffed")) do
+	for _,c in pairs(ents.FindByClass("weapon_handcuffed")) do
 		if c:GetRopeLength()>0 and c:GetKidnapper()==ply then
 			table.insert( DraggedCuffs, c )
 		end

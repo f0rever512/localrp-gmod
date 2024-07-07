@@ -1,0 +1,21 @@
+VertexLitGeneric
+{
+	$basetexture "models/custom/hqlockpick"
+	$bumpmap "models/custom/hqlockpick_nm"
+	$surfaceprop Metal
+
+	$envmap "env_cubemap"
+	$envmaptint "[0.42 0.42 0.42]"
+	$envmapsaturation 0.96
+
+	$phong 1
+	$phongfresnelranges "[4 8 5]"
+	$phongexponent 6
+	$phongboost 0.05
+
+	$rimlight 1
+	$rimlightexponent 2
+	$rimlightboost 1
+
+	$model 1
+}

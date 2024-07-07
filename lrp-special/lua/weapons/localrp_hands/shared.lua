@@ -63,7 +63,7 @@ local CarryClass = {
 
 local DoorClass = {
 	"func_door",
-	--"func_door_rotating",
+	"func_door_rotating",
 	"prop_door_rotating",
 	"func_movelinear"
 }

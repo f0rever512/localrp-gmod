@@ -138,7 +138,7 @@ function SWEP:DoHandcuff( target )
 	if target:IsHandcuffed() then return end
 	if not IsValid(self.Owner) then return end
 	
-	local cuff = target:Give( "localrp_cuff_handcuffed" )
+	local cuff = target:Give( "weapon_handcuffed" )
 	cuff:SetCuffStrength( self.CuffStrength + (math.Rand(-self.CuffStrengthVariance,self.CuffStrengthVariance)) )
 	cuff:SetCuffRegen( self.CuffRegen + (math.Rand(-self.CuffRegenVariance,self.CuffRegenVariance)) )
 	

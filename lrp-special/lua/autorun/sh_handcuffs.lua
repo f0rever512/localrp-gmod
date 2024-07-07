@@ -191,7 +191,7 @@ if CLIENT then
 		if bind:lower()=="+attack" and pressed then
 			if ply:KeyDown( IN_USE ) then
 				local isDragging = false
-				for _,c in pairs(ents.FindByClass("localrp_cuff_handcuffed")) do
+				for _,c in pairs(ents.FindByClass("weapon_handcuffed")) do
 					if c.GetRopeLength and c.GetKidnapper and c:GetRopeLength()>0 and c:GetKidnapper()==ply then
 						isDragging=true
 						break
@@ -249,7 +249,7 @@ if CLIENT then
 	local DragBone = "ValveBiped.Bip01_R_Hand"
 	local DefaultRope = Material("cable/rope")
 	hook.Add( "PostDrawOpaqueRenderables", "Cuffs DragRope", function()
-		local allCuffs = ents.FindByClass( "localrp_cuff_handcuffed" )
+		local allCuffs = ents.FindByClass( "weapon_handcuffed" )
 		for i=1,#allCuffs do
 			local cuff = allCuffs[i]
 			if not (IsValid(cuff) and IsValid(cuff.Owner) and cuff.GetRopeLength and cuff:GetRopeLength()>0 and cuff.GetKidnapper and IsValid(cuff:GetKidnapper())) then continue end

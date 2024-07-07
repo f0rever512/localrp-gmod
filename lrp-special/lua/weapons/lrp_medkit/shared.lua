@@ -31,7 +31,7 @@ SWEP.Secondary.Recoil = 0
 SWEP.Secondary.ClipSize = -1
 SWEP.Secondary.DefaultClip = 1
 SWEP.Secondary.Automatic = true
-SWEP.Secondary.Delay = 0.3
+SWEP.Secondary.Delay = 0.2
 SWEP.Secondary.Ammo = "none"
 
 function SWEP:Initialize()
@@ -77,7 +77,7 @@ function SWEP:PrimaryAttack()
     Owner:LagCompensation(false)
 
     if found then
-        found:SetHealth(found:Health() + 2)
+        found:SetHealth(found:Health() + 1)
         self:EmitSound("hl1/fvox/boop.wav", 150, math.max(found:Health() / found:GetMaxHealth() * 100, 25), 1, CHAN_AUTO)
         self:SetHoldType(self.Active)
     end
@@ -88,7 +88,7 @@ function SWEP:SecondaryAttack()
     local ply = self:GetOwner()
     local maxhealth = ply:GetMaxHealth() or 100
     if ply:Health() < maxhealth then
-        ply:SetHealth(ply:Health() + 2)
+        ply:SetHealth(ply:Health() + 1)
         self:EmitSound("hl1/fvox/boop.wav", 150, math.max(ply:Health() / ply:GetMaxHealth() * 100, 25), 1, CHAN_AUTO)
         self:SetHoldType(self.Active2)
     end
