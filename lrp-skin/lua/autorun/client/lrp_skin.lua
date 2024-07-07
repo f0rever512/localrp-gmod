@@ -191,7 +191,7 @@ function SKIN:PaintTextEntry(pnl, w, h)
 		if str:StartWith("#") then str = str:sub(2) end
 		str = language.GetPhrase(str)
 		pnl:SetText(str)
-		pnl:DrawTextEntryText(pnl:GetPlaceholderColor(), pnl:GetHighlightColor(), pnl:GetCursorColor())
+		pnl:DrawTextEntryText(color_white, pnl:GetHighlightColor(), pnl:GetCursorColor())
 		pnl:SetText(oldText)
 		return
 	end
@@ -510,4 +510,8 @@ function SKIN:PaintTooltip( pnl, w, h )
 	DisableClipping(old)
 end
 
-derma.DefineSkin("localrp_skin", "LocalRP Skin", SKIN)
+derma.DefineSkin('lrp_skin', "LocalRP Skin", SKIN)
+
+hook.Add("ForceDermaSkin", 'lrp-setskin', function()
+	return 'lrp_skin'
+end)
