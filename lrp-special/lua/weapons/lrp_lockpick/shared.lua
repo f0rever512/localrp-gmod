@@ -14,7 +14,7 @@ if CLIENT then
 end
 
 SWEP.Author = 'Octothorp Team'
-SWEP.Instructions = 'Подними все пины и поверни цилиндр\n\nМышь - двигать отмычку\nЛКМ - повернуть цилиндр\nПКМ - отменить взлом'
+SWEP.Instructions = 'ЛКМ - Начать взлом'
 SWEP.ViewModelFOV = 60
 SWEP.ViewModel = 'models/weapons/custom/v_lockpick.mdl'
 SWEP.WorldModel = 'models/weapons/custom/w_lockpick.mdl'
@@ -257,6 +257,7 @@ local function LockpickMenu()
             nextPush = RealTime() + 0.3
         end
         cmd:RemoveKey(IN_ATTACK)
+        cmd:RemoveKey(IN_USE)
         cmd:ClearMovement()
     end)
 
@@ -317,14 +318,17 @@ function SWEP:PrimaryAttack()
     self:SetNextPrimaryFire(CurTime() + 0.8)
 
     local owner = self.Owner
+    local ent = owner:GetEyeTrace().Entity
     if owner:GetPos():DistToSqr(owner:GetEyeTrace().HitPos) > 5500 or self:Clip1() <= 0 then return end
 
-    if canLockpicking[owner:GetEyeTrace().Entity:GetClass()] then
+    if canLockpicking[ent:GetClass()] then
         if not self:GetLockpicking() then
-            if SERVER and owner:GetEyeTrace().Entity:GetInternalVariable("m_bLocked") then
-                self:SetLockpicking(true)
-                net.Start('lrp-openmenu')
-                net.Send(owner)
+            if SERVER then
+                if (ent:GetClass() == 'gmod_sent_vehicle_fphysics_base' and ent:GetIsLocked()) or ent:GetInternalVariable("m_bLocked") then
+                    self:SetLockpicking(true)
+                    net.Start('lrp-openmenu')
+                    net.Send(owner)
+                end
             end
         end
     else
@@ -345,8 +349,14 @@ function SWEP:Think()
         timer.Simple(0.3, function()
             self:SetLockpicking(false)
         end)
+
+        local ent = self.Owner:GetEyeTrace().Entity
         
-        self.Owner:GetEyeTrace().Entity:Fire("unlock", "", 0)
+        if ent:GetClass() == 'gmod_sent_vehicle_fphysics_base' then
+            ent:UnLock()
+        else
+            ent:Fire("unlock", "", 0)
+        end
     end)
 
     net.Receive('lrp-break', function()

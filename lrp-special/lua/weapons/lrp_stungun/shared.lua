@@ -1,4 +1,4 @@
-STUNGUN = {} -- General stungun stuff table
+STUNGUN = {}
 
 include("config.lua")
 
