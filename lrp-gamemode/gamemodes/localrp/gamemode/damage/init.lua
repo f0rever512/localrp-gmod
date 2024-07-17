@@ -10,7 +10,7 @@ hook.Add('Initialize', 'lrp-damage', function()
 		end)
 	end
 
-	timer.Create('drowndamage', 1, 0, function()
+	timer.Create('lrp-damage.drowning', 1, 0, function()
         if not GetConVar('lrp_drowning'):GetBool() then return end
 		for k, v in pairs ( player.GetAll() ) do
 			if not v:IsValid() then return end 
@@ -25,14 +25,14 @@ hook.Add('Initialize', 'lrp-damage', function()
 			end
 
 			if v.drowning != nil and v.drowning > 5 and v:Alive() then
-				if math.random(1,5) == 5 then
+				if math.random(1, 3) == 3 then
 					v:EmitSound("player/pl_drown" .. math.random(2,3) .. ".wav", 100, math.random(100,120) )
 				end
 			end
 			
 			if v.drowning != nil and v.drowning > 9 and v:Alive() then 
-				v:SetHealth( v:Health() - 10 )
-				if math.random(1, 2) == 1 then
+				v:SetHealth(v:Health() - 5)
+				if math.random(1, 2) == 2 then
 					screenfade(v, 0.2)
 				end
 				if v.drowning == 10 then

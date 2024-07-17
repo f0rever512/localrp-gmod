@@ -44,70 +44,47 @@ local function processFiles(folder, isServer) -- by nsfw (https://steamcommunity
     end
 end
 
-processFiles('localrp/gamemode/core', SERVER)
-processFiles('localrp/gamemode/damage', SERVER)
-processFiles("localrp/gamemode/other", SERVER)
-processFiles('localrp/gamemode/vgui', SERVER)
-processFiles("localrp/gamemode/voicechat", SERVER)
+local folders = {
+    'core',
+    'damage',
+    'jobs',
+    'other',
+    'panicbutton',
+    'vgui',
+    'voicechat'
+}
 
-function GM:Initialize()
-	MsgN('LocalRP Gamemode initialized on server')
+for _, name in pairs(folders) do
+	processFiles('localrp/gamemode/' .. name, SERVER)
 end
+
+util.AddNetworkString('lrp-loadData')
+util.AddNetworkString('lrp-sendData')
 
 function GM:PlayerInitialSpawn(ply)
 	ply:SetCanWalk(false)
 	ply:SetCanZoom(false)
-	--ply:ConCommand( "lrp_greet" )
 end
 
-function GM:PlayerSpawn(ply)
-	ply:SetupTeam(GetConVar('lrp_class'):GetInt())
+local giveammo = {
+    {'ammo_air', 150},
+    {'ammo_large', 120},
+    {'ammo_shot', 40},
+    {'ammo_small', 150}
+}
 
-	local giveammo = {
-		{'ammo_air', 150},
-		{'ammo_air', 150},
-		{'ammo_pist', 150},
-		{'ammo_smg', 100},
-		{'ammo_assault', 120},
-		{'ammo_snip', 60},
-		{'ammo_shot', 40}
-	}
+function GM:PlayerSpawn(ply)
+    net.Start('lrp-loadData')
+    net.Send(ply)
+    net.Receive('lrp-sendData', function(len, ply)
+        local playerData = net.ReadTable()
+        ply:SetJob(playerData.job)
+    end)
+	ply:SetupHands()
 
 	for _, ammo in pairs(giveammo) do
 		ply:GiveAmmo( ammo[2], ammo[1] )
 	end
-
-	male = {
-		'models/humans/modern/male_01_01.mdl',
-		'models/humans/modern/male_02_01.mdl',
-		'models/humans/modern/male_03_01.mdl',
-		'models/humans/modern/male_04_01.mdl',
-		'models/humans/modern/male_05_01.mdl',
-		'models/humans/modern/male_06_01.mdl',
-		'models/humans/modern/male_07_01.mdl',
-		'models/humans/modern/male_08_01.mdl',
-		'models/humans/modern/male_09_01.mdl'
-	}
-
-	female = {
-		'models/humans/modern/female_01.mdl',
-		'models/humans/modern/female_02.mdl',
-		'models/humans/modern/female_03.mdl',
-		'models/humans/modern/female_04.mdl',
-		'models/humans/modern/female_06.mdl',
-		'models/humans/modern/female_07.mdl'
-	}
-
-	hook.Add( "PlayerDeathSound", 'lrp-deathsound', function(ply)
-		if table.HasValue(male, ply:GetModel()) then
-			ply:EmitSound('vo/coast/odessa/male01/nlo_cubdeath0' .. math.random(1, 2) .. '.wav', SNDLVL_NORM)
-		elseif table.HasValue(female, ply:GetModel()) then
-			ply:EmitSound('vo/coast/odessa/female01/nlo_cubdeath0' .. math.random(1, 2) .. '.wav', SNDLVL_NORM)
-		end
-		return true
-	end )
-
-	ply:SetupHands()
 
 	return true
 end

@@ -21,7 +21,9 @@ net.Receive('bleeding', function( len, ply )
         if IsValid(ply) and ply:Alive() then
             cmd:RemoveKey(IN_SPEED)
             cmd:RemoveKey(IN_JUMP)
-            cmd:SetButtons(cmd:GetButtons() + IN_DUCK)
+            if not cmd:KeyDown(IN_DUCK) then
+                cmd:SetButtons(cmd:GetButtons() + IN_DUCK)
+            end
         else
             return
         end

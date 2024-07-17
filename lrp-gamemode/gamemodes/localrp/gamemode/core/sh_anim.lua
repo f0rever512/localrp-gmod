@@ -3,6 +3,7 @@ local nextAnim = 0
 hook.Add("KeyPress", 'doorAnim', function( ply, key )
 	local doorClass = {
 		"func_door",
+		"func_door_rotating",
 		"prop_door_rotating",
 		"func_movelinear"
 	}
