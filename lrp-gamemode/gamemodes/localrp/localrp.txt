@@ -4,4 +4,36 @@
 	"title"		"LocalRP"
 	"category"	"rp"
 	"menusystem"	"1"
+	"workshopid"	"3270155743"
+
+	"settings"
+	{
+		1
+		{
+			"name"		"lrp_respawntime"
+			"text"		"Время возрождения"
+			"help"		"Set respawn time"
+			"type"		"Numeric"
+			"default"	"7"
+		}
+
+		
+		2
+		{
+			"name"		"lrp_legbreak"
+			"text"		"Перелом ноги"
+			"help"		"Enable/disable breaking leg"
+			"type"		"CheckBox"
+			"default"	"1"
+		}
+
+		3
+		{
+			"name"		"lrp_drowning"
+			"text"		"Урон при утоплении в воде"
+			"help"		"Enable/disable drowning"
+			"type"		"CheckBox"
+			"default"	"1"
+		}
+	}
 }

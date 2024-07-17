@@ -5,8 +5,8 @@ local function LRPCMenu()
 
     local menu = vgui.Create('DMenu')
     menu:MakePopup()
-    menu:SetPos(-180, ScrH() * .44)
-    menu:MoveTo(10, ScrH() * .44, 0.2, 0)
+    menu:SetPos(-180, ScrH() * .425)
+    menu:MoveTo(10, ScrH() * .425, 0.2, 0)
     menu:SetAlpha(0)
     menu:AlphaTo(255, 0.3, 0)
     input.SetCursorPos( 250, ScrH() * .5 )
@@ -17,11 +17,11 @@ local function LRPCMenu()
         RunConsoleCommand('lrp_dropweapon')
     end ):SetIcon('icon16/arrow_right.png')
     
-    if IsValid(wep) and wep.LRPGuns then
+    if IsValid(wep) and wep:GetMaxClip1() > -1 or wep:GetMaxClip2() > -1 then
         local checkammo = gunSub:AddOption( 'Проверить магазин', function()
             RunConsoleCommand('say', '/me проверяет магазин')
             timer.Simple( 0.5, function()
-                notification.AddLegacy('В магазине ' .. wep:Clip1() .. ' патрон, а в запасе ' .. wep:Ammo1() .. ' патрон', NOTIFY_GENERIC, 3 )
+                notification.AddLegacy('В магазине ' .. wep:Clip1() .. ' патрон, а в запасе ' .. ply:GetAmmoCount(wep:GetPrimaryAmmoType()) .. ' патрон', NOTIFY_GENERIC, 3 )
                 surface.PlaySound( "buttons/lightswitch2.wav" )
             end)
         end ):SetIcon('icon16/briefcase.png')
@@ -46,6 +46,15 @@ local function LRPCMenu()
         end )
         checkhp:SetIcon('icon16/shield.png')
     end
+
+    local team = ply:Team()
+    if team == 3 or team == 4 or team == 5 then
+        local panic = menu:AddOption('Нажать кнопку паники', function()
+            ply:ConCommand('panicbutton')
+        end)
+        panic:SetIcon('icon16/exclamation.png')
+    end
+
     -- local fuck = menu:AddOption( 'Показать фак', function()
     --     RunConsoleCommand('say', '/me показал фак')
     -- end ):SetIcon('icon16/emoticon_wink.png')
@@ -85,10 +94,10 @@ local function LRPCMenu()
     anim('cheer', 'Радоваться', 'emoticon_smile', 2.75)
     anim('dance', 'Танцевать', 'group', 9)
     anim('laugh', 'Смеяться', 'emoticon_happy', 6)
-    anim('muscle', 'Откровенно танцевать', 'eye', 11)
+    anim('muscle', 'Откровенно танцевать', 'eye', 12.5)
     anim('pers', 'Напугать', 'emoticon_unhappy', 3)
     anim('robot', 'Танцевать как робот', 'group', 11)
-    anim('zombie', 'Двигаться как зомби', 'exclamation', 2.75)
+    anim('zombie', 'Двигаться как зомби', 'exclamation', 2.8)
     -- nonrp
     menu:AddSpacer()
     local roll = menu:AddOption( 'Получить шанс', function()
@@ -106,6 +115,10 @@ local function LRPCMenu()
 
     local lrpsteam = child_nrole:AddOption( 'Сборка LocalRP', function()
         gui.OpenURL('https://steamcommunity.com/sharedfiles/filedetails/?id=2837278729')
+    end ):SetIcon('icon16/information.png')
+
+    local lrpdiscord = child_nrole:AddOption( 'Дискорд LocalRP', function()
+        gui.OpenURL('https://discord.gg/33Ut7rwu3x')
     end ):SetIcon('icon16/information.png')
     --options
     menu:AddSpacer()

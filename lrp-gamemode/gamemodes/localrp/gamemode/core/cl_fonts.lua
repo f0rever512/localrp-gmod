@@ -1,15 +1,23 @@
---main
-surface.CreateFont( 'titlefont', {
+--menu
+surface.CreateFont( 'lrp.menu-small', {
     font = 'Calibri',
-    size = 27,
+    size = 15,
     weight = 300,
     antialias = true,
     extended = true
 } )
 
-surface.CreateFont( 'mainfont', {
+surface.CreateFont( 'lrp.menu-medium', {
     font = 'Calibri',
     size = 25,
+    weight = 300,
+    antialias = true,
+    extended = true
+} )
+
+surface.CreateFont( 'lrp.menu-large', {
+    font = 'Calibri',
+    size = 27,
     weight = 300,
     antialias = true,
     extended = true
