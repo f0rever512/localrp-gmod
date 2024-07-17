@@ -63,7 +63,7 @@ local CarryClass = {
 
 local DoorClass = {
 	"func_door",
-	--"func_door_rotating",
+	"func_door_rotating",
 	"prop_door_rotating",
 	"func_movelinear"
 }
@@ -133,7 +133,7 @@ end
 
 function SWEP:Lock(ent)
     if SERVER then
-		if not ent:Lock() then
+		if ent:GetIsLocked() then
 			return
 		end
 		if ent.alarm then
@@ -158,7 +158,7 @@ end
 
 function SWEP:UnLock(ent)
     if SERVER then
-		if ent:Lock() then
+		if not ent:GetIsLocked() then
 			return
 		end
 		if ent.alarm then

@@ -1,0 +1,7 @@
+"VertexLitGeneric"
+{
+	
+	"$basetexture" "models/weapons/cg_ocrp2/w_taser/v_pistol_sheet"
+	"$envmapmask" "env_cubemap"
+	$selfillum 1
+}
