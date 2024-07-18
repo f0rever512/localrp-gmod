@@ -58,6 +58,7 @@ end
 
 local function LoadPlayerData()
     if not file.Exists('lrp_player_data.txt', "DATA") then
+        Derma_Message('Файл с настройками игрока для режима LocalRP не найден.\nЧтобы создать его перейди в F1-Меню', 'Уведомление LocalRP', 'Ок')
         return playerData
     end
 
