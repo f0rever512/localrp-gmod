@@ -118,12 +118,17 @@ function ply:SetJob(jobID)
 	self:SetWalkSpeed(walk)
 	self:SetRunSpeed(run)
 	self:SetLadderClimbSpeed(140)
-	net.Receive('lrp-sendData2', function(len, ply)
-        local playerData = net.ReadTable()
-        
-        self:SetModel(string.format(jobs[jobID].model, playerData.model))
-       	self:SetSkin(playerData.skin)
-    end)
+	if not self:IsBot() then
+		net.Receive('lrp-sendData2', function(len, ply)
+			local playerData = net.ReadTable()
+			
+			self:SetModel(string.format(jobs[jobID].model, playerData.model))
+			self:SetSkin(playerData.skin)
+		end)
+	else
+		self:SetModel(string.format(jobs[jobID].model, 1))
+		self:SetSkin(0)
+	end
 	self:SetPlayerColor(Vector(jobs[jobID].color.r / 255, jobs[jobID].color.g / 255, jobs[jobID].color.b / 255))
 
 	for _, weapon in pairs(jobs[jobID].weapons) do
