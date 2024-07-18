@@ -108,15 +108,9 @@ local walk = 80
 local run = 180
 
 local ply = FindMetaTable("Player")
-function ply:SetJob(jobID, spawn)
+function ply:SetJob(jobID)
 	if not jobs[jobID] then return end
-	
-	if spawn then
-		self:KillSilent()
-		timer.Simple(0.1, function()
-			self:Spawn()
-		end)
-	end
+
 	self:SetTeam(jobID)
 	self:SetHealth(100)
 	self:SetArmor(jobs[jobID].ar or 0)
@@ -132,7 +126,7 @@ function ply:SetJob(jobID, spawn)
     end)
 	self:SetPlayerColor(Vector(jobs[jobID].color.r / 255, jobs[jobID].color.g / 255, jobs[jobID].color.b / 255))
 
-	for k, weapon in pairs(jobs[jobID].weapons) do
+	for _, weapon in pairs(jobs[jobID].weapons) do
 		self:Give(weapon)
 	end
 end
