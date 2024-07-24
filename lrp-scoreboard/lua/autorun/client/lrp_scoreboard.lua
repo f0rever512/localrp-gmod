@@ -19,7 +19,7 @@ surface.CreateFont("lrp.sb-medium", {
     extended = true
 })
 
-local function ToggleScoreboard(toggle)
+function ToggleScoreboard(toggle)
     local scrw, scrh = ScrW(), ScrH()
     local corner = 15
 
@@ -108,18 +108,19 @@ local function ToggleScoreboard(toggle)
             nameLabel:SetText(v:Name())
             nameLabel:SetFont('lrp.sb-small')
             nameLabel:SetTextColor(color_white)
+            nameLabel:SizeToContents()
 
-            if v ~= LocalPlayer() then
-                local mute = vgui.Create("DImageButton", plypanel)
-                mute:Dock(RIGHT)
-                mute:SetWide(SBPanel:GetWide() * 0.05)
-                mute:DockMargin(0, 8, 8, 8)
-                mute:SetImage(v:IsMuted() and "icon32/muted.png" or "icon32/unmuted.png")
-                mute.DoClick = function()
-                    v:SetMuted(not v:IsMuted())
-                    mute:SetImage(v:IsMuted() and "icon32/muted.png" or "icon32/unmuted.png")
-                end
-            end
+            -- if v ~= LocalPlayer() then
+            --     local mute = vgui.Create("DImageButton", plypanel)
+            --     mute:Dock(RIGHT)
+            --     mute:SetWide(SBPanel:GetWide() * 0.05)
+            --     mute:DockMargin(0, 8, 8, 8)
+            --     mute:SetImage(v:IsMuted() and "icon32/muted.png" or "icon32/unmuted.png")
+            --     mute.DoClick = function()
+            --         v:SetMuted(not v:IsMuted())
+            --         mute:SetImage(v:IsMuted() and "icon32/muted.png" or "icon32/unmuted.png")
+            --     end
+            -- end
 
             local kdLabel = vgui.Create("DLabel", plypanel)
             kdLabel:Dock(RIGHT)

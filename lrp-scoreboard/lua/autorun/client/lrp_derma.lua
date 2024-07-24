@@ -1,3 +1,5 @@
+include('lrp_rating_menu.lua')
+
 local function addMenuOption(menu, text, icon, func)
     local option = menu:AddOption(text, func)
     option:SetIcon(icon)
@@ -98,6 +100,16 @@ function LRPDerma(pl)
             end)
         end
 
+        -- local setJob = addSubMenu(lrpDerma, 'Установить профессию', "icon16/wrench.png")
+        -- for int, job in ipairs({'Гражданин', 'Бездомный', 'Офицер полиции', 'Детектив', 'Оперативник спецназа', 'Медик'}) do
+        --     addMenuOption(setJob, job, "icon16/status_offline.png", function()
+        --         net.Start('sb-setJob')
+        --         net.WriteInt(int, 5)
+        --         net.WriteEntity(pl)
+        --         net.SendToServer()
+        --     end)
+        -- end
+
         local deathUser = addSubMenu(lrpDerma, "Убить", "icon16/user_red.png")
         addMenuOption(deathUser, "Убить", "icon16/heart_delete.png", function() 
             net.Start("kill") 
@@ -114,6 +126,12 @@ function LRPDerma(pl)
             net.Start("resp") 
             net.WriteEntity(pl) 
             net.SendToServer() 
+        end)
+
+        lrpDerma:AddSpacer()
+        addMenuOption(lrpDerma, 'Оценить игрока', "icon16/add.png", function()
+            ToggleScoreboard(false)
+            RatingMenu(pl)
         end)
     end
 

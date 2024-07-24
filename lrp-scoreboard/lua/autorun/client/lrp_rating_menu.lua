@@ -1,0 +1,36 @@
+local scrw, scrh = ScrW(), ScrH()
+function RatingMenu(ply)
+    local frame = vgui.Create("DFrame")
+    frame:SetSize(scrw * 0.3, scrh * 0.5)
+    frame:Center()
+    frame:SetDraggable(false)
+    frame:SetTitle('Рейтинг игрока ' .. ply:Name())
+    frame:MakePopup()
+
+    local panel = vgui.Create("DPanel", frame)
+    panel:Dock(FILL)
+
+    local thumbUp = vgui.Create( "DButton", panel )
+    thumbUp:Dock(LEFT)
+    thumbUp:SetWide(frame:GetWide() * 0.5 - 5)
+    thumbUp:SetText('Положительная оценка')
+    thumbUp:SetIcon('icon16/thumb_up.png')
+    thumbUp.DoClick = function()
+        net.Start('sb-setRating')
+        net.WriteEntity(ply)
+        net.WriteBool(true)
+        net.SendToServer()
+    end
+
+    local thumbDown = vgui.Create( "DButton", panel )
+    thumbDown:Dock(RIGHT)
+    thumbDown:SetWide(frame:GetWide() * 0.5 - 5)
+    thumbDown:SetText('Отрицательная оценка')
+    thumbDown:SetIcon('icon16/thumb_down.png')
+    thumbDown.DoClick = function()
+        net.Start('sb-setRating')
+        net.WriteEntity(ply)
+        net.WriteBool(false)
+        net.SendToServer()
+    end
+end
