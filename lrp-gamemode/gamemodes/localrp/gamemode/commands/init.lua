@@ -12,7 +12,7 @@ if SERVER then
         local args = string.Split(str, " ")
         local commandname = args[1]:sub(2, #str)
         commandname = string.lower(commandname)
-        if not commands[commandname] then --[[ sendMessageCustom(pl, Color(255,10,10), "Invalid command")]] return false end
+        if not commands[commandname] then return false end
 
         table.remove(args,1)
         commands[commandname].cb(pl, args)

@@ -8,9 +8,12 @@ function createCommand(name, func)
     return commands[name]
 end
 
+createCommand('dropweapon', function(pl, args)
+    pl:dropWeapon()
+end)
+
 createCommand("roll", function(pl, args)
     local roll = math.random(1, 100)
-    local message = pl:Nick() .. " has rolled a " .. roll
     local color = team.GetColor(pl:Team())
     for _, target in pairs(player.GetAll()) do
         if target:GetPos():Distance(pl:GetPos()) <= 400 then
