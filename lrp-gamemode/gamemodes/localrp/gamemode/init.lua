@@ -2,13 +2,18 @@ AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 include('shared.lua')
 
-if not processedFiles then
-    processedFiles = {}
-end
-
 local function processFiles(folder, isServer) -- by nsfw (https://steamcommunity.com/id/NsfwS)
     local files, folders = file.Find(folder .. "/*", "LUA")
     local filesToAddCS, filesToInclude = {}, {}
+    local processedFiles = processedFiles or {}
+
+    local function shouldAddCS(f)
+        return string.StartWith(f, "cl_") or string.StartWith(f, "sh")
+    end
+
+    local function shouldInclude(f)
+        return string.StartWith(f, "sv_") or string.StartWith(f, "sh") or string.StartWith(f, "init")
+    end
 
     for _, f in ipairs(files) do
         local fullPath = folder .. "/" .. f
@@ -16,18 +21,13 @@ local function processFiles(folder, isServer) -- by nsfw (https://steamcommunity
         if not processedFiles[fullPath] then
             processedFiles[fullPath] = true
 
-            if string.StartWith(f, "cl_") or string.StartWith(f, 'sh') then
+            if shouldAddCS(f) then
                 table.insert(filesToAddCS, fullPath)
-                -- MsgC(Color(255, 221, 102), ('Loaded on client: ' .. fullPath .. '\n'))
             end
 
-            if isServer and (string.StartWith(f, "sv_") or string.StartWith(f, 'sh') or string.StartWith(f, 'init')) then
-				-- Msg('Loaded on server: ' .. fullPath .. '\n')
+            if isServer and shouldInclude(f) then
+                table.insert(filesToInclude, fullPath)
             end
-        end
-
-        if isServer and (string.StartWith(f, "sv_") or string.StartWith(f, 'sh') or string.StartWith(f, 'init')) then
-            table.insert(filesToInclude, fullPath)
         end
     end
 
@@ -44,6 +44,7 @@ local function processFiles(folder, isServer) -- by nsfw (https://steamcommunity
     end
 end
 
+
 local folders = {
     'core',
     'damage',
@@ -51,7 +52,10 @@ local folders = {
     'other',
     'panicbutton',
     'vgui',
-    'voicechat'
+    'commands',
+    'anims',
+    'dropweapon',
+    'pushing'
 }
 
 for _, name in pairs(folders) do

@@ -7,6 +7,5 @@ if CLIENT then
             end
         end
         chat.AddText(unpack(message))
-        --print(table.concat(message,", "))
     end)
 end
