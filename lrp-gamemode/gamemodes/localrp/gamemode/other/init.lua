@@ -2,32 +2,16 @@ function GM:AllowPlayerPickup(ply, ent)
     return false
 end
 
--- function GM:PhysgunPickup(ply, ent)
---     if ply:IsAdmin() and ent:IsPlayer() then
---         return true
---     end
---     return true
--- end
-
 function GM:PlayerNoClip(ply, desiredState)
-	if desiredState == false then
-        return true
-    elseif ply:IsAdmin() then
-        return true
-    end
+    return desiredState == false or ply:IsAdmin()
 end
 
 hook.Add("PlayerDeathSound", 'lrp-deathsound', function(ply)
-    if string.find(ply:GetModel(), 'female') then
-        ply:EmitSound('vo/coast/odessa/female01/nlo_cubdeath0' .. math.random(1, 2) .. '.wav', SNDLVL_NORM)
-    else
-        ply:EmitSound('vo/coast/odessa/male01/nlo_cubdeath0' .. math.random(1, 2) .. '.wav', SNDLVL_NORM)
-    end
+    local gender = string.find(ply:GetModel(), 'female') and 'female01' or 'male01'
+    ply:EmitSound('vo/coast/odessa/' .. gender .. '/nlo_cubdeath0' .. math.random(1, 2) .. '.wav', SNDLVL_NORM)
     return true
 end)
 
 hook.Add("PlayerCanPickupWeapon", 'lrp-weaponpickup', function(ply, weapon)
-    if (ply:HasWeapon(weapon:GetClass())) then
-		return false
-	end
+    return not ply:HasWeapon(weapon:GetClass())
 end)
