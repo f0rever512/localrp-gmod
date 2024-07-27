@@ -24,4 +24,4 @@ function playerMeta:dropWeapon()
     ply:DropWeapon()
 end
 
-concommand.Add('lrp_dropweapon', function(ply, cmd, args) dropWeapon(ply) end)
+concommand.Add('lrp_dropweapon', function(ply, cmd, args) ply:dropWeapon() end)
