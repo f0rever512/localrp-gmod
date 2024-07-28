@@ -1,25 +1,21 @@
 include('shared.lua')
 
-local function includeFiles(folder) -- by nsfw (https://steamcommunity.com/id/NsfwS)
-    local files, folders = file.Find(folder .. "/*", "LUA")
-    local function shouldInclude(f)
-        return string.StartWith(f, "cl_") or string.StartWith(f, "sh")
-    end
+local function includeFiles(directory)
+    local files, subdirectories = file.Find(directory .. "/*", "LUA")
 
-    for _, f in ipairs(files) do
-        local fullPath = folder .. "/" .. f
-        if shouldInclude(f) then
+    for _, fileName in ipairs(files) do
+        local fullPath = directory .. "/" .. fileName
+        if string.StartWith(fileName, "cl_") or string.StartWith(fileName, "sh") then
             include(fullPath)
         end
     end
 
-    for _, f in ipairs(folders) do
-        includeFiles(folder .. "/" .. f)
+    for _, subdirectory in ipairs(subdirectories) do
+        includeFiles(directory .. "/" .. subdirectory)
     end
 end
 
-
-local folders = {
+local foldersToInclude = {
     'core',
     'damage',
     'jobs',
@@ -32,6 +28,6 @@ local folders = {
     'pushing'
 }
 
-for _, name in pairs(folders) do
-	includeFiles('localrp/gamemode/' .. name)
+for _, folder in ipairs(foldersToInclude) do
+    includeFiles('localrp/gamemode/' .. folder)
 end
