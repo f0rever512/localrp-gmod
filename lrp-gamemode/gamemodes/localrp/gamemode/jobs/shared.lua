@@ -1,6 +1,16 @@
-team.SetUp(1, 'Гражданин', Color(255, 255, 255))
-team.SetUp(2, 'Бездомный', Color(125, 65, 55))
-team.SetUp(3, 'Офицер полиции', Color(80, 80, 220))
-team.SetUp(4, 'Детектив', Color(80, 80, 220))
-team.SetUp(5, 'Оперативник спецназа', Color(80, 80, 220))
-team.SetUp(6, 'Медик', Color(225, 120, 120))
+lrp_jobs = lrp_jobs or {}
+
+local jobs = lrp_jobs -- Кеширование в локальной переменной для ускорения обращения
+
+local plyMeta = FindMetaTable("Player")
+
+function plyMeta:GetJob()
+	local ply = self
+	local plyTeam = self:Team()
+	return jobs[plyTeam]
+end
+
+-- Создаем команды для каждой работы
+for jobID, job in pairs(jobs) do
+	team.SetUp(jobID, job.name, job.color)
+end

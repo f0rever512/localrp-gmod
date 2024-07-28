@@ -5,5 +5,5 @@ GM.Website = "https://github.com/f0rever512"
 DeriveGamemode('sandbox')
 
 function GM:Initialize()
-	MsgN((SERVER and 'LocalRP Gamemode Initialized' or 'LocalRP Gamemode Initialized') .. os.date(' - %H:%M:%S', os.time()))
+    MsgN('LocalRP Gamemode Initialized - ' .. os.date('%H:%M:%S', os.time()))
 end

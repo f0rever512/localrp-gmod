@@ -2,10 +2,10 @@ AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 include('shared.lua')
 
-local function processFiles(folder, isServer) -- by nsfw (https://steamcommunity.com/id/NsfwS)
+local processedFiles = {}
+
+local function processFiles(folder, isServer)
     local files, folders = file.Find(folder .. "/*", "LUA")
-    local filesToAddCS, filesToInclude = {}, {}
-    local processedFiles = processedFiles or {}
 
     local function shouldAddCS(f)
         return string.StartWith(f, "cl_") or string.StartWith(f, "sh")
@@ -22,11 +22,11 @@ local function processFiles(folder, isServer) -- by nsfw (https://steamcommunity
             processedFiles[fullPath] = true
 
             if shouldAddCS(f) then
-                table.insert(filesToAddCS, fullPath)
+                AddCSLuaFile(fullPath)
             end
 
             if isServer and shouldInclude(f) then
-                table.insert(filesToInclude, fullPath)
+                include(fullPath)
             end
         end
     end
@@ -34,16 +34,7 @@ local function processFiles(folder, isServer) -- by nsfw (https://steamcommunity
     for _, f in ipairs(folders) do
         processFiles(folder .. "/" .. f, isServer)
     end
-
-    for _, fullPath in ipairs(filesToAddCS) do
-        AddCSLuaFile(fullPath)
-    end
-
-    for _, fullPath in ipairs(filesToInclude) do
-        include(fullPath)
-    end
 end
-
 
 local folders = {
     'core',
@@ -58,19 +49,19 @@ local folders = {
     'pushing'
 }
 
-for _, name in pairs(folders) do
-	processFiles('localrp/gamemode/' .. name, SERVER)
+for _, name in ipairs(folders) do
+    processFiles('localrp/gamemode/' .. name, SERVER)
 end
 
 util.AddNetworkString('lrp-loadData')
 util.AddNetworkString('lrp-sendData')
 
 function GM:PlayerInitialSpawn(ply)
-	ply:SetCanWalk(false)
-	ply:SetCanZoom(false)
+    ply:SetCanWalk(false)
+    ply:SetCanZoom(false)
 end
 
-local giveammo = {
+local giveAmmo = {
     {'ammo_air', 150},
     {'ammo_large', 120},
     {'ammo_shot', 40},
@@ -80,15 +71,17 @@ local giveammo = {
 function GM:PlayerSpawn(ply)
     net.Start('lrp-loadData')
     net.Send(ply)
+
     net.Receive('lrp-sendData', function(len, ply)
         local playerData = net.ReadTable()
         ply:SetJob(playerData.job)
     end)
-	ply:SetupHands()
 
-	for _, ammo in pairs(giveammo) do
-		ply:GiveAmmo( ammo[2], ammo[1] )
-	end
+    ply:SetupHands()
 
-	return true
+    for _, ammo in ipairs(giveAmmo) do
+        ply:GiveAmmo(ammo[2], ammo[1])
+    end
+
+    return true
 end
