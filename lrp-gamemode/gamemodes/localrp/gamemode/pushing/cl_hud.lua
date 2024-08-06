@@ -39,9 +39,9 @@ hook.Add("PostDrawTranslucentRenderables", 'lrp-push.Text', function()
     
     if not ply:IsValid() or not ent:IsValid() then return end
     if not ply:IsPlayer() or not ent:IsPlayer() then return end
-    if not ply:Alive() or not ent:Alive() or not ent:GetMoveType() ~= MOVETYPE_WALK then return end
+    if not ply:Alive() or not ent:Alive() or ent:GetMoveType() ~= MOVETYPE_WALK then return end
 
-    if ply:GetPos():DistToSqr( ent:GetPos() ) <= 100*100 then
+    if ply:GetPos():DistToSqr( ent:GetPos() ) <= 70 * 70 then
         cam.Start3D2D(Pos, Ang, math.pow(tr.Fraction, 0.9) * 0.08)
         cam.IgnoreZ(true)
             draw.SimpleTextOutlined( "E - Толкнуть", 'postdraw-font', 0, 60, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 2, halfVisibleColor )

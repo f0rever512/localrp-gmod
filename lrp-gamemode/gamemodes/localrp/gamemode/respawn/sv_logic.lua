@@ -1,16 +1,22 @@
-local RESP_MSG = "RespawnTimer" -- Временно
-local TIMER_DESTROY_MSG = 'timerDestroy' -- Временно
+local RESP_MSG = 'lrp-respawn.timer' -- Временно
+local TIMER_DESTROY_MSG = 'lrp-respawn.timerDestroy' -- Временно
 
 util.AddNetworkString(RESP_MSG) -- В будущем будем инициализировать где-то в другом месте, например: sv(sh)_nets.lua
 util.AddNetworkString(TIMER_DESTROY_MSG) -- В будущем будем инициализировать где-то в другом месте, например: sv(sh)_nets.lua
 
+local respawnTimeCVar = CreateConVar('lrp_respawntime', 5, FCVAR_ARCHIVE, 'Set respawn time')
+
+local function getRespawnTime()
+    return respawnTimeCVar:GetInt()
+end
+
 local function sendRespawnTimer(ply)
-    net.Start("RespawnTimer")
-    net.WriteInt(respawntime(), 13)
+    net.Start(RESP_MSG)
+    net.WriteInt(getRespawnTime(), 13)
     net.Send(ply)
 end
 
-hook.Add("PlayerDeath", "RespawnTimer", function(ply)
+hook.Add("PlayerDeath", RESP_MSG, function(ply)
     local deadTime = RealTime()
     ply:SetNWInt('DeadTime', deadTime)
     ply.deadtime = deadTime

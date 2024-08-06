@@ -80,7 +80,9 @@ end)
 
 local function createPanel(parent, dock, width, height, margin, paintFunc)
     local panel = vgui.Create("DPanel", parent)
-    panel:Dock(dock)
+    if dock then
+        panel:Dock(dock)
+    end
     if width then panel:SetWide(width) end
     if height then panel:SetTall(height) end
     if margin then panel:DockMargin(unpack(margin)) end
@@ -194,7 +196,7 @@ local function LRPMenuMain()
     jobComboB:AddChoice("Бездомный", nil, false, 'icon16/user_gray.png')
     jobComboB:AddChoice('Офицер полиции', nil, false, 'icon16/medal_gold_1.png')
     jobComboB:AddChoice("Детектив", nil, false, 'icon16/asterisk_yellow.png')
-    `:AddChoice('Оперативник спецназа', nil, false, 'icon16/award_star_gold_1.png')
+    jobComboB:AddChoice('Оперативник спецназа', nil, false, 'icon16/award_star_gold_1.png')
     jobComboB:AddChoice('Медик', nil, false, 'icon16/pill.png')
 
     createLabel(infoPanel, 'Модель игрока', "lrp.menu-medium", color_white, TOP, {0, 36, 0, 0}, {16, 0})

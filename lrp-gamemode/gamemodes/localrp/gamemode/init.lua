@@ -44,18 +44,18 @@ local function processFiles(folder, isServer) -- by nsfw (https://steamcommunity
     end
 end
 
-
 local folders = {
+    'anims',
+    'commands',
     'core',
     'damage',
+    'dropweapon',
     'jobs',
     'other',
     'panicbutton',
+    'pushing',
+    'respawn',
     'vgui',
-    'commands',
-    'anims',
-    'dropweapon',
-    'pushing'
 }
 
 for _, name in pairs(folders) do
