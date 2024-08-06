@@ -70,9 +70,7 @@ end
 
 local function handleDrowning()
     if not drowningCvar:GetBool() then return end
-	local playerList = player.GetAll()
-    for _=1, #playerList do
-		local v = playerList[_]
+    for _, v in pairs (player.GetAll()) do
         if v:Alive() then
             if v:WaterLevel() == 3 then
                 v.drowning = (v.drowning or 0) + 1
@@ -116,8 +114,7 @@ local function checkBones(ply, dmgpos)
         {name = 'ValveBiped.Bip01_Head1', dist = 80, group = HITGROUP_HEAD}
     }
 
-    for _=0, #bones do
-		local bone = bones[_]
+    for _, bone in pairs(bones) do
         local index = ply:LookupBone(bone.name)
         if index then
             local pos = ply:GetBonePosition(index)
