@@ -22,7 +22,7 @@ else
     local function ClSpawnBlock()
         local ply = LocalPlayer()
 	
-        if !ply:Alive() then return false end
+        if not ply:Alive() then return false end
         if GetGlobalBool("AccessSpawn") then return true end
 
         local wep = ply:GetActiveWeapon()

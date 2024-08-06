@@ -6,9 +6,6 @@ surface.CreateFont("lrp-panicbutton", {
     extended = true
 })
 
-lrp_jobs = lrp_jobs or {}
-local jobs = lrp_jobs -- Кеширование в локальной переменной для ускорения обращения
-
 local Panics = {}
 local SeenPanics = {}
 local icon = Material('icon16/exclamation.png')
