@@ -24,7 +24,7 @@ local allowHolster = {
     ["localrp_hands"] = true
 }
 
-local function screenfade(pl, time)
+local function screenFade(pl, time)
     pl:ScreenFade(SCREENFADE.OUT, color_black, time, 0)
     timer.Simple(time, function()
         pl:ScreenFade(SCREENFADE.IN, color_black, time, time + 0.15)
@@ -43,7 +43,7 @@ local function notifyDamage(ply, hitgroup)
     if hitgroupName then
         if math.random(1, 2) == 1 then
             ply:ViewPunch(Angle(math.random(-15, 15), math.random(-15, 15), math.random(-10, 10)))
-            screenfade(ply, 0.1)
+            screenFade(ply, 0.1)
         end
         net.Start('notifydmg')
             net.WriteString(hitgroupName)
@@ -89,7 +89,7 @@ local function handleDrowning()
             if v.drowning and v.drowning > 9 then
                 v:SetHealth(v:Health() - 5)
                 if math.random(1, 2) == 2 then
-                    screenfade(v, 0.2)
+                    screenFade(v, 0.2)
                 end
                 if v.drowning == 10 then
                     v:EmitSound("player/pl_drown1.wav")

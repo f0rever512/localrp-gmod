@@ -1,33 +1,31 @@
-local ScW, ScH = ScrW(), ScrH()
-
-local function removeHUDHooks()
-    hook.Remove("HUDPaint", "RespawnTimer")
-    hook.Remove("HUDPaint", "RespawnTimerEnd")
-end
+local posX, posY = ScrW() / 2, ScrH() - 30
 
 local function displayRespawnTimer(respTime)
     local deadTime = RealTime()
-    hook.Add("HUDPaint", "RespawnTimer", function()
+    hook.Add("HUDPaint", 'lrp-respawn.timer', function()
         local timeLeft = math.Round(respTime - RealTime() + deadTime)
-        draw.SimpleTextOutlined("Возродиться можно через " .. timeLeft .. " секунд", 'lrp-deathfont', ScW / 2, ScH * 0.975, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
+        draw.SimpleTextOutlined("Возродиться можно через " .. timeLeft .. " секунд", 'lrp-deathfont', posX, posY, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
     end)
 
     timer.Create('AfterTimer', respTime, 1, function()
-        hook.Add("HUDPaint", "RespawnTimerEnd", function()
-            draw.SimpleTextOutlined("Нажмите любую клавишу для возрождения", 'lrp-deathfont', ScW / 2, ScH * 0.975, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
+        hook.Add("HUDPaint", 'lrp-respawn.timerEnd', function()
+            draw.SimpleTextOutlined("Нажмите любую клавишу для возрождения", 'lrp-deathfont', posX, posY, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
         end)
     end)
 
-    timer.Create('TimerRemoveHudDeath', respTime, 1, removeHUDHooks)
+    timer.Create('TimerRemoveHudDeath', respTime, 1, function ()
+        hook.Remove("HUDPaint", 'lrp-respawn.timer')
+    end)
 end
 
-net.Receive("RespawnTimer", function()
+net.Receive('lrp-respawn.timer', function()
     local respTime = net.ReadInt(13)
     displayRespawnTimer(respTime)
 end)
 
-net.Receive('timerDestroy', function()
+net.Receive('lrp-respawn.timerDestroy', function()
     timer.Remove('TimerRemoveHudDeath')
     timer.Remove('AfterTimer')
-    removeHUDHooks()
+    hook.Remove("HUDPaint", 'lrp-respawn.timer')
+    hook.Remove("HUDPaint", 'lrp-respawn.timerEnd')
 end)

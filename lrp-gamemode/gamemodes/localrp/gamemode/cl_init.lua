@@ -16,16 +16,17 @@ local function includeFiles(directory)
 end
 
 local foldersToInclude = {
+    'anims',
+    'commands',
     'core',
     'damage',
+    'dropweapon',
     'jobs',
     'other',
     'panicbutton',
+    'pushing',
+    'respawn',
     'vgui',
-    'commands',
-    'anims',
-    'dropweapon',
-    'pushing'
 }
 
 for _, folder in ipairs(foldersToInclude) do

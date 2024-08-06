@@ -1,4 +1,5 @@
-lrp_jobs = lrp_jobs or {}
+AddCSLuaFile('sv_jobs.lua')
+include('sv_jobs.lua')
 
 local jobs = lrp_jobs -- Кеширование в локальной переменной для ускорения обращения
 
