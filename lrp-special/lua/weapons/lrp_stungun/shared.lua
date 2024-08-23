@@ -247,7 +247,7 @@ end)
 hook.Add('CreateMove', 'lrp-stungun.createmove', function(cmd)
 	local wp = LocalPlayer():GetActiveWeapon()
 	if not IsValid(wp) then return end
-	if wp:GetClass() == 'lrp_stungun' and wp:GetReady() then
+	if wp:GetClass() == 'lrp_stungun' and wp:GetVar('Ready') then
 		cmd:RemoveKey(IN_SPEED)
 		cmd:RemoveKey(IN_JUMP)
 		cmd:RemoveKey(IN_USE)
