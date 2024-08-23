@@ -183,15 +183,15 @@ function STUNGUN.Ragdoll( ply, pushdir )
 	-- Handcuff support
 	local cuffs = ply:GetWeapon("weapon_handcuffed")
 	if IsValid(cuffs) then
-		if cuffs:GetIsLeash() then
-			rag.isleashed = true
+		-- if cuffs:GetIsLeash() then
+		-- 	rag.isleashed = true
 			rag.leashowner = cuffs:GetKidnapper()
 			rag.ropelength = cuffs:GetRopeLength()
-		else
-			rag.iscuffed = true
-		end
+		-- else
+		-- 	rag.iscuffed = true
+		-- end
 
-		rag:SetNWBool("cuffs_isleash", rag.isleashed)
+		-- rag:SetNWBool("cuffs_isleash", rag.isleashed)
 		rag:SetNWEntity("cuffs_kidnapper", cuffs:GetKidnapper())
 		rag:SetNWString("cuffs_ropemat", cuffs:GetRopeMaterial())
 		rag:SetNWString("cuffs_cuffmat", cuffs:GetCuffMaterial())
