@@ -75,9 +75,11 @@ function SWEP:OnDrop()
 end
 
 function SWEP:OnRemove()
-    timer.Remove("clipinsound" .. self:GetOwner():SteamID())
-    timer.Remove("slidesound" .. self:GetOwner():SteamID())
-    timer.Remove("reload_act2" .. self:GetOwner():SteamID())
+    if self:GetReloading() then
+        timer.Remove("clipinsound" .. self:GetOwner():SteamID())
+        timer.Remove("slidesound" .. self:GetOwner():SteamID())
+        timer.Remove("reload_act2" .. self:GetOwner():SteamID())
+    end
     self:Deploy()
 end
 
@@ -139,6 +141,7 @@ function SWEP:GunReloading()
             self:EmitSound(self.ClipoutSound or '', 60, 100)
 
             timer.Create('reload_act' .. self:GetOwner():SteamID(), 0.1, 1, function()
+                if not IsValid(self) then return end
 				timer.Create("clipinsound" .. self:GetOwner():SteamID(), self.ReloadTime - 1.25, 1, function()
 					self:EmitSound(self.ClipinSound or '', 60, 100)
 				end)
@@ -207,7 +210,7 @@ function SWEP:PrimaryAttack()
             return
         end
 
-        self:EmitSound(self.Primary.Sound)
+        self:EmitSound(self.Primary.Sound, 80)
         self:ShotBullet(self.Primary.Damage, self.Primary.NumShots, self.Primary.Spread)
         self:TakePrimaryAmmo(1)
     end
