@@ -133,7 +133,7 @@ local function damageHandler(ply, hitgroup, dmginfo)
     local hitgroup = checkBones(ply, dmgpos) or hitgroup
 
     if hitgroup == HITGROUP_HEAD then
-        dmginfo:ScaleDamage(5)
+        dmginfo:ScaleDamage(6)
     elseif hitgroup == HITGROUP_LEFTARM or hitgroup == HITGROUP_RIGHTARM then
         dmginfo:ScaleDamage(1)
         damageHands(ply, 25)
@@ -141,7 +141,7 @@ local function damageHandler(ply, hitgroup, dmginfo)
         dmginfo:ScaleDamage(0.75)
         breakLeg(ply, 5)
     elseif hitgroup == HITGROUP_CHEST then
-        dmginfo:ScaleDamage(3)
+        dmginfo:ScaleDamage(2.5)
     elseif hitgroup == HITGROUP_STOMACH then
         dmginfo:ScaleDamage(1)
     elseif hitgroup == 'HITGROUP_NUTS' then
