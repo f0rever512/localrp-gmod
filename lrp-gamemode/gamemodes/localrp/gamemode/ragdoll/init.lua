@@ -51,9 +51,6 @@ function playerMeta:InvisiblePlayerModel(bool)
 	self:SetCollisionGroup(bool and COLLISION_GROUP_IN_VEHICLE or COLLISION_GROUP_PLAYER)
 	self:SetNotSolid(bool)
 	self:DrawWorldModel(not bool)
-    -- hook.Add("PlayerSwitchWeapon", 'lrp-blockSwitch', function(_, _, _)
-    --     return bool
-    -- end )
 
 	if bool then
 		self:Lock()
