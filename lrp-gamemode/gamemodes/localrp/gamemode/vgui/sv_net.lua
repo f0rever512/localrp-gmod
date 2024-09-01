@@ -1,6 +1,7 @@
 util.AddNetworkString('lrp.menu-main')
 util.AddNetworkString('lrp-act')
 util.AddNetworkString('lrp-respawn')
+util.AddNetworkString('lrp-ragdoll')
 
 local nextKeyDown = 0
 local keyDownDelay = 0.8
@@ -28,4 +29,8 @@ net.Receive('lrp-respawn', function(_, ply)
         if not IsValid(ply) then return end
         ply:Spawn()
     end)
+end)
+
+net.Receive('lrp-ragdoll', function(_, ply)
+    ply:SetRagdoll(net.ReadBool())
 end)

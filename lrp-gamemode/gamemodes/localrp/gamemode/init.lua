@@ -54,6 +54,7 @@ local folders = {
     'other',
     'panicbutton',
     'pushing',
+    'ragdoll',
     'respawn',
     'vgui',
 }
