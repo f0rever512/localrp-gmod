@@ -1,3 +1,5 @@
+local jobs = lrp_jobs
+
 local blurMaterial = Material('pp/blurscreen')
 local blurAmount = 0.8
 
@@ -126,6 +128,7 @@ local function LRPMenuMain()
             self:MoveTo(ScrW() * 0.5 - self:GetWide() / 2, ScrH() * 0.52 - self:GetTall() / 2, 0.25, 0)
             timer.Simple(0.25, function()
                 self:SetVisible(false)
+                CloseDermaMenus()
                 hook.Remove('RenderScreenspaceEffects', 'lrp.menu-blur')
             end)
         end
@@ -134,6 +137,7 @@ local function LRPMenuMain()
     function mainPanel:Think()
         if self:IsVisible() and gui.IsGameUIVisible() then
             self:SetVisible(false)
+            CloseDermaMenus()
             hook.Remove('RenderScreenspaceEffects', 'lrp.menu-blur')
         end
     end
@@ -192,12 +196,10 @@ local function LRPMenuMain()
     jobComboB:DockMargin(32, 12, mainPanel:GetWide() * 0.3, 0)
     jobComboB:SetValue(team.GetName(ply:Team()))
     jobComboB:SetIcon('icon16/status_offline.png')
-    jobComboB:AddChoice("Гражданин", nil, false, 'icon16/user.png')
-    jobComboB:AddChoice("Бездомный", nil, false, 'icon16/user_gray.png')
-    jobComboB:AddChoice('Офицер полиции', nil, false, 'icon16/medal_gold_1.png')
-    jobComboB:AddChoice("Детектив", nil, false, 'icon16/asterisk_yellow.png')
-    jobComboB:AddChoice('Оперативник спецназа', nil, false, 'icon16/award_star_gold_1.png')
-    jobComboB:AddChoice('Медик', nil, false, 'icon16/pill.png')
+    jobComboB:SetSortItems(false)
+    for _, job in ipairs(jobs) do
+        jobComboB:AddChoice(job.name, nil, false, 'icon16/' .. job.icon .. '.png')
+    end
 
     createLabel(infoPanel, 'Модель игрока', "lrp.menu-medium", color_white, TOP, {0, 36, 0, 0}, {16, 0})
     local modelSlider = vgui.Create("DNumSlider", infoPanel)
