@@ -14,6 +14,12 @@ local blackList = {
     gmod_camera = true
 }
 
+local function inOutQuad(t, b, c, d)
+    t = t / d * 2
+    if t < 1 then return c / 2 * math.pow(t, 2) + b end
+    return -c / 2 * ((t - 1) * (t - 3) - 1) + b
+end
+
 local function IsWepBlacklisted(list)
     local wep = LocalPlayer():GetActiveWeapon()
     if not IsValid(wep) then
@@ -25,61 +31,54 @@ end
 local function CanViewWork()
     local ply = LocalPlayer()
     local eye = ply:GetAttachment(ply:LookupAttachment("eyes"))
-    return not ply or not IsValid(ply) or not eye or ply:GetViewEntity() ~= ply or IsWepBlacklisted(blackList) or GetConVarNumber("lrp_view") == 0
+    return not ply or not IsValid(ply) or not eye or ply:GetViewEntity() ~= ply or IsValid(ply:GetNW2Entity('playerRagdollEntity')) or IsWepBlacklisted(blackList) or GetConVarNumber("lrp_view") == 0
 end
 
 hook.Add("CalcView", 'lrp-view', function(ply, pos, angles, fov)
     local head = ply:LookupBone("ValveBiped.Bip01_Head1")
     local eye = ply:GetAttachment(ply:LookupAttachment("eyes"))
     if CanViewWork() then
-        ply:ManipulateBoneScale(head, Vector(1, 1, 1))
+        if eye then
+            ply:ManipulateBoneScale(head, Vector(1, 1, 1))
+        end
         return
     end
 
     local wep = ply:GetActiveWeapon()
-    local org, angl = eye.Pos, angles
+    local pos, ang = eye.Pos, angles
 
     if ply:Alive() then
         if not ply:InVehicle() then
-            org = eye.Pos + eye.Ang:Forward() * 2 - eye.Ang:Up()
-            ply:ManipulateBoneScale(head, Vector(1, 1, 1))
-        else
-            org = eye.Pos + eye.Ang:Forward() * 1.5
-            ply:ManipulateBoneScale(head, Vector(0.2, 0.2, 0.2))
-        end
-        if wep.LRPGuns then
-            local hand = ply:GetAttachment(ply:LookupAttachment("anim_attachment_rh"))
-            if hand then
-                local function switchaiming(x, y)
-                    local function inOutQuad(t, b, c, d)
-                        t = t / d * 2
-                        if t < 1 then return c / 2 * math.pow(t, 2) + b end
-                        return -c / 2 * ((t - 1) * (t - 3) - 1) + b
+            pos = eye.Pos
+            ply:ManipulateBoneScale(head, Vector(0, 0, 0))
+            if wep.LRPGuns then
+                local hand = ply:GetAttachment(ply:LookupAttachment("anim_attachment_rh"))
+                if hand then
+                    local function switchaiming(x, y)
+                        if not wep:GetReady() or wep:GetReloading() then
+                            coef = 2.5
+                        elseif not handview then
+                            coef = 1.6
+                        end
+                        local worldVector, worldAngle = LocalToWorld(wep.AimPos, wep.AimAng, hand.Pos, hand.Ang)
+                        local e = math.Approach(wep.aimProgress or x, y, FrameTime() * coef)
+                        wep.aimProgress = e
+                        local t = inOutQuad(e, 0, 1, 1)
+                        pos = LerpVector(t, pos, worldVector)
+                        ang = LerpAngle(t, angles, worldAngle)
                     end
-                    if not wep:GetReady() or wep:GetReloading() then
-                        coef = 2.5
-                    elseif not handview then
-                        coef = 1.6
+                    if wep:GetReady() and handview then
+                        switchaiming(0, 1)
+                    elseif not wep:GetReady() or not handview or wep:GetReloading() then
+                        switchaiming(1, 0)
                     end
-                    local worldVector, worldAngle = LocalToWorld(wep.AimPos, wep.AimAng, hand.Pos, hand.Ang)
-                    local e = math.Approach(wep.aimProgress or x, y, FrameTime() * coef)
-                    wep.aimProgress = e
-                    local t = inOutQuad(e, 0, 1, 1)
-                    org = LerpVector(t, eye.Pos + eye.Ang:Forward() * 2 - eye.Ang:Up(), worldVector)
-                    angl = LerpAngle(t, angles, worldAngle)
+                else
+                    handview = false
                 end
-                if wep:GetReady() and handview then
-                    ply:ManipulateBoneScale(head, Vector(0.3, 0.3, 0.3))
-                    switchaiming(0, 1)
-                elseif not wep:GetReady() or not handview or wep:GetReloading() then
-                    timer.Simple( 0.2, function()
-                        ply:ManipulateBoneScale(head, Vector(1, 1, 1))
-                    end)
-                    switchaiming(1, 0)
-                end
-            else
-                handview = false
             end
+        else
+            pos = eye.Pos - eye.Ang:Up() + eye.Ang:Forward() * 1.5
+            ply:ManipulateBoneScale(head, Vector(1, 1, 1))
         end
     else
         local ragdoll = ply:GetRagdollEntity()
@@ -87,12 +86,12 @@ hook.Add("CalcView", 'lrp-view', function(ply, pos, angles, fov)
 
         local eye = ragdoll:GetAttachment(ragdoll:LookupAttachment("eyes"))
         
-        org, angl = eye.Pos, eye.Ang
+        pos, ang = eye.Pos, eye.Ang
     end
 
     local view = {
-        origin = org,
-        angles = angl,
+        origin = pos,
+        angles = ang,
         fov = fov,
         drawviewer = true,
         znear = 1
@@ -161,6 +160,7 @@ hook.Add("PostDrawTranslucentRenderables", 'lrp-view.cross', function()
     local wep = ply:GetActiveWeapon()
 
     if CanViewWork() or not wep or not IsValid(wep) or not ply:Alive() or ply:InVehicle() or GetConVarNumber("lrp_view_crosshair") == 0 then return end
+    if IsValid(ply:GetNWEntity("tazerviewrag")) then return end -- for ragdoll view after stungun shot
     if hook.Run('dbg-view.chShouldDraw') then return end -- for lrp switch weapon
     
     if wep.LRPGuns then
@@ -240,7 +240,7 @@ hook.Add("PostDrawHUD", 'lrp-view.blackscreen', function()
         end
     else
         local tr = {
-            start = eye.Pos + eye.Ang:Forward() * 2.2 - eye.Ang:Up(),
+            start = eye.Pos + eye.Ang:Forward() * 2.2,
             endpos = eye.Pos,
             mins = Vector(-1, -1, 0),
             maxs = Vector(1, 1, 1)

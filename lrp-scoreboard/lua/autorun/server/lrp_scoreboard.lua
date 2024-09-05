@@ -1,4 +1,4 @@
-function adminstration(cmd, text)
+local function adminstration(cmd, text)
 	net.Receive( cmd, function( len, ply )
 		local p = net.ReadEntity()
 		if ply:IsAdmin() then
@@ -67,6 +67,9 @@ function adminstration(cmd, text)
 				end
 			elseif cmd == "resp" then
 				p:Spawn()
+			-- elseif cmd == 'sb-setJob' then
+			-- 	local jobID = net.ReadInt(5)
+			-- 	p:SetJob(jobID, true)
 			else
 				return
 			end
@@ -93,6 +96,7 @@ cmdnetwork = {
 	"50ar",
 	"100ar",
 	"resp",
+	-- 'sb-setJob'
 }
 for v, k in pairs(cmdnetwork) do
 	util.AddNetworkString(k)
@@ -118,6 +122,7 @@ cmdtable["25ar"] = "установил 25 брони"
 cmdtable["50ar"] = "установил 50 брони"
 cmdtable["100ar"] = "установил 100 брони"
 cmdtable["resp"] = "возродил"
+-- cmdtable['sb-setJob'] = 'установил профессию'
 
 for v, k in pairs(cmdtable) do
 	adminstration(v, k)

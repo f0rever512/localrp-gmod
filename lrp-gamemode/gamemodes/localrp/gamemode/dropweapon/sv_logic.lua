@@ -12,7 +12,7 @@ function playerMeta:dropWeapon()
     local ply = self
     local wep = ply:GetActiveWeapon()
 
-    if dropBlacklist[wep:GetClass()] or ply:InVehicle() then
+    if IsValid(wep) and dropBlacklist[wep:GetClass()] or ply:InVehicle() then
         net.Start( 'dropweapon' )
         net.Send(ply)
         return

@@ -25,6 +25,7 @@ local foldersToInclude = {
     'other',
     'panicbutton',
     'pushing',
+    'ragdoll',
     'respawn',
     'vgui',
 }

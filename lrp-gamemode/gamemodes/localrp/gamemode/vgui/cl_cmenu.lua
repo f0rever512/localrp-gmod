@@ -1,3 +1,4 @@
+local nextRagdoll = 0
 local function LRPCMenu()
     local ply = LocalPlayer()
     local wep = ply:GetActiveWeapon()
@@ -50,6 +51,32 @@ local function LRPCMenu()
         menu:AddOption('Нажать кнопку паники', function()
             ply:ConCommand('panicbutton')
         end):SetIcon('icon16/exclamation.png')
+    end
+
+    if ply:GetRagdoll() then
+        menu:AddOption('Встать', function()
+            if CurTime() >= nextRagdoll then
+                net.Start('lrp-ragdoll')
+                net.WriteBool(false)
+                net.SendToServer()
+                nextRagdoll = CurTime() + 4
+            else
+                notification.AddLegacy('Встать нельзя еще ' .. math.Round(nextRagdoll - CurTime()) .. ' с.', NOTIFY_ERROR, 3)
+                surface.PlaySound('buttons/lightswitch2.wav')
+            end
+        end):SetIcon('icon16/arrow_up.png')
+    else
+        menu:AddOption('Упасть', function()
+            if CurTime() >= nextRagdoll then
+                net.Start('lrp-ragdoll')
+                net.WriteBool(true)
+                net.SendToServer()
+                nextRagdoll = CurTime() + 4
+            else
+                notification.AddLegacy('Лечь нельзя еще ' .. math.Round(nextRagdoll - CurTime()) .. ' с.', NOTIFY_ERROR, 3)
+                surface.PlaySound('buttons/lightswitch2.wav')
+            end
+        end):SetIcon('icon16/arrow_down.png')
     end
 
     menu:AddSpacer()

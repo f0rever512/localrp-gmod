@@ -54,6 +54,7 @@ local folders = {
     'other',
     'panicbutton',
     'pushing',
+    'ragdoll',
     'respawn',
     'vgui',
 }
@@ -78,12 +79,16 @@ local giveammo = {
 }
 
 function GM:PlayerSpawn(ply)
-    net.Start('lrp-loadData')
-    net.Send(ply)
-    net.Receive('lrp-sendData', function(len, ply)
-        local playerData = net.ReadTable()
-        ply:SetJob(playerData.job)
-    end)
+    if not ply:IsBot() then
+        net.Start('lrp-loadData')
+        net.Send(ply)
+        net.Receive('lrp-sendData', function(len, ply)
+            local playerData = net.ReadTable()
+            ply:SetJob(playerData.job)
+        end)
+    else
+        ply:SetJob(1)
+    end
 	ply:SetupHands()
 
 	for _, ammo in pairs(giveammo) do
