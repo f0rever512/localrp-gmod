@@ -11,7 +11,7 @@
 
 [Steam коллекция](https://steamcommunity.com/sharedfiles/filedetails/?id=2837278729)
 
-[Поддержать меня](https://boosty.to/forever512)
+[Поддержать меня](https://yoomoney.ru/to/4100118775242744)
 
 ---
 English
