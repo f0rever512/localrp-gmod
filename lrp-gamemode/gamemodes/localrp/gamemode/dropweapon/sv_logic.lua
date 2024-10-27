@@ -21,7 +21,7 @@ function playerMeta:dropWeapon()
     if not IsValid(ply) or not IsValid(wep) then return end
 
     ply:DoCustomAnimEvent(PLAYERANIMEVENT_CUSTOM, 229)
-    ply:DropWeapon()
+    timer.Simple(1, function() ply:DropWeapon(wep) end)
 end
 
 concommand.Add('lrp_dropweapon', function(ply, cmd, args) ply:dropWeapon() end)
