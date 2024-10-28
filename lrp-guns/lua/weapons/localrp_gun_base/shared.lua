@@ -221,7 +221,6 @@ function SWEP:PrimaryAttack()
 
         local recoilAngle = Angle(-verticalRecoil / 5, -horizontalRecoil / 2, 0)
         self.Owner:ViewPunch(recoilAngle)
-        print(recoilAngle)
 
         local eyes = self.Owner:EyeAngles()
         eyes.pitch = eyes.pitch + (recoilAngle.pitch / 3)
