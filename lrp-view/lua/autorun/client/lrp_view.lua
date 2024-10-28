@@ -51,27 +51,19 @@ hook.Add("CalcView", 'lrp-view', function(ply, pos, angles, fov)
         if not ply:InVehicle() then
             pos = eye.Pos
             ply:ManipulateBoneScale(head, Vector(0, 0, 0))
-            if wep.LRPGuns then
+            if wep.Base == 'localrp_gun_base' then
                 local hand = ply:GetAttachment(ply:LookupAttachment("anim_attachment_rh"))
                 if hand then
-                    local function switchaiming(x, y)
-                        if not wep:GetReady() or wep:GetReloading() then
-                            coef = 2.5
-                        elseif not handview then
-                            coef = 1.6
-                        end
-                        local worldVector, worldAngle = LocalToWorld(wep.AimPos, wep.AimAng, hand.Pos, hand.Ang)
-                        local e = math.Approach(wep.aimProgress or x, y, FrameTime() * coef)
-                        wep.aimProgress = e
-                        local t = inOutQuad(e, 0, 1, 1)
-                        pos = LerpVector(t, pos, worldVector)
-                        ang = LerpAngle(t, angles, worldAngle)
-                    end
-                    if wep:GetReady() and handview then
-                        switchaiming(0, 1)
-                    elseif not wep:GetReady() or not handview or wep:GetReloading() then
-                        switchaiming(1, 0)
-                    end
+                    local animIn = handview and wep:GetHoldType() == wep.Sight and wep:GetReady()
+                    local aimProgress = math.Approach(wep.aimProgress or 0, animIn and 1 or 0, FrameTime() * (animIn and 1.25 or 2.5))
+                    wep.aimProgress = aimProgress
+                    
+                    gunRecoil = Lerp(FrameTime() * 5, gunRecoil or 0, math.Clamp(wep.Sight == 'revolver' and ply:GetActiveWeapon():GetNW2Float("lrp-handRecoil") / 3 or ply:GetActiveWeapon():GetNW2Float("lrp-handRecoil") / 5, 0, 10))
+                    
+                    local worldVector, worldAngle = LocalToWorld(wep.AimPos + hand.Ang:Up() * gunRecoil, wep.AimAng, hand.Pos, hand.Ang) -- wep.AimAng + Angle(gunRecoil * 10, 0, 0)
+                    local easedProgress = inOutQuad(aimProgress, 0, 1, 1)
+                    pos = LerpVector(easedProgress, pos, worldVector)
+                    ang = LerpAngle(easedProgress, angles, worldAngle)
                 else
                     handview = false
                 end

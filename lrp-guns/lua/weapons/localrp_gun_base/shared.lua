@@ -1,17 +1,5 @@
-if SERVER then
-	AddCSLuaFile('leans.lua')
-end
-include('leans.lua')
-
-SWEP.PrintName = 'LocalRP Gun'
-SWEP.WorldModel = ''
-
-SWEP.Author = 'Octothorp Team | forever512'
-SWEP.Instructions = 'ПКМ + ЛКМ - Выстрелить\nСКМ - Сменить прицеливание\nALT - Проверить магазин\nЙ / У - Наклониться'
-
+SWEP.Spawnable = false
 SWEP.Base = 'weapon_base'
-SWEP.Passive = 'passive'
-SWEP.Sight = 'ar2'
 SWEP.Primary.Sound = Sound('')
 SWEP.Primary.Damage = 100
 SWEP.Primary.Spread = 0.01
@@ -32,17 +20,17 @@ SWEP.Secondary.DefaultClip = -1
 SWEP.Secondary.Automatic = false
 SWEP.Secondary.Ammo = 'none'
 
+SWEP.Passive = 'passive'
+SWEP.Sight = 'ar2'
+
+SWEP.HandRecoil = 0.5
+SWEP.VerticalRecoil = 4
+SWEP.HorizontalRecoil = 0.5
+
 SWEP.LRPGuns = true
 SWEP.Silent = false
 SWEP.ShootAnimOff = false
 SWEP.ReloadTime = 1
-
-SWEP.DrawAmmo = true
-SWEP.DrawCrosshair = true
-
-SWEP.Slot = 3
-SWEP.SlotPos = 1
-SWEP.Spawnable = false
 
 local barrelAngles = {
     _default = {Vector(10, .65, 3.5), Angle(-2, 5, 0)},
@@ -84,13 +72,20 @@ function SWEP:OnRemove()
 end
 
 function SWEP:Holster()
-    timer.Remove("clipinsound" .. self:GetOwner():SteamID())
-    timer.Remove("slidesound" .. self:GetOwner():SteamID())
-    timer.Remove("reload_act2" .. self:GetOwner():SteamID())
+    local ply = self:GetOwner()
+
+    timer.Remove("clipinsound" .. ply:SteamID())
+    timer.Remove("slidesound" .. ply:SteamID())
+    timer.Remove("reload_act2" .. ply:SteamID())
     self:SetReady(false)
     self:SetReloading(false)
-    self:GetOwner():SetNW2Int("TFALean", 0)
     self.aimProgress = 0
+    ply:SetNW2Int("TFALean", 0)
+
+	ply:ManipulateBonePosition(ply:LookupBone("ValveBiped.Bip01_R_Clavicle"), Vector(0, 0, 0), true)
+    ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Clavicle"), Angle(0, 0, 0), true)
+    ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Finger1"), Angle(0, 0, 0), true)
+	ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Hand"), Angle(0, 0, 0), true)
     return true
 end
 
@@ -176,9 +171,14 @@ function SWEP:GunReloading()
 end
 
 function SWEP:Think()
+    if self:GetNW2Float("lrp-handRecoil") ~= 0 then
+        self:Recoil()
+    end
+
 	if self:GetOwner():KeyReleased( IN_ATTACK2 ) or self:GetReloading() then
 		self:GetOwner():SetNW2Int("TFALean", 0)
 	end
+
     if IsValid(self) and IsValid(self:GetOwner()) and self:GetOwner():Alive() then
         self:GunReloading()
 
@@ -210,54 +210,63 @@ function SWEP:PrimaryAttack()
             return
         end
 
+        self:MuzzleFlashCustom()
         self:EmitSound(self.Primary.Sound, 80)
         self:ShotBullet(self.Primary.Damage, self.Primary.NumShots, self.Primary.Spread)
         self:TakePrimaryAmmo(1)
+
+        verticalRecoil = math.random(self.VerticalRecoil, self.VerticalRecoil + 2)
+        horizontalRecoil = math.random(-self.HorizontalRecoil, self.HorizontalRecoil)
+        self:SetNW2Float("lrp-handRecoil", self:GetNW2Float("lrp-handRecoil") + self.HandRecoil)
+
+        local recoilAngle = Angle(-verticalRecoil / 5, -horizontalRecoil / 2, 0)
+        self.Owner:ViewPunch(recoilAngle)
+        print(recoilAngle)
+
+        local eyes = self.Owner:EyeAngles()
+        eyes.pitch = eyes.pitch + (recoilAngle.pitch / 3)
+        eyes.yaw = eyes.yaw + (recoilAngle.yaw / 3)
+        self.Owner:SetEyeAngles(eyes)
     end
 end
 
 function SWEP:SecondaryAttack() return end
 
-if SERVER then
-    util.AddNetworkString('custommuzzle')
-else
-    net.Receive('custommuzzle', function()
-        local weap = net.ReadEntity()
-        if not IsValid(weap) then return end
-
-        local dlight = DynamicLight( weap:EntIndex() )
-        if dlight then
-            dlight.pos = weap:GetShootPos()
-            dlight.r = 255
-            dlight.g = 145
-            dlight.b = 10
-            dlight.brightness = 1
-            dlight.Decay = 5000
-            dlight.Size = 256
-            dlight.DieTime = CurTime() + 0.2
-        end
-    end)
-end
-
 function SWEP:MuzzleFlashCustom()
 	if self.Silent then return end
-	if SERVER then
-		net.Start('custommuzzle')
-			net.WriteEntity(self)
-		net.SendPVS(self:GetShootPos())
-
-		return
-	end
 
 	local effectData = EffectData()
 	effectData:SetEntity(self)
+    effectData:SetAttachment(1)
 	effectData:SetFlags(1)
-
+    -- if SERVER then
+    --     effectData:SetEntIndex('muzzle' .. self:GetOwner():SteamID())
+    -- end
 	util.Effect('MuzzleFlash', effectData)
 end
 
+verticalRecoil = verticalRecoil or 0
+horizontalRecoil = horizontalRecoil or 0
+function SWEP:Recoil()
+	self.animProg = self:GetNW2Float("lrp-handRecoil") or 0
+	self.animLerp = self.animLerp or Angle(0, 0, 0)
+	self.animLerp = LerpAngle(0.25, self.animLerp, Angle(verticalRecoil, horizontalRecoil, self.Sight == "revolver" and 0 or -2) * self.animProg)
+	local ply = self:GetOwner()
+	if self:GetNW2Float("lrp-handRecoil") > 0 then
+		if self.Sight ~= "revolver" and self.Sight ~= 'pistol' then
+			ply:ManipulateBonePosition(ply:LookupBone("ValveBiped.Bip01_R_Clavicle"), Vector(0, -self.animLerp.x / 3, -self.animLerp.x / 3), false)
+			ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Clavicle"), Angle(0, 0, -self.animLerp.x), false)
+		end
+        ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Finger1"), LerpAngle(1, self.animLerp, Angle(0, -20, self.Sight == "revolver" and 10 or -2) * math.min(self.animProg, 0.5)), false)
+		ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Hand"), self.animLerp * 2, false)
+		self:SetNW2Float("lrp-handRecoil", Lerp(FrameTime() * 4, self:GetNW2Float("lrp-handRecoil") or 0, 0))
+	end
+end
+
 function SWEP:FireAnimationEvent( pos, ang, event, options )
-	if event == 21 then return true end	
+    -- Disables animation based muzzle event
+	if event == 21 then return true end
+    -- Disable thirdperson muzzle flash
 	if event == 5003 then return true end
 end
 
@@ -280,77 +289,15 @@ function SWEP:ShotBullet(dmg, numbul, cone)
     self:GetOwner():FireBullets(bullet)
     self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
     --self:GetOwner():MuzzleFlash()
-	if not self.ShootAnimOff then
-    	self:GetOwner():SetAnimation(PLAYER_ATTACK1)
-	end
-	self:MuzzleFlashCustom()
-    
-    local anglo1 = Angle(math.Rand(-self.Primary.KickDown, -self.Primary.KickUp), math.Rand(-self.Primary.KickHorizontal, self.Primary.KickHorizontal), 0)
-    self.Owner:ViewPunch(anglo1)
-
-    if SERVER and game.SinglePlayer() and not self.Owner:IsNPC() then
-        local offlineeyes = self.Owner:EyeAngles()
-        offlineeyes.pitch = offlineeyes.pitch + anglo1.pitch
-        offlineeyes.yaw = offlineeyes.yaw + anglo1.yaw
-        self.Owner:SetEyeAngles(offlineeyes)
-    end
-
-    if CLIENT and not game.SinglePlayer() and not self.Owner:IsNPC() then
-        local anglo = Angle(math.Rand(-self.Primary.KickDown, -self.Primary.KickUp), math.Rand(-self.Primary.KickHorizontal, self.Primary.KickHorizontal), 0)
-        local eyes = self.Owner:EyeAngles()
-        eyes.pitch = eyes.pitch + (anglo.pitch / 3)
-        eyes.yaw = eyes.yaw + (anglo.yaw / 3)
-        self.Owner:SetEyeAngles(eyes)
-    end
+	-- if not self.ShootAnimOff then
+    -- 	self:GetOwner():SetAnimation(PLAYER_ATTACK1)
+	-- end
 end
 
 hook.Add('SetupMove', 'lrp-guns.setupmove', function(ply, mv)
-    local w = ply:GetActiveWeapon()
+    local wep = ply:GetActiveWeapon()
 
-    if IsValid(ply) and IsValid(w) and ply:Alive() then
-        if w.LRPGuns and not w:GetReady() and w:GetReloading() then
-            mv:SetMaxClientSpeed(mv:GetMaxClientSpeed() / 1.2)
-        end
+    if IsValid(wep) and wep.Base == 'localrp_gun_base' and wep:GetReloading() then
+        mv:SetMaxClientSpeed(mv:GetMaxClientSpeed() / 1.2)
     end
 end)
-
-hook.Add('CreateMove', 'lrp-guns.createmove', function(cmd)
-    local ply = LocalPlayer()
-    local w = ply:GetActiveWeapon()
-
-    if IsValid(ply) and IsValid(w) and ply:Alive() then
-        if w.LRPGuns and w:GetReady() and not w:GetReloading() then
-            cmd:RemoveKey(IN_SPEED)
-            cmd:RemoveKey(IN_JUMP)
-            cmd:RemoveKey(IN_USE)
-        else
-            return
-        end
-    end
-end)
-
--- if CLIENT then
---     hook.Add('WepTrace', 'wepTrace', function()
-
---         local wep = LocalPlayer():GetActiveWeapon()
---         if not IsValid(wep) then return end
-    
---         local pos, dir = wep:GetShootPos()
---         return util.TraceLine({
---             start = pos,
---             endpos = pos + dir * 2000,
---             filter = function(ent)
---                 return ent ~= ply and ent:GetRenderMode() ~= RENDERMODE_TRANSALPHA
---             end
---         })
-    
---     end)
-    
---     function SWEP:DrawWorldModel()
---         self:DrawModel()
-    
---         local pos, dir = self:GetShootPos()
---         render.DrawLine(pos, pos + dir * 200, color_white, true)
---         render.DrawWireframeSphere(pos, 1, 5, 5, color_white, true)
---     end
--- end
