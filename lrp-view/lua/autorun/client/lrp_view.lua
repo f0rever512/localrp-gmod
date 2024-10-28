@@ -155,7 +155,7 @@ hook.Add("PostDrawTranslucentRenderables", 'lrp-view.cross', function()
     if IsValid(ply:GetNWEntity("tazerviewrag")) then return end -- for ragdoll view after stungun shot
     if hook.Run('dbg-view.chShouldDraw') then return end -- for lrp switch weapon
     
-    if wep.LRPGuns then
+    if wep.Base == 'localrp_gun_base' then
         local e = {
             start = ply:GetShootPos(),
             endpos = wep:GetShootPos(),
@@ -172,7 +172,7 @@ hook.Add("PostDrawTranslucentRenderables", 'lrp-view.cross', function()
     --local hand = ply:GetAttachment(ply:LookupAttachment("anim_attachment_rh"))
 
     local pos, aim
-    if wep.LRPGuns then
+    if wep.Base == 'localrp_gun_base' then
         pos, aim = wep:GetShootPos()
     elseif wep.DrawCrosshair or IsWepBlacklisted(hl2wep) then
         pos, aim = ply:GetShootPos(), ply:EyeAngles():Forward() --eye.Pos
@@ -201,7 +201,7 @@ hook.Add("PostDrawTranslucentRenderables", 'lrp-view.cross', function()
         surface.SetDrawColor(clr_r, clr_g, clr_b, 225)
         surface.SetMaterial(hand_mat)
         surface.DrawTexturedRect(-45, -45, 75, 75)
-    elseif (wep.LRPGuns and not handview and wep:GetReady()) or wep.DrawCrosshair or IsWepBlacklisted(hl2wep) then
+    elseif (wep.Base == 'localrp_gun_base' and not handview and wep:GetReady()) or wep.DrawCrosshair or IsWepBlacklisted(hl2wep) then
         surface.SetDrawColor(clr_r, clr_g, clr_b, 225)
         surface.SetMaterial(crosshair_mat)
         surface.DrawTexturedRect(-32, -32, 64, 64)
@@ -218,7 +218,7 @@ hook.Add("PostDrawHUD", 'lrp-view.blackscreen', function()
 
     if CanViewWork() or not hand or not ply:Alive() or ply:InVehicle() then return end
 
-    if wep.LRPGuns and handview and wep:GetReady() then
+    if wep.Base == 'localrp_gun_base' and handview and wep:GetReady() then
         local tr = {
             start = hand.Pos - hand.Ang:Forward() * 2,
             endpos = hand.Pos,
@@ -248,7 +248,7 @@ hook.Add('CreateMove', 'lrp-view.handview', function(cmd)
     local ply = LocalPlayer()
     local wep = ply:GetActiveWeapon()
 
-    if not wep.LRPGuns then return end
+    if not wep.Base == 'localrp_gun_base' then return end
 
     if input.WasMousePressed(109) and wep:GetReady() then
         if not handview then
