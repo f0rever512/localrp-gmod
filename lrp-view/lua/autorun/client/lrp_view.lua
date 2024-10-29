@@ -1,5 +1,3 @@
-include('lrp_sight.lua')
-
 CreateClientConVar("lrp_view", "1", true, false)
 CreateClientConVar('lrp_view_crosshair', 1, true, false)
 CreateClientConVar('lrp_view_crosshair_color_r', 255, true, false)
@@ -58,7 +56,7 @@ hook.Add("CalcView", 'lrp-view', function(ply, pos, angles, fov)
                     local aimProgress = math.Approach(wep.aimProgress or 0, animIn and 1 or 0, FrameTime() * (animIn and 1.25 or 2.5))
                     wep.aimProgress = aimProgress
                     
-                    gunRecoil = Lerp(FrameTime() * 5, gunRecoil or 0, math.Clamp(wep.Sight == 'revolver' and ply:GetActiveWeapon():GetNW2Float("lrp-handRecoil") / 3 or ply:GetActiveWeapon():GetNW2Float("lrp-handRecoil") / 5, 0, 10))
+                    gunRecoil = Lerp(FrameTime() * 5, gunRecoil or 0, math.Clamp(wep.Sight == 'revolver' and ply:GetActiveWeapon():GetNW2Float("lrp-handRecoil") / 2 or ply:GetActiveWeapon():GetNW2Float("lrp-handRecoil") / 4, 0, 10))
                     
                     local worldVector, worldAngle = LocalToWorld(wep.AimPos + hand.Ang:Up() * gunRecoil, wep.AimAng, hand.Pos, hand.Ang) -- wep.AimAng + Angle(gunRecoil * 10, 0, 0)
                     local easedProgress = inOutQuad(aimProgress, 0, 1, 1)
