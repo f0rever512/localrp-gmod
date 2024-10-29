@@ -6,10 +6,6 @@ SWEP.Primary.Spread = 0.01
 SWEP.Primary.NumShots = 1
 SWEP.Primary.RPM = 0
 
-SWEP.Primary.KickUp = 0
-SWEP.Primary.KickDown = 0
-SWEP.Primary.KickHorizontal = 0
-
 SWEP.Primary.ClipSize = 0
 SWEP.Primary.DefaultClip = 0
 SWEP.Primary.Automatic = true
@@ -34,8 +30,8 @@ SWEP.ReloadTime = 1
 
 local barrelAngles = {
     _default = {Vector(10, .65, 3.5), Angle(-2, 5, 0)},
-   	revolver = {Vector(8, .65, 4), Angle(-2, 5, 0)},
-    pistol = {Vector(10, .25, 3.5), Angle(-2, 5, 0)},
+   	revolver = {Vector(8, .45, 4), Angle(-2, 5, 0)},
+    pistol = {Vector(10, .25, 3.5), Angle(-2.1, 4.9, 0)},
     ar2 = {Vector(25, -1, 7.5), Angle(-9, 0, 0)},
     smg = {Vector(11, -0.9, 7.5), Angle(-8, 1.5, 0)},
     duel = {Vector(9, 1, 3.5), Angle(0, 11, 0)}
@@ -232,7 +228,7 @@ end
 function SWEP:SecondaryAttack() return end
 
 function SWEP:MuzzleFlashCustom()
-	if self.Silent then return end
+	if self.Silent or (self.SightPos and handview) then return end
 
 	local effectData = EffectData()
 	effectData:SetEntity(self)
@@ -249,7 +245,7 @@ horizontalRecoil = horizontalRecoil or 0
 function SWEP:Recoil()
 	self.animProg = self:GetNW2Float("lrp-handRecoil") or 0
 	self.animLerp = self.animLerp or Angle(0, 0, 0)
-	self.animLerp = LerpAngle(0.25, self.animLerp, Angle(verticalRecoil, horizontalRecoil, self.Sight == "revolver" and 0 or -2) * self.animProg)
+	self.animLerp = LerpAngle(0.25, self.animLerp, Angle(verticalRecoil, horizontalRecoil, self.Sight == 'revolver' and 0 or -2) * self.animProg)
 	local ply = self:GetOwner()
 	if self:GetNW2Float("lrp-handRecoil") > 0 then
 		if self.Sight ~= "revolver" and self.Sight ~= 'pistol' then
@@ -258,7 +254,7 @@ function SWEP:Recoil()
 		end
         ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Finger1"), LerpAngle(1, self.animLerp, Angle(0, -20, self.Sight == "revolver" and 10 or -2) * math.min(self.animProg, 0.5)), false)
 		ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Hand"), self.animLerp * 2, false)
-		self:SetNW2Float("lrp-handRecoil", Lerp(FrameTime() * 4, self:GetNW2Float("lrp-handRecoil") or 0, 0))
+		self:SetNW2Float("lrp-handRecoil", Lerp(FrameTime() * self:GetNW2Float("lrp-handRecoil") * 8, self:GetNW2Float("lrp-handRecoil") or 0, 0))
 	end
 end
 

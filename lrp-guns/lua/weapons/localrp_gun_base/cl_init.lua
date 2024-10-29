@@ -7,7 +7,7 @@ SWEP.Instructions = 'ПКМ + ЛКМ - Выстрелить\nСКМ - Смени
 SWEP.Slot = 1
 SWEP.SlotPos = 1
 SWEP.DrawAmmo = true
-SWEP.DrawCrosshair = true
+SWEP.DrawCrosshair = false
 
 CreateClientConVar('cl_lrp_sight_resolution', 512, true)
 local sightMaterials = {}
