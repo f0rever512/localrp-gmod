@@ -12,7 +12,6 @@ SWEP.Primary.Damage = 27
 SWEP.Primary.RPM = 500
 SWEP.Primary.ClipSize = 15
 SWEP.Primary.DefaultClip = 0
-SWEP.Primary.Spread = 0.01
 SWEP.Primary.Ammo = 'ammo_small'
 SWEP.Primary.Automatic = false
 
