@@ -254,7 +254,12 @@ function SWEP:Recoil()
 		end
         ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Finger1"), LerpAngle(1, self.animLerp, Angle(0, -20, self.Sight == "revolver" and 10 or -2) * math.min(self.animProg, 0.5)), false)
 		ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Hand"), self.animLerp * 2, false)
-		self:SetNW2Float("lrp-handRecoil", Lerp(FrameTime() * self:GetNW2Float("lrp-handRecoil") * 8, self:GetNW2Float("lrp-handRecoil") or 0, 0))
+
+		self:SetNW2Float("lrp-handRecoil", Lerp(FrameTime() * 8, self:GetNW2Float("lrp-handRecoil") or 0, 0))
+
+        if self:GetNW2Float("lrp-handRecoil") <= 0.01 then
+            self:SetNW2Float("lrp-handRecoil", 0)
+        end
 	end
 end
 
