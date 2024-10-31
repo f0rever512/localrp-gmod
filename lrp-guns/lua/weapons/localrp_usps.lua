@@ -8,7 +8,7 @@ SWEP.SlotPos = 1
 SWEP.WorldModel = 'models/weapons/w_pist_usp_silencer.mdl'
 
 SWEP.Primary.Sound = Sound( 'weapons/usp/usp1.wav' )
-SWEP.Primary.Damage = 28
+SWEP.Primary.Damage = 22
 SWEP.Primary.RPM = 700
 SWEP.Primary.ClipSize = 12
 SWEP.Primary.DefaultClip = 0

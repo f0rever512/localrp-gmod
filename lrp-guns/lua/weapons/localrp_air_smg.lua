@@ -8,7 +8,7 @@ SWEP.SlotPos = 1
 SWEP.WorldModel = 'models/weapons/w_smg1.mdl'
 
 SWEP.Primary.Sound = Sound( 'weapons/p228/p228_sliderelease.wav' )
-SWEP.Primary.Damage = 1.25
+SWEP.Primary.Damage = 1
 SWEP.Primary.RPM = 725
 SWEP.Primary.ClipSize = 20
 SWEP.Primary.DefaultClip = 0

@@ -8,8 +8,8 @@ SWEP.SlotPos = 1
 SWEP.WorldModel = 'models/weapons/w_pist_elite_single.mdl'
 
 SWEP.Primary.Sound = Sound( 'weapons/elite/elite-1.wav' )
-SWEP.Primary.Damage = 27
-SWEP.Primary.RPM = 500
+SWEP.Primary.Damage = 25
+SWEP.Primary.RPM = 550
 SWEP.Primary.ClipSize = 15
 SWEP.Primary.DefaultClip = 0
 SWEP.Primary.Ammo = 'ammo_small'

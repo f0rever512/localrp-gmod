@@ -8,7 +8,7 @@ SWEP.SlotPos = 1
 SWEP.WorldModel = 'models/weapons/w_shotgun.mdl'
 
 SWEP.Primary.Sound = Sound( 'weapons/scout/scout_clipout.wav' )
-SWEP.Primary.Damage = 0.4
+SWEP.Primary.Damage = 0.5
 SWEP.Primary.RPM = 200
 SWEP.Primary.ClipSize = 8
 SWEP.Primary.DefaultClip = 0

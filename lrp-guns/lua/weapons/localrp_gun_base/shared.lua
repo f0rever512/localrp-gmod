@@ -34,7 +34,7 @@ local barrelAngles = {
     pistol = {Vector(10, .25, 3.5), Angle(-2.1, 4.9, 0)},
     ar2 = {Vector(25, -1, 7.5), Angle(-9, 0, 0)},
     smg = {Vector(11, -0.9, 7.5), Angle(-8, 1.5, 0)},
-    duel = {Vector(9, 1, 3.5), Angle(0, 11, 0)}
+    duel = {Vector(9, 1.1, 3.5), Angle(1.5, 11.8, 0)}
 }
 
 function SWEP:SetupDataTables()

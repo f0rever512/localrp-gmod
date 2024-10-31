@@ -8,7 +8,7 @@ SWEP.SlotPos = 1
 SWEP.WorldModel = 'models/weapons/w_rif_sg552.mdl'
 
 SWEP.Primary.Sound = Sound( 'weapons/sg552/sg552-1.wav' )
-SWEP.Primary.Damage = 23
+SWEP.Primary.Damage = 25
 SWEP.Primary.RPM = 750
 SWEP.Primary.ClipSize = 30
 SWEP.Primary.DefaultClip = 0
@@ -17,7 +17,7 @@ SWEP.Primary.Ammo = 'ammo_large'
 SWEP.Passive = 'passive'
 SWEP.Sight = 'ar2'
 
-SWEP.HandRecoil = 0.9
+SWEP.HandRecoil = 0.7
 SWEP.VerticalRecoil = 5
 SWEP.HorizontalRecoil = 0.2
 

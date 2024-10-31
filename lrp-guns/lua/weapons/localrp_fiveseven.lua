@@ -8,7 +8,7 @@ SWEP.SlotPos = 1
 SWEP.WorldModel = 'models/weapons/w_pist_fiveseven.mdl'
 
 SWEP.Primary.Sound = Sound( 'weapons/fiveseven/fiveseven-1.wav' )
-SWEP.Primary.Damage = 25
+SWEP.Primary.Damage = 22
 SWEP.Primary.RPM = 800
 SWEP.Primary.ClipSize = 20
 SWEP.Primary.DefaultClip = 0

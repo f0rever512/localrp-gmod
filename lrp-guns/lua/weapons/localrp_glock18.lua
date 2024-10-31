@@ -8,7 +8,7 @@ SWEP.SlotPos = 1
 SWEP.WorldModel = 'models/weapons/w_pist_glock18.mdl'
 
 SWEP.Primary.Sound = Sound( 'Weapon_Glock.Single' )
-SWEP.Primary.Damage = 26
+SWEP.Primary.Damage = 23
 SWEP.Primary.RPM = 700
 SWEP.Primary.ClipSize = 17
 SWEP.Primary.DefaultClip = 0
