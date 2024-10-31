@@ -1,8 +1,5 @@
-local function SetSightResolution(_, _, int)
-	GetConVar('cl_lrp_sight_resolution'):SetInt(int)
-end
-
-hook.Add("AddToolMenuTabs", 'LRPGuns', function()
+local resolutionsList = {128, 256, 512, 1024}
+hook.Add("AddToolMenuTabs", 'lrp-guns.tab', function()
 	spawnmenu.AddToolTab('LocalRP', '#LocalRP', 'icon16/brick.png')
 	spawnmenu.AddToolMenuOption("LocalRP", "Client Options", 'lrp_guns', 'Guns', "", "", function(pnl)
 		pnl:ClearControls()
@@ -14,9 +11,8 @@ hook.Add("AddToolMenuTabs", 'LRPGuns', function()
 		})
 		resolutionList:SetSortItems(false)
 
-		local resolutionsList = {128, 256, 512, 1024}
-		for a = 1, #resolutionsList do
-			local resolution = resolutionsList[a]
+		for int = 1, #resolutionsList do
+			local resolution = resolutionsList[int]
 			local optionName = resolution .. ' x ' .. resolution
 
 			resolutionList:AddOption(optionName, {
@@ -24,7 +20,4 @@ hook.Add("AddToolMenuTabs", 'LRPGuns', function()
 			})
 		end
 	end)
-
-	cvars.AddChangeCallback('cl_lrp_sight_resolution', SetSightResolution, 'setSightResolution')
-	SetSightResolution(_, _, GetConVar('cl_lrp_sight_resolution'):GetInt())
 end)
