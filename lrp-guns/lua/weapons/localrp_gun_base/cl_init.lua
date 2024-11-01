@@ -140,8 +140,6 @@ function SWEP:DrawWorldModel()
 
 end
 
-function SWEP:Reload() end
-
 hook.Add('CreateMove', 'lrp-guns.createmove', function(cmd)
     local wep = LocalPlayer():GetActiveWeapon()
 
