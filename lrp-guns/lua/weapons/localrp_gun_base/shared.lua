@@ -25,8 +25,16 @@ SWEP.HorizontalRecoil = 0.5
 
 SWEP.LRPGuns = true
 SWEP.Silent = false
-SWEP.ShootAnimOff = false
-SWEP.ReloadTime = 1
+SWEP.ReloadTime = 2.2
+
+net.Receive('lrp-oldShooting', function( len, ply )
+    local int = net.ReadInt(3)
+    if int == 1 then
+        oldShooting = true
+    else
+        oldShooting = false
+    end
+end)
 
 local barrelAngles = {
     _default = {Vector(10, .65, 3.5), Angle(-2, 5, 0)},
@@ -167,7 +175,7 @@ function SWEP:GunReloading()
 end
 
 function SWEP:Think()
-    if self:GetNW2Float("lrp-handRecoil") ~= 0 then
+    if self:GetNW2Float("lrp-handRecoil") ~= 0 and not oldShooting then
         self:Recoil()
     end
 
@@ -232,11 +240,7 @@ function SWEP:MuzzleFlashCustom()
 
 	local effectData = EffectData()
 	effectData:SetEntity(self)
-    effectData:SetAttachment(1)
 	effectData:SetFlags(1)
-    -- if SERVER then
-    --     effectData:SetEntIndex('muzzle' .. self:GetOwner():SteamID())
-    -- end
 	util.Effect('MuzzleFlash', effectData)
 end
 
@@ -288,10 +292,10 @@ function SWEP:ShotBullet(dmg, numbul, cone)
 
     self:GetOwner():FireBullets(bullet)
     self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
-    --self:GetOwner():MuzzleFlash()
-	-- if not self.ShootAnimOff then
-    -- 	self:GetOwner():SetAnimation(PLAYER_ATTACK1)
-	-- end
+
+    if oldShooting then
+        self:GetOwner():SetAnimation(PLAYER_ATTACK1)
+    end
 end
 
 hook.Add('SetupMove', 'lrp-guns.setupmove', function(ply, mv)
