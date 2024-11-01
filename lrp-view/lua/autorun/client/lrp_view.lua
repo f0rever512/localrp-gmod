@@ -43,7 +43,7 @@ hook.Add("CalcView", 'lrp-view', function(ply, pos, angles, fov)
     end
 
     local wep = ply:GetActiveWeapon()
-    local pos, ang = eye.Pos, ply:EyeAngles()
+    local pos, ang = eye.Pos, angles
 
     if ply:Alive() then
         if not ply:InVehicle() then

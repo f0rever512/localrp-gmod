@@ -316,7 +316,7 @@ hook.Add("CalcViewModelView", "TFALeanCalcVMView", LeanCalcVMView)
 
 hook.Add( "PlayerButtonDown", 'lrp-guns.leanbtndown', function(ply, button)
 	local wep = ply:GetActiveWeapon()
-    if not wep.Base == 'localrp_gun_base' or wep:GetClass() == 'lrp_stungun' then return end
+    if ply:Alive() and not wep.Base == 'localrp_gun_base' then return end
 
 	if button ~= KEY_Q and button ~= KEY_E then return end
 
