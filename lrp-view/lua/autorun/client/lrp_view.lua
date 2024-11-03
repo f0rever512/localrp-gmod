@@ -47,8 +47,7 @@ hook.Add("CalcView", 'lrp-view', function(ply, pos, angles, fov)
 
     if ply:Alive() then
         if not ply:InVehicle() then
-            pos = eye.Pos
-            ply:ManipulateBoneScale(head, Vector(0, 0, 0))
+            ply:ManipulateBoneScale(head, Vector(0.01, 0.01, 0.01))
             if wep.Base == 'localrp_gun_base' then
                 local hand = ply:GetAttachment(ply:LookupAttachment("anim_attachment_rh"))
                 if ply:GetNW2Int("TFALean") == 0 then
@@ -61,7 +60,7 @@ hook.Add("CalcView", 'lrp-view', function(ply, pos, angles, fov)
                     local animIn = handview and wep:GetHoldType() == wep.Sight and wep:GetReady()
                     local aimProgress = math.Approach(wep.aimProgress or 0, animIn and 1 or 0, FrameTime() * (animIn and 1.25 or 2.5))
                     wep.aimProgress = aimProgress
-                    
+
                     gunRecoil = Lerp(FrameTime() * 15, gunRecoil or 0, ply:GetActiveWeapon():GetNW2Float("lrp-handRecoil") * (wep.Sight == 'revolver' and 0.15 or 0.05))
                     
                     local worldVector, worldAngle = LocalToWorld(Vector(wep.AimPos.x, wep.AimPos.y, wep.AimPos.z + wep.AimPos.z * gunRecoil), wep.AimAng, hand.Pos, smoothHandAng)
@@ -82,7 +81,7 @@ hook.Add("CalcView", 'lrp-view', function(ply, pos, angles, fov)
 
         local eye = ragdoll:GetAttachment(ragdoll:LookupAttachment("eyes"))
         
-        pos, ang = eye.Pos, eye.Ang
+        ang = eye.Ang
     end
 
     local view = {
@@ -90,7 +89,7 @@ hook.Add("CalcView", 'lrp-view', function(ply, pos, angles, fov)
         angles = ang,
         fov = fov,
         drawviewer = true,
-        znear = 1
+        znear = 3
     }
     return view
 end)
