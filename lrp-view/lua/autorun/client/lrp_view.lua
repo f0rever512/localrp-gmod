@@ -61,9 +61,9 @@ hook.Add("CalcView", 'lrp-view', function(ply, pos, angles, fov)
                     local aimProgress = math.Approach(wep.aimProgress or 0, animIn and 1 or 0, FrameTime() * (animIn and 1.25 or 2.5))
                     wep.aimProgress = aimProgress
 
-                    gunRecoil = Lerp(FrameTime() * 15, gunRecoil or 0, ply:GetActiveWeapon():GetNW2Float("lrp-handRecoil") * (wep.Sight == 'revolver' and 0.15 or 0.05))
+                    gunRecoil = Lerp(FrameTime() * 15, gunRecoil or 0, ply:GetActiveWeapon():GetNW2Float("lrp-handRecoil") * (wep.Sight == 'revolver' and 0.5 or 0.05))
                     
-                    local worldVector, worldAngle = LocalToWorld(Vector(wep.AimPos.x, wep.AimPos.y, wep.AimPos.z + wep.AimPos.z * gunRecoil), wep.AimAng, hand.Pos, smoothHandAng)
+                    local worldVector, worldAngle = LocalToWorld(Vector(wep.AimPos.x, wep.AimPos.y, wep.AimPos.z + wep.AimPos.z * gunRecoil * 0.5), Angle(wep:GetShootAng().p - (not wep.SightPos and (wep:GetShootAng().p * gunRecoil * 5) or 0), wep:GetShootAng().y, wep:GetShootAng().r), hand.Pos, smoothHandAng)
                     local easedProgress = inOutQuad(aimProgress, 0, 1, 1)
                     pos = LerpVector(easedProgress, pos, worldVector)
                     ang = LerpAngle(easedProgress, angles, worldAngle)
@@ -89,7 +89,7 @@ hook.Add("CalcView", 'lrp-view', function(ply, pos, angles, fov)
         angles = ang,
         fov = fov,
         drawviewer = true,
-        znear = 3
+        znear = handview and 1 or 2
     }
     return view
 end)
