@@ -31,15 +31,16 @@ SWEP.ClipoutSound = ''
 SWEP.ClipinSound = ''
 SWEP.SlideSound = ''
 
-local oldShooting = false
-net.Receive('lrp-oldShooting', function()
-    local int = net.ReadInt(3)
-    if int == 1 then
-        oldShooting = true
-    else
-        oldShooting = false
-    end
-end)
+-- GetConVar('sv_lrp_oldshoot'):GetInt() == 1
+-- local oldShooting = false
+-- net.Receive('lrp-oldShooting', function()
+--     local int = net.ReadInt(3)
+--     if int == 1 then
+--         oldShooting = true
+--     else
+--         oldShooting = false
+--     end
+-- end)
 
 local barrelAngles = {
     _default = {Vector(10, .65, 3.5), Angle(-2, 5, 0)},
@@ -133,6 +134,18 @@ function SWEP:GetShootPos()
     end
 end
 
+function SWEP:GetShootAng()
+    local mPos, mAng = self.MuzzlePos, self.MuzzleAng
+    if not mPos then
+        if barrelAngles[self.Sight] then
+            pos, mAng = unpack(barrelAngles[self.Sight])
+        else
+            pos, mAng = unpack(barrelAngles._default)
+        end
+    end
+	return mAng
+end
+
 function SWEP:GunReloading()
     local ply = self:GetOwner()
     if self:Ammo1() == 0 and ply:KeyPressed(IN_RELOAD) then return end
@@ -169,7 +182,7 @@ function SWEP:GunReloading()
 end
 
 function SWEP:Think()
-    if self:GetNW2Float("lrp-handRecoil") ~= 0 and not oldShooting then
+    if self:GetNW2Float("lrp-handRecoil") ~= 0 and GetConVar('sv_lrp_oldshoot'):GetInt() == 0 then
         self:Recoil()
     end
 
@@ -210,7 +223,7 @@ function SWEP:PrimaryAttack()
         end
 
         self:MuzzleFlashCustom()
-        self:EmitSound(self.Primary.Sound, 80)
+        self:EmitSound(self.Primary.Sound, self.Silent and 75 or 80)
         self:ShotBullet(self.Primary.Damage, self.Primary.NumShots, self.Primary.Spread)
         self:TakePrimaryAmmo(1)
 
@@ -290,7 +303,7 @@ function SWEP:ShotBullet(dmg, numbul, cone)
     self:GetOwner():FireBullets(bullet)
     self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
 
-    if oldShooting then
+    if GetConVar('sv_lrp_oldshoot'):GetInt() == 1 then
         self:GetOwner():SetAnimation(PLAYER_ATTACK1)
     end
 end

@@ -9,13 +9,13 @@ SWEP.WorldModel = ''
 util.AddNetworkString('lrp-muzzleFlash')
 util.AddNetworkString('lrp-oldShooting')
 
-CreateConVar('sv_lrp_oldshoot', 1, {FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Enable/disable old shooting')
+CreateConVar('sv_lrp_oldshoot', 0, {FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Enable/disable old shooting')
 
-cvars.AddChangeCallback('sv_lrp_oldshoot', function(convar, oldValue, newValue)
-    net.Start('lrp-oldShooting')
-    net.WriteInt(newValue, 3)
-    net.Broadcast()
-end)
+-- cvars.AddChangeCallback('sv_lrp_oldshoot', function(convar, oldValue, newValue)
+--     net.Start('lrp-oldShooting')
+--     net.WriteInt(newValue, 3)
+--     net.Broadcast()
+-- end)
 
 function SWEP:MuzzleFlashCustom()
 	if self.Silent then return end
