@@ -258,7 +258,7 @@ horizontalRecoil = horizontalRecoil or 0
 function SWEP:Recoil()
 	self.animProg = self:GetNW2Float("lrp-handRecoil") or 0
 	self.animLerp = self.animLerp or Angle(0, 0, 0)
-	self.animLerp = LerpAngle(0.25, self.animLerp, Angle(verticalRecoil, horizontalRecoil, self.Sight == 'revolver' and 0 or -2) * self.animProg)
+	self.animLerp = LerpAngle(0.25, self.animLerp, Angle(verticalRecoil, horizontalRecoil, (self.Sight == 'revolver' or self.Sight == 'pistol') and 0 or -2) * self.animProg)
 	
     local ply = self:GetOwner()
 	if self:GetNW2Float("lrp-handRecoil") > 0 then
@@ -266,7 +266,7 @@ function SWEP:Recoil()
 			ply:ManipulateBonePosition(ply:LookupBone("ValveBiped.Bip01_R_Clavicle"), Vector(0, -self.animLerp.x / 3, -self.animLerp.x / 3), false)
 			ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Clavicle"), Angle(0, 0, -self.animLerp.x), false)
 		end
-        ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Finger1"), LerpAngle(1, self.animLerp, Angle(0, -20, self.Sight == "revolver" and 10 or -2) * math.min(self.animProg, 0.5)), false)
+        ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Finger1"), LerpAngle(1, self.animLerp, Angle(0, -20, (self.Sight == 'revolver' or self.Sight == 'pistol') and 10 or -2) * math.min(self.animProg, 0.5)), false)
 		ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Hand"), self.animLerp * 2, false)
 
 		self:SetNW2Float("lrp-handRecoil", Lerp(FrameTime() * 8, self:GetNW2Float("lrp-handRecoil") or 0, 0))
