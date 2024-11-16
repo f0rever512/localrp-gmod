@@ -182,7 +182,7 @@ function SWEP:GunReloading()
 end
 
 function SWEP:Think()
-    if self:GetNW2Float("lrp-handRecoil") ~= 0 and GetConVar('sv_lrp_oldshoot'):GetInt() == 0 then
+    if self:GetNW2Float("lrp-handRecoil") ~= 0 then
         self:Recoil()
     end
 
@@ -303,9 +303,9 @@ function SWEP:ShotBullet(dmg, numbul, cone)
     self:GetOwner():FireBullets(bullet)
     self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
 
-    if GetConVar('sv_lrp_oldshoot'):GetInt() == 1 then
-        self:GetOwner():SetAnimation(PLAYER_ATTACK1)
-    end
+    -- if GetConVar('sv_lrp_oldshoot'):GetInt() == 1 then
+    --     self:GetOwner():SetAnimation(PLAYER_ATTACK1)
+    -- end
 end
 
 hook.Add('SetupMove', 'lrp-guns.setupmove', function(ply, mv)
