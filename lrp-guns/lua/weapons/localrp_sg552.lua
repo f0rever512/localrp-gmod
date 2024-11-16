@@ -28,7 +28,6 @@ SWEP.ClipinSound = 'weapons/sg552/sg552_clipin.wav'
 SWEP.SlideSound = 'weapons/sg552/sg552_boltpull.wav'
 
 SWEP.AimPos = Vector(-3.5, -0.892, 5.77)
-SWEP.AimAng = Angle(-9, 0, 0)
 SWEP.SightPos = Vector(-0.8, -0.89, 6.2)
 SWEP.SightAng = Angle(0, -90, 100)
 SWEP.SightSize = 1.2

@@ -30,4 +30,3 @@ SWEP.SlideSound = 'weapons/mp5navy/mp5_slideback.wav'
 SWEP.MuzzlePos = Vector(12, -0.6, 7.5)
 SWEP.MuzzleAng = Angle(-7.5, 2.2, 0)
 SWEP.AimPos = Vector(-7, -1.35, 7.3)
-SWEP.AimAng = Angle(-7.5, 2.2, 0)

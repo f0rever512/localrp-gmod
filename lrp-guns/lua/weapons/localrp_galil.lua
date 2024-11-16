@@ -30,4 +30,3 @@ SWEP.SlideSound = 'weapons/galil/galil_boltpull.wav'
 SWEP.MuzzlePos = Vector(25, -1, 8.2)
 SWEP.MuzzleAng = Angle(-10, 0, 0)
 SWEP.AimPos = Vector(-4, -0.75, 5.55)
-SWEP.AimAng = Angle(-10, 0, 0)

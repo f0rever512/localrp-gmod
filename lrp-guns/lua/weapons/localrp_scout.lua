@@ -29,7 +29,6 @@ SWEP.ClipinSound = 'weapons/scout/scout_clipin.wav'
 SWEP.SlideSound = 'weapons/scout/scout_bolt.wav'
 
 SWEP.AimPos = Vector(-0.5, -0.99, 5.84)
-SWEP.AimAng = Angle(-9, 0, 0)
 SWEP.SightPos = Vector(1.6, -0.99, 6.17)
 SWEP.SightAng = Angle(0, -90, 100)
 SWEP.SightSize = 1.2

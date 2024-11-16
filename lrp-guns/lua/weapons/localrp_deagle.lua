@@ -27,4 +27,3 @@ SWEP.ReloadTime = 2.4
 SWEP.SlideSound = 'weapons/deagle/de_slideback.wav'
 
 SWEP.AimPos = Vector(-10.5, -1.27, 4.5)
-SWEP.AimAng = Angle(-2, 5, 0)

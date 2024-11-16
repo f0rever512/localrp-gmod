@@ -30,4 +30,3 @@ SWEP.SlideSound = 'weapons/ump45/ump45_boltslap.wav'
 SWEP.MuzzlePos = Vector(12, -0.85, 7)
 SWEP.MuzzleAng = Angle(-9.5, 0, 0)
 SWEP.AimPos = Vector(-7, -0.8, 5.4)
-SWEP.AimAng = Angle(-9.5, 0, 0)

@@ -30,4 +30,3 @@ SWEP.ClipinSound = 'weapons/m3/m3_insertshell.wav'
 SWEP.SlideSound = 'weapons/m3/m3_pump.wav'
 
 SWEP.AimPos = Vector(-5, -0.95, 4.6)
-SWEP.AimAng = Angle(-9, 0, 0)

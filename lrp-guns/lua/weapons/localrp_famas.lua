@@ -30,4 +30,3 @@ SWEP.SlideSound = 'weapons/famas/famas_forearm.wav'
 SWEP.MuzzlePos = Vector(20, -1, 7.4)
 SWEP.MuzzleAng = Angle(-8, 0, 0)
 SWEP.AimPos = Vector(-6, -0.91, 7.55)
-SWEP.AimAng = Angle(-8, 0, 0)

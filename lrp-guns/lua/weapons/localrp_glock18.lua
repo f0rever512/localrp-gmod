@@ -27,4 +27,3 @@ SWEP.ReloadTime = 2.4
 SWEP.SlideSound = 'weapons/glock/glock_sliderelease.wav'
 
 SWEP.AimPos = Vector(-10.5, -1.23, 3.95)
-SWEP.AimAng = Angle(-2, 5, 0)

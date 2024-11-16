@@ -27,4 +27,3 @@ SWEP.ReloadTime = 2.4
 SWEP.SlideSound = 'weapons/fiveseven/fiveseven_sliderelease.wav'
 
 SWEP.AimPos = Vector(-10.5, -1.255, 3.93)
-SWEP.AimAng = Angle(-2, 5, 0)

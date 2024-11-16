@@ -26,6 +26,5 @@ SWEP.Silent = true
 SWEP.ReloadTime = 2.4
 
 SWEP.MuzzlePos = Vector(5.5, 0.5, 5)
-SWEP.MuzzleAng = Angle(-3.75, 1.9, 0)
+SWEP.MuzzleAng = Angle(-4, 1.8, -5)
 SWEP.AimPos = Vector(-10.5, 0, 3.95)
-SWEP.AimAng = Angle(-4, 1.85, -5)

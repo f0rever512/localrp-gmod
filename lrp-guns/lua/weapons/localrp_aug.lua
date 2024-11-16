@@ -30,7 +30,6 @@ SWEP.SlideSound = 'weapons/aug/aug_boltpull.wav'
 SWEP.MuzzlePos = Vector(20, -1, 7)
 SWEP.MuzzleAng = Angle(-7.9, 1, 0)
 SWEP.AimPos = Vector(-5, -0.7, 5.61)
-SWEP.AimAng = Angle(-8, 1, 0)
 SWEP.SightPos = Vector(-3.2, -0.67, 5.87)
 SWEP.SightAng = Angle(0, -90, 100)
 SWEP.SightSize = 0.9

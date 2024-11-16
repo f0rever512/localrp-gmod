@@ -28,4 +28,3 @@ SWEP.ClipinSound = 'weapons/ak47/ak47_clipin.wav'
 SWEP.SlideSound = 'weapons/ak47/ak47_boltpull.wav'
 
 SWEP.AimPos = Vector(-4, -1.04, 5.25)
-SWEP.AimAng = Angle(-9, 0, 0)
