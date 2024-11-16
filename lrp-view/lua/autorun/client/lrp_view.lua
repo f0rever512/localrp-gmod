@@ -81,7 +81,7 @@ hook.Add("CalcView", 'lrp-view', function(ply, pos, angles, fov)
 
         local eye = ragdoll:GetAttachment(ragdoll:LookupAttachment("eyes"))
         
-        ang = eye.Ang
+        pos, ang = eye.Pos, eye.Ang
     end
 
     local view = {
