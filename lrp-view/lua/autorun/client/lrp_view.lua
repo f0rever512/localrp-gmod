@@ -61,7 +61,7 @@ hook.Add("CalcView", 'lrp-view', function(ply, pos, angles, fov)
                     local aimProgress = math.Approach(wep.aimProgress or 0, animIn and 1 or 0, FrameTime() * (animIn and 1.25 or 2.5))
                     wep.aimProgress = aimProgress
 
-                    gunRecoil = Lerp(FrameTime() * 15, gunRecoil or 0, ply:GetActiveWeapon():GetNW2Float("lrp-handRecoil") * (wep.Sight == 'revolver' and 0.5 or 0.05))
+                    gunRecoil = Lerp(FrameTime() * 20, gunRecoil or 0, ply:GetActiveWeapon():GetNW2Float("lrp-handRecoil") * (wep.Sight == 'revolver' and 0.5 or 0.05))
                     
                     local worldVector, worldAngle = LocalToWorld(Vector(wep.AimPos.x, wep.AimPos.y, wep.AimPos.z + wep.AimPos.z * gunRecoil * 0.5), Angle(wep:GetShootAng().p - (not wep.SightPos and (wep:GetShootAng().p * gunRecoil * 5) or 0), wep:GetShootAng().y, wep:GetShootAng().r), hand.Pos, smoothHandAng)
                     local easedProgress = inOutQuad(aimProgress, 0, 1, 1)
@@ -175,7 +175,7 @@ hook.Add("PostDrawTranslucentRenderables", 'lrp-view.cross', function()
     --local hand = ply:GetAttachment(ply:LookupAttachment("anim_attachment_rh"))
 
     local pos, aim
-    if wep.Base == 'localrp_gun_base' then
+    if wep.Base == 'localrp_gun_base' or wep:GetClass() == 'lrp_stungun' then
         pos, aim = wep:GetShootPos()
     elseif wep.DrawCrosshair or IsWepBlacklisted(hl2wep) then
         pos, aim = ply:GetShootPos(), ply:EyeAngles():Forward() --eye.Pos
@@ -204,7 +204,7 @@ hook.Add("PostDrawTranslucentRenderables", 'lrp-view.cross', function()
         surface.SetDrawColor(clr_r, clr_g, clr_b, 225)
         surface.SetMaterial(hand_mat)
         surface.DrawTexturedRect(-45, -45, 75, 75)
-    elseif (wep.Base == 'localrp_gun_base' and not handview and wep:GetReady()) or wep.DrawCrosshair or IsWepBlacklisted(hl2wep) then
+    elseif (wep.Base == 'localrp_gun_base' and not handview and wep:GetReady()) or wep.DrawCrosshair or IsWepBlacklisted(hl2wep) or (wep:GetClass() == 'lrp_stungun' and wep:GetReady()) then
         surface.SetDrawColor(clr_r, clr_g, clr_b, 225)
         surface.SetMaterial(crosshair_mat)
         surface.DrawTexturedRect(-32, -32, 64, 64)

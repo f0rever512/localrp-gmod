@@ -2,6 +2,7 @@ STUNGUN = {}
 
 include("config.lua")
 
+SWEP.Base = 'weapon_base'
 SWEP.Instructions = 'ПКМ + ЛКМ - Выстрелить'
 SWEP.Category = 'LocalRP - Special'
 SWEP.Passive = 'normal'
@@ -29,9 +30,6 @@ SWEP.Secondary.Ammo = "none"
 
 SWEP.Uncharging = false
 SWEP.Range = 200
-SWEP.AimPos = Vector(-13, 0.9, 4.1)
-SWEP.AimAng = Angle(-2.5, -0.65, -10)
-SWEP.LRPGuns = true
 
 function SWEP:SetupDataTables()
     self:NetworkVar('Bool', 0, 'Ready')
@@ -242,14 +240,4 @@ hook.Add("StartCommand", "Tazer", function(ply, cmd)
 	cmd:RemoveKey(IN_USE)
 	cmd:RemoveKey(IN_DUCK)
 	cmd:RemoveKey(IN_JUMP)
-end)
-
-hook.Add('CreateMove', 'lrp-stungun.createmove', function(cmd)
-	local wp = LocalPlayer():GetActiveWeapon()
-	if not IsValid(wp) then return end
-	if wp:GetClass() == 'lrp_stungun' and wp:GetVar('Ready') then
-		cmd:RemoveKey(IN_SPEED)
-		cmd:RemoveKey(IN_JUMP)
-		cmd:RemoveKey(IN_USE)
-	end
 end)

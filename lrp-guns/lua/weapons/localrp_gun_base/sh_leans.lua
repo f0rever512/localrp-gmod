@@ -316,25 +316,24 @@ hook.Add("CalcViewModelView", "TFALeanCalcVMView", LeanCalcVMView)
 
 hook.Add( "PlayerButtonDown", 'lrp-guns.leanbtndown', function(ply, button)
 	local wep = ply:GetActiveWeapon()
-    if ply:Alive() and not wep.Base == 'localrp_gun_base' then return end
-
 	if button ~= KEY_Q and button ~= KEY_E then return end
 
-	if ply:KeyDown(IN_ATTACK2) and not wep:GetReloading() then
-		targ = (button == KEY_Q and -1 or (button == KEY_E and 1 or 0))
+	if wep.Base == 'localrp_gun_base' then
+		if ply:KeyDown(IN_ATTACK2) and not wep:GetReloading() then
+			targ = (button == KEY_Q and -1 or (button == KEY_E and 1 or 0))
 
-		ply:SetNW2Int("TFALean", targ)
-	end
-	if SERVER then
-		for _, v in ipairs(player.GetAll()) do
-			v.TFALean = Lerp(FrameTime() * 10, v.TFALean or 0, v:GetNW2Int("TFALean")) --unpredicted lean which gets synched with our predicted lean status
+			ply:SetNW2Int("TFALean", targ)
+		end
+		if SERVER then
+			for _, v in ipairs(player.GetAll()) do
+				v.TFALean = Lerp(FrameTime() * 10, v.TFALean or 0, v:GetNW2Int("TFALean")) --unpredicted lean which gets synched with our predicted lean status
+			end
 		end
 	end
 end)
 
 hook.Add("PlayerButtonUp", 'lrp-guns.leanbtnup', function(ply, button)
 	local wep = ply:GetActiveWeapon()
-    if not wep.Base == 'localrp_gun_base' then return end
 	if button ~= KEY_Q and button ~= KEY_E then return end
 
 	if button == KEY_Q or button == KEY_E then

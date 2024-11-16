@@ -302,3 +302,12 @@ net.Receive("tazerondrop",function()
 	local swep = net.ReadEntity()
 	swep:OnDrop()
 end)
+
+hook.Add('CreateMove', 'lrp-stungun.createmove', function(cmd)
+	local wep = LocalPlayer():GetActiveWeapon()
+	if IsValid(wep) and wep:GetClass() == 'lrp_stungun' and wep:GetReady() then
+		cmd:RemoveKey(IN_SPEED)
+		cmd:RemoveKey(IN_JUMP)
+		cmd:RemoveKey(IN_USE)
+	end
+end)
