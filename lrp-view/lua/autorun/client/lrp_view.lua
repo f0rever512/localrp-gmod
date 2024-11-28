@@ -89,7 +89,7 @@ hook.Add("CalcView", 'lrp-view', function(ply, pos, angles, fov)
         angles = ang,
         fov = fov,
         drawviewer = true,
-        znear = handview and 1 or 2
+        znear = (wep.Base == 'localrp_gun_base' and wep:GetReady() and handview) and 1.5 or 3
     }
     return view
 end)
