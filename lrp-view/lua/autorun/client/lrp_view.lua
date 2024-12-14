@@ -29,7 +29,7 @@ end
 local function CanViewWork()
     local ply = LocalPlayer()
     local eye = ply:GetAttachment(ply:LookupAttachment("eyes"))
-    return not ply or not IsValid(ply) or not eye or ply:GetViewEntity() ~= ply or IsValid(ply:GetNW2Entity('playerRagdollEntity')) or IsWepBlacklisted(blackList) or GetConVarNumber("lrp_view") == 0
+    return not ply or not IsValid(ply) or not eye or ply:GetViewEntity() ~= ply or IsValid(ply:GetNW2Entity('playerRagdollEntity')) or IsValid(ply:GetNWEntity("tazerviewrag")) or IsWepBlacklisted(blackList) or GetConVarNumber("lrp_view") == 0
 end
 
 hook.Add("CalcView", 'lrp-view', function(ply, pos, angles, fov)
