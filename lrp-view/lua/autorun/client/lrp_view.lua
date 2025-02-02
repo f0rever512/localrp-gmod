@@ -50,12 +50,6 @@ hook.Add("CalcView", 'lrp-view', function(ply, pos, angles, fov)
             ply:ManipulateBoneScale(head, Vector(0.01, 0.01, 0.01))
             if wep.Base == 'localrp_gun_base' then
                 local hand = ply:GetAttachment(ply:LookupAttachment("anim_attachment_rh"))
-                if ply:GetNW2Int("TFALean") == 0 then
-                    smoothHandAng = LerpAngle(0.5, smoothHandAng or hand.Ang, hand.Ang)
-                else
-                    smoothHandAng = hand.Ang
-                end
-
                 if hand then
                     local animIn = handview and wep:GetHoldType() == wep.Sight and wep:GetReady()
                     local aimProgress = math.Approach(wep.aimProgress or 0, animIn and 1 or 0, FrameTime() * (animIn and 1.25 or 2.5))
@@ -64,7 +58,7 @@ hook.Add("CalcView", 'lrp-view', function(ply, pos, angles, fov)
                     visualRecoil = Lerp(FrameTime() * 10, visualRecoil or 0, wep.visualRecoil or 0)
                     local aimPos = Vector(wep.AimPos.x, wep.AimPos.y, wep.AimPos.z + wep.AimPos.z * visualRecoil / 5)
                     local aimAng = Angle(wep:GetShootAng().p - (not wep.SightPos and (wep:GetShootAng().p * visualRecoil * 2.5) or 0), wep:GetShootAng().y, wep:GetShootAng().r)
-                    local worldVector, worldAngle = LocalToWorld(aimPos, aimAng, hand.Pos, smoothHandAng)
+                    local worldVector, worldAngle = LocalToWorld(aimPos, aimAng, hand.Pos, hand.Ang)
                     local easedProgress = inOutQuad(aimProgress, 0, 1, 1)
                     pos = LerpVector(easedProgress, pos, worldVector)
                     ang = LerpAngle(easedProgress, angles, worldAngle)
