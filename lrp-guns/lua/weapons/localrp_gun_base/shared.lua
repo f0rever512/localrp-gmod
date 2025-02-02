@@ -79,12 +79,9 @@ function SWEP:Holster()
     self:SetReady(false)
     self:SetReloading(false)
     self.aimProgress = 0
+    self.visualRecoil = 0
     ply:SetNW2Int("TFALean", 0)
-
-	ply:ManipulateBonePosition(ply:LookupBone("ValveBiped.Bip01_R_Clavicle"), Vector(0, 0, 0), true)
-    ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Clavicle"), Angle(0, 0, 0), true)
-    ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Finger1"), Angle(0, 0, 0), true)
-	ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Hand"), Angle(0, 0, 0), true)
+	ply:ManipulateBoneAngles(ply:LookupBone('ValveBiped.Bip01_R_Hand'), Angle(0, 0, 0))
     return true
 end
 
@@ -218,7 +215,7 @@ function SWEP:PrimaryAttack()
         self:TakePrimaryAmmo(1)
         self.visualRecoil = (self.visualRecoil or 0) + self.HandRecoil / (self.Sight == 'revolver' and 1 or 5)
 
-        local recoilCoef = ply:IsListenServerHost() and 2 or 6
+        local recoilCoef = ply:IsListenServerHost() and 1.5 or 5
         local recoilAngle = Angle(math.Rand(-self.VerticalRecoil, -self.VerticalRecoil + 2) / 3, math.Rand(-self.HorizontalRecoil, self.HorizontalRecoil) * 4, 0)
         if CLIENT then
             local ang = ply:EyeAngles()
@@ -303,7 +300,7 @@ function SWEP:StartRecoilRestore(ply, bone)
 end
 
 function SWEP:FireAnimationEvent( pos, ang, event, options )
-    -- Disables animation based muzzle event
+    -- Disable animation based muzzle event
 	if event == 21 then return true end
     -- Disable thirdperson muzzle flash
 	if event == 5003 then return true end
