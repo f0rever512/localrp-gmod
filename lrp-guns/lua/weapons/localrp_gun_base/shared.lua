@@ -185,6 +185,7 @@ function SWEP:Think()
     if self:GetNW2Float("lrp-handRecoil") ~= 0 then
         self:Recoil()
     end
+    self.visualRecoil = Lerp(FrameTime() * 10, self.visualRecoil or 0, 0)
 
     local ply = self:GetOwner()
 	if ply:KeyReleased( IN_ATTACK2 ) or self:GetReloading() then
@@ -226,18 +227,40 @@ function SWEP:PrimaryAttack()
         self:EmitSound(self.Primary.Sound, self.Silent and 75 or 80)
         self:ShotBullet(self.Primary.Damage, self.Primary.NumShots, self.Primary.Spread)
         self:TakePrimaryAmmo(1)
+        self.visualRecoil = (self.visualRecoil or 0) + self.HandRecoil / (self.Sight == 'revolver' and 1 or 5)
 
-        verticalRecoil = math.random(self.VerticalRecoil, self.VerticalRecoil + 2)
-        horizontalRecoil = math.random(-self.HorizontalRecoil, self.HorizontalRecoil)
-        self:SetNW2Float("lrp-handRecoil", self:GetNW2Float("lrp-handRecoil") + self.HandRecoil)
+        local recoilCoef = ply:IsListenServerHost() and 2 or 6
+        local recoilAngle = Angle(math.Rand(-self.VerticalRecoil, -self.VerticalRecoil + 2) / 3, math.Rand(-self.HorizontalRecoil, self.HorizontalRecoil) * 4, 0)
+        if CLIENT then
+            local ang = ply:EyeAngles()
+            ang.p = ang.p + (recoilAngle.p / recoilCoef)
+            ang.y = ang.y + (recoilAngle.y / recoilCoef)
+            ply:SetEyeAngles(ang)
+        else
+        	ply:ViewPunch(recoilAngle)
+        end
+        
+        self:Recoil()
 
-        local recoilAngle = Angle(-verticalRecoil / 5, -horizontalRecoil / 2, 0)
-        ply:ViewPunch(recoilAngle)
+        -- local anglo1 = Angle(math.Rand(-self.VerticalRecoil, self.VerticalRecoil) / 3, math.Rand(-self.HorizontalRecoil, self.HorizontalRecoil) * 4, 0)
+        -- self.Owner:ViewPunch(Angle(1, 0, 0))
+        -- print(anglo1)
 
-        local eyes = ply:EyeAngles()
-        eyes.pitch = eyes.pitch + (recoilAngle.pitch / 3)
-        eyes.yaw = eyes.yaw + (recoilAngle.yaw / 3)
-        ply:SetEyeAngles(eyes)
+        -- if SERVER and game.SinglePlayer() and not self.Owner:IsNPC() then
+        --     local offlineeyes = self.Owner:EyeAngles()
+        --     offlineeyes.pitch = offlineeyes.pitch + anglo1.pitch
+        --     offlineeyes.yaw = offlineeyes.yaw + anglo1.yaw
+        --     self.Owner:SetEyeAngles(offlineeyes)
+        -- end
+
+        -- if CLIENT and not game.SinglePlayer() and not self.Owner:IsNPC() then
+        --     -- local anglo = Angle(math.Rand(-self.VerticalRecoil, -self.VerticalRecoil) / 3, math.Rand(-self.HorizontalRecoil, self.HorizontalRecoil), 0)
+        --     local anglo = Angle(math.Rand(-self.VerticalRecoil, self.VerticalRecoil) / 3, math.Rand(-self.HorizontalRecoil, self.HorizontalRecoil) * 4, 0)
+        --     local eyes = self.Owner:EyeAngles()
+        --     eyes.pitch = eyes.pitch + (anglo.pitch / 3)
+        --     eyes.yaw = eyes.yaw + (anglo.yaw / 3)
+        --     self.Owner:SetEyeAngles(eyes)
+        -- end
     end
 end
 
@@ -253,12 +276,69 @@ function SWEP:MuzzleFlashCustom()
 	util.Effect('MuzzleFlash', effectData)
 end
 
+function SWEP:Recoil()
+    local ply = self:GetOwner()
+    if not IsValid(ply) then return end
+
+    if timer.Exists('smoothRecoil_' .. ply:SteamID()) then return end
+
+    local bone = ply:LookupBone('ValveBiped.Bip01_R_Hand')
+    if not bone then return end
+
+    local handRecoilAngle = Angle(self.HandRecoil * 6, 0, 0)
+    local steps = 4
+    local interval = 0.01
+    local incAngle = Angle(
+        handRecoilAngle.p / steps,
+        handRecoilAngle.y / steps,
+        handRecoilAngle.r / steps
+    )
+
+    timer.Remove('smoothRecoil_' .. ply:SteamID())
+
+    local currentStep = 0
+    timer.Create('smoothRecoil_' .. ply:SteamID(), interval, steps, function()
+        if not IsValid(ply) then return end
+        currentStep = currentStep + 1
+        local curAngle = ply:GetManipulateBoneAngles(bone) or Angle(0, 0, 0)
+        ply:ManipulateBoneAngles(bone, curAngle + incAngle)
+        -- after last step start recoil restore
+        if currentStep == steps then
+            self:StartRecoilRestore(ply, bone)
+        end
+    end)
+end
+
+function SWEP:StartRecoilRestore(ply, bone)
+    timer.Remove('recoilRestore_' .. ply:SteamID())
+
+    local recoilRestoreSpeed = 5
+    timer.Create('recoilRestore_' .. ply:SteamID(), 0.01, 0, function()
+        if not IsValid(ply) then return end
+        local curAngle = ply:GetManipulateBoneAngles(bone) or Angle(0, 0, 0)
+        
+        local stepP = recoilRestoreSpeed * math.abs(curAngle.p) * 0.01
+        local stepY = recoilRestoreSpeed * math.abs(curAngle.y) * 0.01
+        local stepR = recoilRestoreSpeed * math.abs(curAngle.r) * 0.01
+
+        curAngle.p = math.Approach(curAngle.p, 0, stepP)
+        curAngle.y = math.Approach(curAngle.y, 0, stepY)
+        curAngle.r = math.Approach(curAngle.r, 0, stepR)
+        
+        ply:ManipulateBoneAngles(bone, curAngle)
+
+        if curAngle.p == 0 and curAngle.y == 0 and curAngle.r == 0 then
+            timer.Remove('recoilRestore_' .. ply:SteamID())
+        end
+    end)
+end
+
 verticalRecoil = verticalRecoil or 0
 horizontalRecoil = horizontalRecoil or 0
-function SWEP:Recoil()
+function SWEP:Recoil1()
 	self.animProg = self:GetNW2Float("lrp-handRecoil") or 0
 	self.animLerp = self.animLerp or Angle(0, 0, 0)
-	self.animLerp = LerpAngle(0.25, self.animLerp, Angle(verticalRecoil, horizontalRecoil, (self.Sight == 'revolver' or self.Sight == 'pistol') and 0 or -2) * self.animProg)
+	self.animLerp = LerpAngle(FrameTime() * 10, self.animLerp, Angle(self.VerticalRecoil, horizontalRecoil, (self.Sight == 'revolver' or self.Sight == 'pistol') and 0 or -2) * self.animProg)
 	
     local ply = self:GetOwner()
 	if self:GetNW2Float("lrp-handRecoil") > 0 then
@@ -269,7 +349,7 @@ function SWEP:Recoil()
         ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Finger1"), LerpAngle(1, self.animLerp, Angle(0, -20, (self.Sight == 'revolver' or self.Sight == 'pistol') and 10 or -2) * math.min(self.animProg, 0.5)), false)
 		ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Hand"), self.animLerp * 2, false)
 
-		self:SetNW2Float("lrp-handRecoil", Lerp(FrameTime() * 8, self:GetNW2Float("lrp-handRecoil") or 0, 0))
+		self:SetNW2Float("lrp-handRecoil", Lerp(FrameTime() * 10, self:GetNW2Float("lrp-handRecoil") or 0, 0))
 
         if self:GetNW2Float("lrp-handRecoil") <= 0.01 then
             self:SetNW2Float("lrp-handRecoil", 0)
@@ -302,10 +382,7 @@ function SWEP:ShotBullet(dmg, numbul, cone)
 
     self:GetOwner():FireBullets(bullet)
     self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
-
-    -- if GetConVar('sv_lrp_oldshoot'):GetInt() == 1 then
-    --     self:GetOwner():SetAnimation(PLAYER_ATTACK1)
-    -- end
+    -- self:GetOwner():SetAnimation(PLAYER_ATTACK1)
 end
 
 hook.Add('SetupMove', 'lrp-guns.setupmove', function(ply, mv)
