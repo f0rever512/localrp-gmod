@@ -31,17 +31,6 @@ SWEP.ClipoutSound = ''
 SWEP.ClipinSound = ''
 SWEP.SlideSound = ''
 
--- GetConVar('sv_lrp_oldshoot'):GetInt() == 1
--- local oldShooting = false
--- net.Receive('lrp-oldShooting', function()
---     local int = net.ReadInt(3)
---     if int == 1 then
---         oldShooting = true
---     else
---         oldShooting = false
---     end
--- end)
-
 local barrelAngles = {
     _default = {Vector(10, .65, 3.5), Angle(-2, 5, 0)},
    	revolver = {Vector(8, .45, 4), Angle(-2, 5, 0)},
@@ -241,26 +230,6 @@ function SWEP:PrimaryAttack()
         end
         
         self:Recoil()
-
-        -- local anglo1 = Angle(math.Rand(-self.VerticalRecoil, self.VerticalRecoil) / 3, math.Rand(-self.HorizontalRecoil, self.HorizontalRecoil) * 4, 0)
-        -- self.Owner:ViewPunch(Angle(1, 0, 0))
-        -- print(anglo1)
-
-        -- if SERVER and game.SinglePlayer() and not self.Owner:IsNPC() then
-        --     local offlineeyes = self.Owner:EyeAngles()
-        --     offlineeyes.pitch = offlineeyes.pitch + anglo1.pitch
-        --     offlineeyes.yaw = offlineeyes.yaw + anglo1.yaw
-        --     self.Owner:SetEyeAngles(offlineeyes)
-        -- end
-
-        -- if CLIENT and not game.SinglePlayer() and not self.Owner:IsNPC() then
-        --     -- local anglo = Angle(math.Rand(-self.VerticalRecoil, -self.VerticalRecoil) / 3, math.Rand(-self.HorizontalRecoil, self.HorizontalRecoil), 0)
-        --     local anglo = Angle(math.Rand(-self.VerticalRecoil, self.VerticalRecoil) / 3, math.Rand(-self.HorizontalRecoil, self.HorizontalRecoil) * 4, 0)
-        --     local eyes = self.Owner:EyeAngles()
-        --     eyes.pitch = eyes.pitch + (anglo.pitch / 3)
-        --     eyes.yaw = eyes.yaw + (anglo.yaw / 3)
-        --     self.Owner:SetEyeAngles(eyes)
-        -- end
     end
 end
 
@@ -331,30 +300,6 @@ function SWEP:StartRecoilRestore(ply, bone)
             timer.Remove('recoilRestore_' .. ply:SteamID())
         end
     end)
-end
-
-verticalRecoil = verticalRecoil or 0
-horizontalRecoil = horizontalRecoil or 0
-function SWEP:Recoil1()
-	self.animProg = self:GetNW2Float("lrp-handRecoil") or 0
-	self.animLerp = self.animLerp or Angle(0, 0, 0)
-	self.animLerp = LerpAngle(FrameTime() * 10, self.animLerp, Angle(self.VerticalRecoil, horizontalRecoil, (self.Sight == 'revolver' or self.Sight == 'pistol') and 0 or -2) * self.animProg)
-	
-    local ply = self:GetOwner()
-	if self:GetNW2Float("lrp-handRecoil") > 0 then
-		if self.Sight ~= "revolver" and self.Sight ~= 'pistol' then
-			ply:ManipulateBonePosition(ply:LookupBone("ValveBiped.Bip01_R_Clavicle"), Vector(0, -self.animLerp.x / 3, -self.animLerp.x / 3), false)
-			ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Clavicle"), Angle(0, 0, -self.animLerp.x), false)
-		end
-        ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Finger1"), LerpAngle(1, self.animLerp, Angle(0, -20, (self.Sight == 'revolver' or self.Sight == 'pistol') and 10 or -2) * math.min(self.animProg, 0.5)), false)
-		ply:ManipulateBoneAngles(ply:LookupBone("ValveBiped.Bip01_R_Hand"), self.animLerp * 2, false)
-
-		self:SetNW2Float("lrp-handRecoil", Lerp(FrameTime() * 10, self:GetNW2Float("lrp-handRecoil") or 0, 0))
-
-        if self:GetNW2Float("lrp-handRecoil") <= 0.01 then
-            self:SetNW2Float("lrp-handRecoil", 0)
-        end
-	end
 end
 
 function SWEP:FireAnimationEvent( pos, ang, event, options )
