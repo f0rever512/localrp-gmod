@@ -8,7 +8,7 @@ SWEP.SlotPos = 1
 SWEP.WorldModel = 'models/weapons/w_smg_tmp.mdl'
 
 SWEP.Primary.Sound = Sound( 'weapons/tmp/tmp-1.wav' )
-SWEP.Primary.Damage = 16
+SWEP.Primary.Damage = 17
 SWEP.Primary.RPM = 1100
 SWEP.Primary.ClipSize = 20
 SWEP.Primary.DefaultClip = 0
@@ -18,7 +18,7 @@ SWEP.Passive = 'passive'
 SWEP.Sight = 'ar2'
 
 SWEP.HandRecoil = 0.5
-SWEP.VerticalRecoil = 5
+SWEP.VerticalRecoil = 5.5
 SWEP.HorizontalRecoil = 0.25
 
 SWEP.Silent = true

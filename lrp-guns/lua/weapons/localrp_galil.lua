@@ -8,7 +8,7 @@ SWEP.SlotPos = 1
 SWEP.WorldModel = 'models/weapons/w_rif_galil.mdl'
 
 SWEP.Primary.Sound = Sound( 'weapons/galil/galil-1.wav' )
-SWEP.Primary.Damage = 21
+SWEP.Primary.Damage = 22
 SWEP.Primary.RPM = 800
 SWEP.Primary.ClipSize = 35
 SWEP.Primary.DefaultClip = 0
@@ -17,9 +17,9 @@ SWEP.Primary.Ammo = 'ammo_large'
 SWEP.Passive = 'passive'
 SWEP.Sight = 'ar2'
 
-SWEP.HandRecoil = 1
+SWEP.HandRecoil = 0.65
 SWEP.VerticalRecoil = 5
-SWEP.HorizontalRecoil = 0.5
+SWEP.HorizontalRecoil = 0.3
 
 SWEP.ReloadTime = 2.2
 

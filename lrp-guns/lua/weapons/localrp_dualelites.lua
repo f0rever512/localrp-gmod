@@ -18,9 +18,9 @@ SWEP.Primary.Automatic = false
 SWEP.Passive = 'normal'
 SWEP.Sight = 'duel'
 
-SWEP.HandRecoil = 1.1
-SWEP.VerticalRecoil = 5
-SWEP.HorizontalRecoil = 1
+SWEP.HandRecoil = 1
+SWEP.VerticalRecoil = 4.5
+SWEP.HorizontalRecoil = 0.8
 
 SWEP.ReloadTime = 2.9
 

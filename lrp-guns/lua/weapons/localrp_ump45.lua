@@ -8,7 +8,7 @@ SWEP.SlotPos = 1
 SWEP.WorldModel = 'models/weapons/w_smg_ump45.mdl'
 
 SWEP.Primary.Sound = Sound( 'weapons/ump45/ump45-1.wav' )
-SWEP.Primary.Damage = 18
+SWEP.Primary.Damage = 19
 SWEP.Primary.RPM = 800
 SWEP.Primary.ClipSize = 25
 SWEP.Primary.DefaultClip = 0
@@ -17,7 +17,7 @@ SWEP.Primary.Ammo = 'ammo_small'
 SWEP.Passive = 'passive'
 SWEP.Sight = 'smg'
 
-SWEP.HandRecoil = 0.6
+SWEP.HandRecoil = 0.5
 SWEP.VerticalRecoil = 5
 SWEP.HorizontalRecoil = 0.3
 

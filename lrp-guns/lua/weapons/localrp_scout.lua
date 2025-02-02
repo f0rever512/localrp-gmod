@@ -20,7 +20,7 @@ SWEP.Sight = 'ar2'
 
 SWEP.HandRecoil = 2.2
 SWEP.VerticalRecoil = 6
-SWEP.HorizontalRecoil = 1
+SWEP.HorizontalRecoil = 1.3
 
 SWEP.ReloadTime = 2.4
 

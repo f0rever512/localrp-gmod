@@ -18,7 +18,7 @@ SWEP.Passive = 'passive'
 SWEP.Sight = 'ar2'
 
 SWEP.HandRecoil = 0.4
-SWEP.VerticalRecoil = 6
+SWEP.VerticalRecoil = 3.5
 SWEP.HorizontalRecoil = 0.2
 
 SWEP.Silent = true

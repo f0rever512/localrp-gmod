@@ -12,14 +12,15 @@ SWEP.Primary.Damage = 20
 SWEP.Primary.RPM = 950
 SWEP.Primary.ClipSize = 30
 SWEP.Primary.DefaultClip = 0
+SWEP.Primary.Spread = 0.02
 SWEP.Primary.Ammo = 'ammo_small'
 
 SWEP.Passive = 'normal'
 SWEP.Sight = 'pistol'
 
-SWEP.HandRecoil = 0.8
-SWEP.VerticalRecoil = 3
-SWEP.HorizontalRecoil = 0.1
+SWEP.HandRecoil = 0.7
+SWEP.VerticalRecoil = 4.5
+SWEP.HorizontalRecoil = 0.3
 
 SWEP.ReloadTime = 1.5
 

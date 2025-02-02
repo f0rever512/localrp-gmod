@@ -17,9 +17,9 @@ SWEP.Primary.Ammo = 'ammo_large'
 SWEP.Passive = 'passive'
 SWEP.Sight = 'ar2'
 
-SWEP.HandRecoil = 0.7
+SWEP.HandRecoil = 0.65
 SWEP.VerticalRecoil = 5
-SWEP.HorizontalRecoil = 0.2
+SWEP.HorizontalRecoil = 0.25
 
 SWEP.ReloadTime = 2.2
 

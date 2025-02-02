@@ -19,8 +19,8 @@ SWEP.Passive = 'normal'
 SWEP.Sight = 'revolver'
 
 SWEP.HandRecoil = 0.6
-SWEP.VerticalRecoil = 5
-SWEP.HorizontalRecoil = 0.45
+SWEP.VerticalRecoil = 5.5
+SWEP.HorizontalRecoil = 0.2
 
 SWEP.ReloadTime = 2.4
 
