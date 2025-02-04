@@ -54,6 +54,7 @@ end
 function SWEP:Deploy()
     self:SetReady(false)
     self:SetReloading(false)
+    self.visualRecoil = 0
     return true
 end
 
@@ -168,9 +169,6 @@ function SWEP:GunReloading()
 end
 
 function SWEP:Think()
-    if self:GetNW2Float("lrp-handRecoil") ~= 0 then
-        self:Recoil()
-    end
     self.visualRecoil = Lerp(FrameTime() * 10, self.visualRecoil or 0, 0)
 
     local ply = self:GetOwner()
@@ -226,7 +224,7 @@ function SWEP:PrimaryAttack()
         	ply:ViewPunch(recoilAngle)
         end
         
-        self:Recoil()
+        self:HandRecoil()
     end
 end
 
@@ -242,7 +240,7 @@ function SWEP:MuzzleFlashCustom()
 	util.Effect('MuzzleFlash', effectData)
 end
 
-function SWEP:Recoil()
+function SWEP:HandRecoil()
     local ply = self:GetOwner()
     if not IsValid(ply) then return end
 
