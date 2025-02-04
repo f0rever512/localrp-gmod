@@ -224,7 +224,7 @@ function SWEP:PrimaryAttack()
         	ply:ViewPunch(recoilAngle)
         end
         
-        self:HandRecoil()
+        self:BoneRecoil()
     end
 end
 
@@ -240,7 +240,7 @@ function SWEP:MuzzleFlashCustom()
 	util.Effect('MuzzleFlash', effectData)
 end
 
-function SWEP:HandRecoil()
+function SWEP:BoneRecoil()
     local ply = self:GetOwner()
     if not IsValid(ply) then return end
 
