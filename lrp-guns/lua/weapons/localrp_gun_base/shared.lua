@@ -169,7 +169,9 @@ function SWEP:GunReloading()
 end
 
 function SWEP:Think()
-    self.visualRecoil = Lerp(FrameTime() * 10, self.visualRecoil or 0, 0)
+    if CLIENT then
+        self.visualRecoil = Lerp(FrameTime() * 10, self.visualRecoil or 0, 0)
+    end
 
     local ply = self:GetOwner()
 	if ply:KeyReleased( IN_ATTACK2 ) or self:GetReloading() then
@@ -211,9 +213,11 @@ function SWEP:PrimaryAttack()
         self:EmitSound(self.Primary.Sound, self.Silent and 75 or 80)
         self:ShotBullet(self.Primary.Damage, self.Primary.NumShots, self.Primary.Spread)
         self:TakePrimaryAmmo(1)
-        self.visualRecoil = (self.visualRecoil or 0) + self.HandRecoil / (self.Sight == 'revolver' and 1 or 5)
+        if CLIENT then
+            self.visualRecoil = (self.visualRecoil or 0) + self.HandRecoil / (self.Sight == 'revolver' and 1 or 5)
+        end
 
-        local recoilCoef = ply:IsListenServerHost() and 1.5 or 5
+        local recoilCoef = ply:IsListenServerHost() and 3 or 10
         local recoilAngle = Angle(math.Rand(-self.VerticalRecoil, -self.VerticalRecoil + 2) / 3, math.Rand(-self.HorizontalRecoil, self.HorizontalRecoil) * 4, 0)
         if CLIENT then
             local ang = ply:EyeAngles()
@@ -250,7 +254,7 @@ function SWEP:BoneRecoil()
     if not bone then return end
 
     local handRecoilAngle = Angle(self.HandRecoil * 6, 0, 0)
-    local steps = 4
+    local steps = 3
     local interval = 0.01
     local incAngle = Angle(
         handRecoilAngle.p / steps,
@@ -281,9 +285,9 @@ function SWEP:StartRecoilRestore(ply, bone)
         if not IsValid(ply) then return end
         local curAngle = ply:GetManipulateBoneAngles(bone) or Angle(0, 0, 0)
         
-        local stepP = recoilRestoreSpeed * math.abs(curAngle.p) * 0.01
-        local stepY = recoilRestoreSpeed * math.abs(curAngle.y) * 0.01
-        local stepR = recoilRestoreSpeed * math.abs(curAngle.r) * 0.01
+        local stepP = recoilRestoreSpeed * math.abs(curAngle.p) * FrameTime()
+        local stepY = recoilRestoreSpeed * math.abs(curAngle.y) * FrameTime()
+        local stepR = recoilRestoreSpeed * math.abs(curAngle.r) * FrameTime()
 
         curAngle.p = math.Approach(curAngle.p, 0, stepP)
         curAngle.y = math.Approach(curAngle.y, 0, stepY)

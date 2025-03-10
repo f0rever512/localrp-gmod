@@ -55,7 +55,9 @@ hook.Add("CalcView", 'lrp-view', function(ply, pos, angles, fov)
                     local aimProgress = math.Approach(wep.aimProgress or 0, animIn and 1 or 0, FrameTime() * (animIn and 1.25 or 2.5))
                     wep.aimProgress = aimProgress
 
-                    visualRecoil = Lerp(FrameTime() * 10, visualRecoil or 0, wep.visualRecoil or 0)
+                    local recoilCoef = ply:IsListenServerHost() and 10 or 5
+                    visualRecoil = Lerp(FrameTime() * recoilCoef, visualRecoil or 0, wep.visualRecoil or 0)
+                    
                     local aimPos = Vector(wep.AimPos.x, wep.AimPos.y, wep.AimPos.z + wep.AimPos.z * visualRecoil / 5)
                     local aimAng = Angle(wep:GetShootAng().p - (not wep.SightPos and (wep:GetShootAng().p * visualRecoil * 2.5) or 0), wep:GetShootAng().y, wep:GetShootAng().r)
                     local worldVector, worldAngle = LocalToWorld(aimPos, aimAng, hand.Pos, hand.Ang)
