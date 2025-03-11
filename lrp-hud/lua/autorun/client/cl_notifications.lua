@@ -33,12 +33,12 @@ local LoadingIcon = Material( "icon16/arrow_rotate_clockwise.png" )
 local Notifications = {}
 
 local function DrawNotification( x, y, w, h, text, icon, col, progress )
-	draw.RoundedBoxEx( 16, x, y, w, h, BackgroundColor, true, true, true, true )
+	draw.RoundedBoxEx( 8, x, y, w, h, BackgroundColor, true, true, true, true )
 
 	if progress then
-		draw.RoundedBoxEx( 16, x, y, h + ( w - h ) * progress, h, col, true, false, true, false )
+		draw.RoundedBoxEx( 8, x, y, h + ( w - h ) * progress, h, col, true, false, true, false )
 	else
-		draw.RoundedBoxEx( 16, x, y, h, h, col, true, false, true, false )
+		draw.RoundedBoxEx( 8, x, y, h, h, col, true, false, true, false )
 	end
 
 	draw.SimpleText( text, "NotifyFont", x + 30 + 10, y + h / 2, ForegroundColor,
@@ -120,7 +120,7 @@ hook.Add( "HUDPaint", "DrawNotifications", function()
 	for k, v in ipairs( Notifications ) do
 		DrawNotification( math.floor( v.x ), math.floor( v.y ), v.w, v.h, v.text, v.icon, v.col, v.progress )
 
-		v.x = Lerp( FrameTime() * 10, v.x, v.time > CurTime() and ScrW() - v.w - 10 or ScrW() + 1 )
+		v.x = Lerp( FrameTime() * 10, v.x, v.time > CurTime() and ScrW() - v.w - 8 or ScrW() + 1 )
 		v.y = Lerp( FrameTime() * 10, v.y, ScreenPos - ( k - 1 ) * ( v.h + 5 ) )
 	end
 
