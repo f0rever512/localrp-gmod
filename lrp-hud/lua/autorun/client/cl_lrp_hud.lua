@@ -9,7 +9,6 @@ surface.CreateFont('lrpHud-font', {
 	extended = true
 })
 
-local barW = 236
 local animationTime = 0.5
 local startHP, startAR = 0, 0
 local oldHP, newHP, oldAR, newAR = -1, -1, -1, -1
@@ -48,12 +47,16 @@ hook.Add('HUDPaint', 'lrpHud.paint', function()
 		newAR = ar
 	end
 
-	local x = ScrW() * 0.5 - 120
-	local y = ScrH() - 30
+	local offset = 4
+	local width = ScrW() * 0.13
+	local height = ScrH() * 0.019
 
-	draw.RoundedBox(10, x, y, 240, 20, Color(0, 185, 150, 200))
-	draw.RoundedBox(10, x + 2, y + 2, ply:Health() <= 100 and (math.max( 0, smoothHP ) / maxHP * barW) or barW, 16, Color(200, 0, 0, 230))
-	draw.RoundedBox(10, x + 2, y + 2, ply:Armor() <= 100 and (math.max( 0, smoothAR ) / maxAR * barW) or barW, 16, Color(0, 70, 160, 230))
+	local posX = ScrW() * 0.5 - width / 2
+	local posY = ScrH() - height * 1.5
+
+	draw.RoundedBox(10, posX, posY, width, height, Color(0, 185, 150, 200))
+	draw.RoundedBox(10, posX + offset / 2, posY + offset / 2, ply:Health() <= 100 and (math.max( 0, smoothHP ) / maxHP * width - offset) or width - offset, height - offset, Color(200, 0, 0, 230))
+	draw.RoundedBox(10, posX + offset / 2, posY + offset / 2, ply:Armor() <= 100 and (math.max( 0, smoothAR ) / maxAR * width - offset) or width - offset, height - offset, Color(0, 70, 160, 230))
 	
 	local wep = ply:GetActiveWeapon()
 	if IsValid(wep) and (not wep.LRPGuns and GetConVar("lrp_view"):GetInt() == 1) then
@@ -61,7 +64,7 @@ hook.Add('HUDPaint', 'lrpHud.paint', function()
 		local reserve = ply:GetAmmoCount(wep:GetPrimaryAmmoType())
 
 		if ammo > 0 or reserve > 0 then
-			draw.SimpleText(ammo..' / '..reserve, 'lrpHud-font', ScrW() / 2, y + 9, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.SimpleText(ammo..' / '..reserve, 'lrpHud-font', ScrW() / 2, ScrH() - height * 1.1, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			--draw.SimpleTextOutlined(wep.Instructions, 'lrpHud-font', 10, ScrH() + 50, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM, 1, Color(0,0,0,255))
 		end
 	end
