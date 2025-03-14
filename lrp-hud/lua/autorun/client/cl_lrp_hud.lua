@@ -106,17 +106,27 @@ hook.Add("HUDPaint", "VoiceAndTextIcon", function()
 
 	if not ply:Alive() then return end
 
-	local voice_mat = Material('talkicon/voice.png')
-	local text_mat = Material('talkicon/text.png')
+	local offset = 4
+	local iconSize = ScrH() * 0.05
+
+	local posX = ScrW() * 0.5 - iconSize / 2
+	local posY = ScrH() - iconSize * (GetConVar('cl_lrp_hud_type'):GetInt() == 2 and 1.7 or 1.3)
+
+	local function paintIcon(mat)
+		surface.SetMaterial(mat)
+		surface.SetDrawColor(0, 0, 0, 100)
+		surface.DrawTexturedRect(posX - offset / 2, posY - offset / 2, iconSize + offset, iconSize + offset)
+		surface.SetDrawColor(0, 185, 150, 240)
+		surface.DrawTexturedRect(posX, posY, iconSize, iconSize)
+	end
+
+	local voiceMat = Material('talkicon/voice.png')
+	local textMat = Material('talkicon/text.png')
 	
 	if ply:IsSpeaking() then
-		surface.SetMaterial(voice_mat)
-		surface.SetDrawColor( 0, 185, 150, 220 )
-		surface.DrawTexturedRect( ScrW() * .5 - 24, ScrH() - 80, 48, 48)
+		paintIcon(voiceMat)
 	elseif ply:GetNW2Bool('ti_istyping') then
-		surface.SetMaterial(text_mat)
-		surface.SetDrawColor( 0, 185, 150, 220 )
-		surface.DrawTexturedRect( ScrW() * .5 - 24, ScrH() - 80, 48, 56)
+		paintIcon(textMat)
 	end
 end)
 
