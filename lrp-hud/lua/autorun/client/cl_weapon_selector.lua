@@ -23,18 +23,6 @@ local lastAction = -math.huge
 local loadout = {}
 local slide = {}
 
--- local newinv
--- hook.Add("CreateMove", "lrpSelector.createMove", function(cmd)
--- 	if newinv then
--- 		local wep = LocalPlayer():GetWeapon(newinv)
--- 		if wep:IsValid() and LocalPlayer():GetActiveWeapon() ~= wep then
--- 			cmd:SelectWeapon(wep)
--- 		else
--- 			newinv = nil
--- 		end
--- 	end
--- end)
-
 local CWeapons = {}
 for _, y in pairs(file.Find("scripts/weapon_*.txt", "MOD")) do
 	local t = util.KeyValuesToTable(file.Read("scripts/" .. y, "MOD"))
@@ -128,13 +116,15 @@ hook.Add("PlayerBindPress", 'lrpSelector.bind', function(ply, bind, pressed)
 		end
 
 		if GetConVar("hud_fastswitch"):GetInt() > 0 then
-			newinv = loadout[curTab][curSlot].classname
+			if ply:GetActiveWeapon() and loadout[curTab][curSlot] then
+				RunConsoleCommand('use', loadout[curTab][curSlot].classname)
+			end
 		else
 			alpha = 1
 			lastAction = RealTime()
 		end
 
-		surface.PlaySound(GetConVar('hud_fastswitch'):GetInt() == 0 and soundSwitch or soundSelect)
+		surface.PlaySound(GetConVar("hud_fastswitch"):GetInt() == 1 and soundSelect or soundSwitch)
 
 		return true
 	elseif bind:find("invnext", nil, true) and not (ply:GetActiveWeapon():IsValid() and ply:GetActiveWeapon():GetClass() == "weapon_physgun" and ply:KeyDown(IN_ATTACK)) then
@@ -157,13 +147,15 @@ hook.Add("PlayerBindPress", 'lrpSelector.bind', function(ply, bind, pressed)
 		end
 
 		if GetConVar("hud_fastswitch"):GetInt() > 0 then
-			newinv = loadout[curTab][curSlot].classname
-			surface.PlaySound(soundSelect)
+			if ply:GetActiveWeapon() and loadout[curTab][curSlot] then
+				RunConsoleCommand('use', loadout[curTab][curSlot].classname)
+			end
 		else
 			lastAction = RealTime()
 			alpha = 1
-			surface.PlaySound(soundSwitch)
 		end
+
+		surface.PlaySound(GetConVar("hud_fastswitch"):GetInt() == 1 and soundSelect or soundSwitch)
 
 		return true
 	elseif bind:find("invprev", nil, true) and not (ply:GetActiveWeapon():IsValid() and ply:GetActiveWeapon():GetClass() == "weapon_physgun" and ply:KeyDown(IN_ATTACK)) then
@@ -186,18 +178,22 @@ hook.Add("PlayerBindPress", 'lrpSelector.bind', function(ply, bind, pressed)
 		end
 
 		if GetConVar("hud_fastswitch"):GetInt() > 0 then
-			newinv = loadout[curTab][curSlot].classname
-			surface.PlaySound(soundSelect)
+			if ply:GetActiveWeapon() and loadout[curTab][curSlot] then
+				RunConsoleCommand('use', loadout[curTab][curSlot].classname)
+			end
 		else
 			lastAction = RealTime()
 			alpha = 1
-			surface.PlaySound(soundSwitch)
 		end
+
+		surface.PlaySound(GetConVar("hud_fastswitch"):GetInt() == 1 and soundSelect or soundSwitch)
 
 		return true
 	elseif bind:find("+attack", nil, true) and alpha > 0 then
 		if loadout[curTab] and loadout[curTab][curSlot] and not bind:find("+attack2", nil, true) then
-			newinv = loadout[curTab][curSlot].classname
+			if ply:GetActiveWeapon() and loadout[curTab][curSlot] then
+				RunConsoleCommand('use', loadout[curTab][curSlot].classname)
+			end
 		end
 
         if ply:GetActiveWeapon() and loadout[curTab][curSlot] then
@@ -268,12 +264,6 @@ hook.Add('HUDPaint', 'lrpSelector.paint', function()
             if selected and colorSelect then
 				draw.RoundedBox(8, offx + 4, offy + 4, width - 8, height - 8, colorSelect)
 			end
-            -- draw.RoundedBox(8, offx, offy, width, height, colorMain)
-
-            -- draw.RoundedBox(8, offx, offy, width, height, selected and colorSelect or (wep.new and Color(0, math.abs(math.sin(RealTime())) * 255, 0, 127) or colorMain))
-
-			-- surface.SetDrawColor(selected and colorSelect or (wep.new and Color(0, math.abs(math.sin(RealTime())) * 255, 0, 127) or colorMain))
-			-- surface.DrawRect(offx, offy, width, height)
 
 			surface.SetFont("lrp-selectorFont")
 			local w, h = surface.GetTextSize(wep.name)
