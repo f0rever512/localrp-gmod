@@ -71,6 +71,12 @@ local function update()
 	end
 end
 
+local function SetNewWeapon(ply)
+	if ply:GetActiveWeapon() and loadout[curTab][curSlot] then
+		RunConsoleCommand('use', loadout[curTab][curSlot].classname)
+	end
+end
+
 local FKeyBinds = {
 	["gm_showhelp"] = "ShowHelp",
 	["gm_showteam"] = "ShowTeam",
@@ -116,9 +122,7 @@ hook.Add("PlayerBindPress", 'lrpSelector.bind', function(ply, bind, pressed)
 		end
 
 		if GetConVar("hud_fastswitch"):GetInt() > 0 then
-			if ply:GetActiveWeapon() and loadout[curTab][curSlot] then
-				RunConsoleCommand('use', loadout[curTab][curSlot].classname)
-			end
+			SetNewWeapon(ply)
 		else
 			alpha = 1
 			lastAction = RealTime()
@@ -147,9 +151,7 @@ hook.Add("PlayerBindPress", 'lrpSelector.bind', function(ply, bind, pressed)
 		end
 
 		if GetConVar("hud_fastswitch"):GetInt() > 0 then
-			if ply:GetActiveWeapon() and loadout[curTab][curSlot] then
-				RunConsoleCommand('use', loadout[curTab][curSlot].classname)
-			end
+			SetNewWeapon(ply)
 		else
 			lastAction = RealTime()
 			alpha = 1
@@ -178,9 +180,7 @@ hook.Add("PlayerBindPress", 'lrpSelector.bind', function(ply, bind, pressed)
 		end
 
 		if GetConVar("hud_fastswitch"):GetInt() > 0 then
-			if ply:GetActiveWeapon() and loadout[curTab][curSlot] then
-				RunConsoleCommand('use', loadout[curTab][curSlot].classname)
-			end
+			SetNewWeapon(ply)
 		else
 			lastAction = RealTime()
 			alpha = 1
@@ -191,15 +191,10 @@ hook.Add("PlayerBindPress", 'lrpSelector.bind', function(ply, bind, pressed)
 		return true
 	elseif bind:find("+attack", nil, true) and alpha > 0 then
 		if loadout[curTab] and loadout[curTab][curSlot] and not bind:find("+attack2", nil, true) then
-			if ply:GetActiveWeapon() and loadout[curTab][curSlot] then
-				RunConsoleCommand('use', loadout[curTab][curSlot].classname)
-			end
+			SetNewWeapon(ply)
 		end
 
-        if ply:GetActiveWeapon() and loadout[curTab][curSlot] then
-            RunConsoleCommand('use', loadout[curTab][curSlot].classname)
-        end
-
+        SetNewWeapon(ply)
 		surface.PlaySound(soundSelect)
 		alpha = 0
 
