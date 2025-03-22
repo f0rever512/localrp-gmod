@@ -101,10 +101,10 @@ hook.Add('HUDPaint', 'lrpHud.ammoPaint', function()
 	end
 end)
 
-hook.Add("HUDPaint", "VoiceAndTextIcon", function()
+hook.Add("HUDPaint", 'lrpHud.voiceIconPaint', function()
 	local ply = LocalPlayer()
 
-	if not ply:Alive() then return end
+	if GetConVar('cl_lrp_hud_type'):GetInt() == 1 or not ply:Alive() then return end
 
 	local offset = 4
 	local iconSize = ScrH() * 0.05
@@ -137,7 +137,10 @@ hook.Add('HUDShouldDraw', 'HideElements', function(name)
     end
 end)
 
-hook.Add("PlayerStartVoice", "HideVoicePanel", function() return false end)
+hook.Add("PlayerStartVoice", "HideVoicePanel", function()
+	if GetConVar('cl_lrp_hud_type'):GetInt() == 1 then return end
+	return true
+end)
 
 local e = 0
 hook.Add("PostDrawHUD", "PostEffectsHealth", function() 
