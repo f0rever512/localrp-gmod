@@ -23,7 +23,7 @@ hook.Add("PostPlayerDraw", 'lrpOverhead.draw', function(ply)
     if not ply:Alive() or not IsValid(ply) or ply == LocalPlayer() then return end
     
     local eyesAtt = ply:GetAttachment(ply:LookupAttachment('eyes'))
-    local pos = eyesAtt and eyesAtt.Pos + Vector(0, 0, 10) or ply:GetPos() + Vector(0, 0, ply:GetModelRadius() + 2)
+    local pos = eyesAtt and eyesAtt.Pos - eyesAtt.Ang:Forward() * 4 + eyesAtt.Ang:Up() * 9 or ply:GetPos() + Vector(0, 0, ply:GetModelRadius() + 2)
     local angle = Angle(EyeAngles().p, EyeAngles().y, 0)
     angle:RotateAroundAxis(angle:Up(), -90)
     angle:RotateAroundAxis(angle:Forward(), 90)
