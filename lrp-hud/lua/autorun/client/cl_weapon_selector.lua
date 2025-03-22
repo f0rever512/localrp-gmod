@@ -116,7 +116,7 @@ hook.Add("PlayerBindPress", 'lrpSelector.bind', function(ply, bind, pressed)
 
 		findcurrent()
 		
-		if curTab == n and loadout[curTab] and (alpha > 0 or GetConVarNumber("hud_fastswitch") > 0) then
+		if curTab == n and loadout[curTab] and (alpha > 0 or GetConVar("hud_fastswitch"):GetInt() > 0) then
 			curSlot = curSlot + 1
 
 			if curSlot > #loadout[curTab] then
@@ -127,7 +127,7 @@ hook.Add("PlayerBindPress", 'lrpSelector.bind', function(ply, bind, pressed)
 			curSlot = 1
 		end
 
-		if GetConVarNumber("hud_fastswitch") > 0 then
+		if GetConVar("hud_fastswitch"):GetInt() > 0 then
 			newinv = loadout[curTab][curSlot].classname
 		else
 			alpha = 1
@@ -156,7 +156,7 @@ hook.Add("PlayerBindPress", 'lrpSelector.bind', function(ply, bind, pressed)
 			curSlot = 1
 		end
 
-		if GetConVarNumber("hud_fastswitch") > 0 then
+		if GetConVar("hud_fastswitch"):GetInt() > 0 then
 			newinv = loadout[curTab][curSlot].classname
 			surface.PlaySound(soundSelect)
 		else
@@ -185,7 +185,7 @@ hook.Add("PlayerBindPress", 'lrpSelector.bind', function(ply, bind, pressed)
 			curSlot = #loadout[curTab]
 		end
 
-		if GetConVarNumber("hud_fastswitch") > 0 then
+		if GetConVar("hud_fastswitch"):GetInt() > 0 then
 			newinv = loadout[curTab][curSlot].classname
 			surface.PlaySound(soundSelect)
 		else
