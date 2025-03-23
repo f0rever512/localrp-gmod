@@ -95,7 +95,7 @@ hook.Add("PlayerBindPress", 'lrpSelector.bind', function(ply, bind, pressed)
 		hook.Call(FKeyBinds[bnd], GAMEMODE)
 	end
 
-	if not pressed or ply:InVehicle() then return end
+	if not pressed or ply:InVehicle() or not ply:Alive() then return end
 
 	bind = bind:lower()
 	if bind:sub(1, 4) == "slot" then
@@ -255,7 +255,7 @@ hook.Add('HUDPaint', 'lrpSelector.paint', function()
 
 			slide[wep.classname] = Lerp(FrameTime() * 10, slide[wep.classname] or 0, selected and 1 or 0)
 
-			draw.RoundedBox(8, offx, offy, width, height, wep.new and Color(0, 80, math.abs(math.sin(RealTime() * 3)) * 65) or colorMain)
+			draw.RoundedBox(8, offx, offy, width, height, wep.new and Color(0, 80, math.abs(math.sin(RealTime() * 2.5)) * 65) or colorMain)
             if selected and colorSelect then
 				draw.RoundedBox(8, offx + 4, offy + 4, width - 8, height - 8, colorSelect)
 			end
