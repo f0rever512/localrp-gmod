@@ -59,13 +59,15 @@ hook.Add('HUDPaint', 'lrpHud.paint', function()
 	draw.RoundedBox(10, posX + offset / 2, posY + offset / 2, ply:Armor() <= 100 and (math.max( 0, smoothAR ) / maxAR * width - offset) or width - offset, height - offset, Color(0, 70, 160, 230))
 	
 	local wep = ply:GetActiveWeapon()
-	if IsValid(wep) and (not wep.LRPGuns and GetConVar("lrp_view"):GetInt() == 1) then
-		local ammo = wep:Clip1() < 0 and 0 or wep:Clip1()
-		local reserve = ply:GetAmmoCount(wep:GetPrimaryAmmoType())
+	if IsValid(wep) then
+		if not wep.LRPGuns or (wep.LRPGuns and GetConVar("lrp_view"):GetInt() == 0) then
+			local ammo = wep:Clip1() < 0 and 0 or wep:Clip1()
+			local reserve = ply:GetAmmoCount(wep:GetPrimaryAmmoType())
 
-		if ammo > 0 or reserve > 0 then
-			draw.SimpleText(ammo..' / '..reserve, 'lrpHud-font', ScrW() / 2, ScrH() - height * 1.1, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-			--draw.SimpleTextOutlined(wep.Instructions, 'lrpHud-font', 10, ScrH() + 50, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM, 1, Color(0,0,0,255))
+			if ammo > 0 or reserve > 0 then
+				draw.SimpleText(ammo..' / '..reserve, 'lrpHud-font', ScrW() / 2, ScrH() - height * 1.1, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				--draw.SimpleTextOutlined(wep.Instructions, 'lrpHud-font', 10, ScrH() + 50, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM, 1, Color(0,0,0,255))
+			end
 		end
 	end
 end)
