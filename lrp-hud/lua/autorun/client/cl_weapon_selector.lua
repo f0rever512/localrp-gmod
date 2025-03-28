@@ -23,15 +23,27 @@ local lastAction = -math.huge
 local loadout = {}
 local slide = {}
 
-local CWeapons = {}
-for _, y in pairs(file.Find("scripts/weapon_*.txt", "MOD")) do
-	local t = util.KeyValuesToTable(file.Read("scripts/" .. y, "MOD"))
-	CWeapons[y:match("(.+)%.txt")] = {
-		Slot = t.bucket,
-		SlotPos = t.bucket_position,
-		TextureData = t.texturedata
-	}
-end
+local specialWeaponSlot = {
+	-- wepClass = { slot, slotPos }
+	weapon_physgun = { 0, 0 },
+
+	weapon_crowbar = { 0, -2 },
+    weapon_stunstick = { 0, -2 },
+	weapon_physcannon = { 0, -1 },
+    
+    weapon_pistol = { 1, 0 },
+    weapon_357 = { 1, 1 },
+    
+    weapon_smg1 = { 2, 0 },
+    weapon_ar2 = { 2, 1 },
+
+    weapon_shotgun = { 3, 0 },
+    weapon_crossbow = { 3, 1 },
+    
+    weapon_frag = { 4, 0 },
+	weapon_rpg = { 4, 1 },
+    weapon_slam = { 4, 2 },
+}
 
 local function findcurrent()
 	if alpha <= 0 then
@@ -54,7 +66,7 @@ local function update()
 
 	for _, wep in pairs(LocalPlayer():GetWeapons()) do
 		local classname = wep:GetClass()
-		local Slot = CWeapons[classname] and CWeapons[classname].Slot or wep.Slot or 0
+		local Slot = specialWeaponSlot[classname] and specialWeaponSlot[classname][1] or wep.Slot or 0
 
 		loadout[Slot] = loadout[Slot] or {}
 
@@ -62,7 +74,7 @@ local function update()
 			classname = classname,
 			name = wep:GetPrintName(),
 			new = (CurTime() - wep:GetCreationTime()) < 30,
-			slotpos = CWeapons[classname] and CWeapons[classname].SlotPos or wep.SlotPos or 0
+			slotpos = specialWeaponSlot[classname] and specialWeaponSlot[classname][2] or wep.SlotPos or 0
 		})
 	end
 
