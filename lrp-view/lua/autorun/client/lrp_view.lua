@@ -249,7 +249,7 @@ hook.Add('CreateMove', 'lrp-view.handview', function(cmd)
     local wep = ply:GetActiveWeapon()
 
     if ply:InVehicle() then return end
-    if not wep.Base == 'localrp_gun_base' then return end
+    if wep.Base ~= 'localrp_gun_base' then return end
 
     if input.WasMousePressed(109) and wep:GetReady() then
         if not handview then
