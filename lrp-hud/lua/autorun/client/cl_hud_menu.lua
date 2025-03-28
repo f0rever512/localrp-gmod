@@ -1,30 +1,20 @@
-hook.Add("AddToolMenuTabs", "LRPHud", function()
+hook.Add("AddToolMenuTabs", 'lrpHud.tab', function()
 	spawnmenu.AddToolTab('LocalRP', '#LocalRP', 'icon16/brick.png')
-	spawnmenu.AddToolMenuOption("LocalRP", "Client Options", "LocalRP HUD & Overhead", "HUD & Overhead", "", "", function(pnl)
+	spawnmenu.AddToolMenuOption("LocalRP", "Client Options", 'cl_lrp_hud', "HUD & Overhead", "", "", function(pnl)
 		pnl:ClearControls()
 		
-		pnl:AddControl("Label", {Text = "Настройки HUD"})
+		pnl:AddControl('label', {text = 'Клиентские настройки HUD & Overhead'})
 
-		pnl:AddControl("slider", {
-			label = "Тип HUD",
-			command = "hud_type",
-			min = 0,
-			max = 2
-		})
+		local hudType = pnl:AddControl('listbox', {label = 'Тип HUD'})
+		hudType:SetSortItems(false)
+        
+		local hudOptions = {'Чистый', 'Стандартный (HL2)', 'LocalRP HUD'}
+		for id, typeName in ipairs(hudOptions) do
+			hudType:AddOption(typeName, {
+				cl_lrp_hud_type = id - 1
+			})
+		end
 
-		pnl:AddControl("Label", {Text = "0 - Чистый | 1 - Стандартный | 2 - LocalRP"})
-
-		-- local type = pnl:AddControl("listbox", {label = "Тип HUD"})
-		-- type:AddOption("Чистый", {
-		-- 	GetConVar( "hud_type" ):SetInt( 0 )
-		-- })
-		-- type:AddOption("Стандартный", {
-		-- 	GetConVar( "hud_type" ):SetInt( 1 )
-		-- })
-		-- type:AddOption("LocalRP", {
-		-- 	GetConVar( "hud_type" ):SetInt( 2 )
-		-- })
-
-		pnl:AddControl("CheckBox", {Label = "Информация над головой игрока", Command = "lrp_overhead"})
+		pnl:AddControl("CheckBox", {Label = "Информация над головой игрока", Command = "cl_lrp_overhead"})
 	end)
 end)

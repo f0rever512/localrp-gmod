@@ -1,4 +1,4 @@
-surface.CreateFont("NotifyFont", {
+surface.CreateFont('lrpNotify-font', {
     font = "Calibri",
     size = 25,
     weight = 400,
@@ -8,18 +8,8 @@ surface.CreateFont("NotifyFont", {
 
 local ScreenPos = ScrH() - 40
 
-local ForegroundColor = Color( 230, 230, 230 )
-local BackgroundColor = Color( 0, 0, 0, 225 )
-
---[[Colors[ type ]
-local Colors = {}
-Colors[ NOTIFY_GENERIC ] = Color( 52, 73, 94, 100 )
-Colors[ NOTIFY_ERROR ] = Color( 192, 57, 43 )
-Colors[ NOTIFY_UNDO ] = Color( 41, 128, 185 )
-Colors[ NOTIFY_HINT ] = Color( 39, 174, 96 )
-Colors[ NOTIFY_CLEANUP ] = Color( 243, 156, 18 )]]
-
-local LoadingColor = Color( 22, 160, 133 )
+local colorMain = Color(0, 80, 65)
+local colorLoading = Color(0, 125, 100)
 
 local Icons = {}
 Icons[ NOTIFY_GENERIC ] = Material( "notifications/generic.png" )
@@ -33,18 +23,15 @@ local LoadingIcon = Material( "icon16/arrow_rotate_clockwise.png" )
 local Notifications = {}
 
 local function DrawNotification( x, y, w, h, text, icon, col, progress )
-	draw.RoundedBoxEx( 16, x, y, w, h, BackgroundColor, true, true, true, true )
-
+	draw.RoundedBoxEx( 8, x, y, w, h, col, true, true, true, true )
 	if progress then
-		draw.RoundedBoxEx( 16, x, y, h + ( w - h ) * progress, h, col, true, false, true, false )
-	else
-		draw.RoundedBoxEx( 16, x, y, h, h, col, true, false, true, false )
+		draw.RoundedBoxEx( 8, x, y, h + ( w - h ) * progress, h, col, true, false, true, false )
 	end
 
-	draw.SimpleText( text, "NotifyFont", x + 30 + 10, y + h / 2, ForegroundColor,
+	draw.SimpleText( text, 'lrpNotify-font', x + 30 + 10, y + h / 2, color_white,
 		TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
 
-	surface.SetDrawColor( ForegroundColor )
+	surface.SetDrawColor( color_white )
 	surface.SetMaterial( icon )
 
 	if progress then
@@ -54,8 +41,13 @@ local function DrawNotification( x, y, w, h, text, icon, col, progress )
 	end
 end
 
+local OriginalAddLegacy = notification.AddLegacy
 function notification.AddLegacy( text, type, time )
-	surface.SetFont("NotifyFont")
+	if GetConVar('cl_lrp_hud_type'):GetInt() == 1 then
+        return OriginalAddLegacy(text, type, time)
+    end
+
+	surface.SetFont('lrpNotify-font')
 
 	local w = surface.GetTextSize( text ) + 20 + 32
 	local h = 32
@@ -69,7 +61,7 @@ function notification.AddLegacy( text, type, time )
 		h = h,
 
 		text = text,
-		col = Color(0, 210, 170, 75),
+		col = colorMain,
 		icon = Icons[ type ],
 		time = CurTime() + time,
 
@@ -77,7 +69,12 @@ function notification.AddLegacy( text, type, time )
 	} )
 end
 
+local OriginalAddProgress = notification.AddProgress
 function notification.AddProgress( id, text, frac )
+	if GetConVar('cl_lrp_hud_type'):GetInt() == 1 then
+        return OriginalAddProgress(id, text, frac)
+    end
+
 	for k, v in ipairs( Notifications ) do
 		if v.id == id then
 			v.text = text
@@ -87,7 +84,7 @@ function notification.AddProgress( id, text, frac )
 		end
 	end
 
-	surface.SetFont("NotifyFont")
+	surface.SetFont('lrpNotify-font')
 
 	local w = surface.GetTextSize( text ) + 20 + 32
 	local h = 32
@@ -102,7 +99,7 @@ function notification.AddProgress( id, text, frac )
 
 		id = id,
 		text = text,
-		col = LoadingColor,
+		col = colorLoading,
 		icon = LoadingIcon,
 		time = math.huge,
 
@@ -110,7 +107,12 @@ function notification.AddProgress( id, text, frac )
 	} )	
 end
 
+local OriginalKill = notification.Kill
 function notification.Kill( id )
+	if GetConVar('cl_lrp_hud_type'):GetInt() == 1 then
+        return OriginalKill(id)
+    end
+
 	for k, v in ipairs( Notifications ) do
 		if v.id == id then v.time = 0 end
 	end
@@ -120,7 +122,7 @@ hook.Add( "HUDPaint", "DrawNotifications", function()
 	for k, v in ipairs( Notifications ) do
 		DrawNotification( math.floor( v.x ), math.floor( v.y ), v.w, v.h, v.text, v.icon, v.col, v.progress )
 
-		v.x = Lerp( FrameTime() * 10, v.x, v.time > CurTime() and ScrW() - v.w - 10 or ScrW() + 1 )
+		v.x = Lerp( FrameTime() * 10, v.x, v.time > CurTime() and ScrW() - v.w - 8 or ScrW() + 1 )
 		v.y = Lerp( FrameTime() * 10, v.y, ScreenPos - ( k - 1 ) * ( v.h + 5 ) )
 	end
 

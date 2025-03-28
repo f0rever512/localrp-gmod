@@ -1,6 +1,6 @@
-CreateClientConVar("hud_type", "2", true, true)
+CreateClientConVar('cl_lrp_hud_type', '2', true, true)
 
-surface.CreateFont( "lrp-hud-font", {
+surface.CreateFont('lrpHud-font', {
 	font = "Calibri",
 	size = 25,
 	weight = 400,
@@ -9,171 +9,154 @@ surface.CreateFont( "lrp-hud-font", {
 	extended = true
 })
 
-hook.Add('HUDShouldDraw', 'HUDHide', function(name)
-	if GetConVarNumber("hud_type") == 1 then return end
-    for k, v in pairs{'CHudHealth', 'CHudBattery', 'CHudAmmo', 'CHudZoom', 'CHudSuitPower', 'CHudDamageIndicator'} do
-        if name == v then return false end
+local animationTime = 0.5
+local startHP, startAR = 0, 0
+local oldHP, newHP, oldAR, newAR = -1, -1, -1, -1
+
+hook.Add('HUDPaint', 'lrpHud.paint', function()
+	local ply = LocalPlayer()
+	
+	if GetConVar("cl_lrp_hud_type"):GetInt() < 2 then return end
+	if not ply:Alive() then return end
+
+	local hp, maxHP = ply:Health(), ply:GetMaxHealth()
+	local ar, maxAR = ply:Armor(), ply:GetMaxArmor()
+
+	-- Initialize values if not already done
+	if oldHP == -1 then oldHP, newHP = hp, hp end
+	if oldAR == -1 then oldAR, newAR = ar, ar end
+
+	-- Smooth health and armor values
+	local smoothHP = Lerp((SysTime() - startHP) / animationTime, oldHP, newHP)
+	local smoothAR = Lerp((SysTime() - startAR) / animationTime, oldAR, newAR)
+
+	-- Update health values if changed
+	if newHP ~= hp then
+		if smoothHP ~= hp then newHP = smoothHP end
+
+		oldHP = newHP
+		startHP = SysTime()
+		newHP = hp
+	end
+
+	-- Update armor values if changed
+	if newAR ~= ar then
+		if smoothAR ~= ar then newAR = smoothAR end
+		oldAR = newAR
+		startAR = SysTime()
+		newAR = ar
+	end
+
+	local offset = 4
+	local width = ScrW() * 0.13
+	local height = ScrH() * 0.019
+
+	local posX = ScrW() * 0.5 - width / 2
+	local posY = ScrH() - height * 1.5
+
+	draw.RoundedBox(10, posX, posY, width, height, Color(0, 185, 150, 200))
+	draw.RoundedBox(10, posX + offset / 2, posY + offset / 2, ply:Health() <= 100 and (math.max( 0, smoothHP ) / maxHP * width - offset) or width - offset, height - offset, Color(200, 0, 0, 230))
+	draw.RoundedBox(10, posX + offset / 2, posY + offset / 2, ply:Armor() <= 100 and (math.max( 0, smoothAR ) / maxAR * width - offset) or width - offset, height - offset, Color(0, 70, 160, 230))
+	
+	local wep = ply:GetActiveWeapon()
+	if IsValid(wep) and (not wep.LRPGuns and GetConVar("lrp_view"):GetInt() == 1) then
+		local ammo = wep:Clip1() < 0 and 0 or wep:Clip1()
+		local reserve = ply:GetAmmoCount(wep:GetPrimaryAmmoType())
+
+		if ammo > 0 or reserve > 0 then
+			draw.SimpleText(ammo..' / '..reserve, 'lrpHud-font', ScrW() / 2, ScrH() - height * 1.1, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			--draw.SimpleTextOutlined(wep.Instructions, 'lrpHud-font', 10, ScrH() + 50, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM, 1, Color(0,0,0,255))
+		end
+	end
+end)
+
+hook.Add('HUDPaint', 'lrpHud.ammoPaint', function()
+	local ply = LocalPlayer()
+	local handAtt = ply:GetAttachment(ply:LookupAttachment("anim_attachment_rh"))
+
+	if ply:InVehicle() or not ply:Alive() or not handAtt then return end
+	if GetConVar("cl_lrp_hud_type"):GetInt() == 1 or GetConVar("lrp_view"):GetInt() == 0 then return end
+
+	local wep = ply:GetActiveWeapon()
+	if wep.LRPGuns and wep.DrawAmmo then
+		if wep:GetReloading() or ply:KeyDown(IN_WALK) then
+			local sightOffsets = {
+				default = {2, 2, -0.5},
+				revolver = {5, 4.8, -1.1},
+				pistol = {5, 4.8, -1.1},
+				duel = {5, 4.8, -1.1},
+				ar2 = {25, 8.7, -0.3},
+				smg = {14, 7.2, -1},
+			}
+
+			local offset = sightOffsets[wep.Sight] or sightOffsets.default
+			local textPos = (handAtt.Pos + handAtt.Ang:Forward() * offset[1] + handAtt.Ang:Up() * offset[2] + handAtt.Ang:Right() * offset[3]):ToScreen()
+			
+			local ammo = wep:Clip1()
+			local reserve = ply:GetAmmoCount(wep:GetPrimaryAmmoType())
+			
+			draw.SimpleTextOutlined( ammo, 'lrpHud-font', textPos.x, textPos.y, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP, 1, Color(0, 0, 0, 255) )
+			draw.SimpleTextOutlined( reserve, 'lrpHud-font', textPos.x, textPos.y + 20, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP, 1, Color(0, 0, 0, 255) )
+		end
+	end
+end)
+
+hook.Add("HUDPaint", 'lrpHud.voiceIconPaint', function()
+	local ply = LocalPlayer()
+
+	if GetConVar('cl_lrp_hud_type'):GetInt() == 1 or not ply:Alive() then return end
+
+	local offset = 4
+	local iconSize = ScrH() * 0.05
+
+	local posX = ScrW() * 0.5 - iconSize / 2
+	local posY = ScrH() - iconSize * (GetConVar('cl_lrp_hud_type'):GetInt() == 2 and 1.7 or 1.3)
+
+	local function paintIcon(mat)
+		surface.SetMaterial(mat)
+		surface.SetDrawColor(0, 0, 0, 100)
+		surface.DrawTexturedRect(posX - offset / 2, posY - offset / 2, iconSize + offset, iconSize + offset)
+		surface.SetDrawColor(0, 185, 150, 240)
+		surface.DrawTexturedRect(posX, posY, iconSize, iconSize)
+	end
+
+	local voiceMat = Material('talkicon/voice.png')
+	local textMat = Material('talkicon/text.png')
+	
+	if ply:IsSpeaking() then
+		paintIcon(voiceMat)
+	elseif ply:GetNW2Bool('ti_istyping') then
+		paintIcon(textMat)
+	end
+end)
+
+hook.Add('HUDShouldDraw', 'HideElements', function(name)
+	if GetConVar('cl_lrp_hud_type'):GetInt() == 1 then return end
+    for _, hidden in pairs{'CHudHealth', 'CHudBattery', 'CHudAmmo', 'CHudZoom', 'CHudSuitPower', 'CHudDamageIndicator'} do
+        if name == hidden then return false end
     end
 end)
 
-local barW = 236
-local animationTime = 0.5
-local starthp, startar = 0, 0
-local oldhp, newhp, oldar, newar = -1, -1, -1, -1
-
-hook.Add('HUDPaint', 'LRPHud', function()
-	local ply = LocalPlayer()
-	local wep = ply:GetActiveWeapon()
-	local x = ScrW() * .5 - 120
-	local y = ScrH() - 30
-
-	if GetConVarNumber("hud_type") < 2 then return end
-	if not ply:Alive() then return end
-
-	--HEALTH
-	local hp = LocalPlayer():Health()
-	local maxhp = LocalPlayer():GetMaxHealth()
-
-	-- The values are not initialized yet, do so right now
-	if ( oldhp == -1 and newhp == -1 ) then
-		oldhp = hp
-		newhp = hp
-	end
-
-	-- You can use a different smoothing function here
-	local smoothHP = Lerp( ( SysTime() - starthp ) / animationTime, oldhp, newhp )
-
-	-- Health was changed, initialize the animation
-	if newhp ~= hp then
-		-- Old animation is still in progress, adjust
-		if ( smoothHP ~= hp ) then
-			-- Pretend our current "smooth" position was the target so the animation will
-			-- not jump to the old target and start to the new target from there
-			newhp = smoothHP
-		end
-
-		oldhp = newhp
-		starthp = SysTime()
-		newhp = hp
-	end
-
-	--ARMOR
-	local ar = LocalPlayer():Armor()
-	local maxar = LocalPlayer():GetMaxArmor()
-
-	if ( oldar == -1 and newar == -1 ) then
-		oldar = ar
-		newar = ar
-	end
-
-	local smoothar = Lerp( ( SysTime() - startar ) / animationTime, oldar, newar )
-
-	if newar ~= ar then
-		if ( smoothar ~= ar ) then
-			newar = smoothar
-		end
-
-		oldar = newar
-		startar = SysTime()
-		newar = ar
-	end
-
-	draw.RoundedBox(10, x, y, 240, 20, Color(0, 185, 150, 200))
-
-	if ply:Health() <= 100 then
-		draw.RoundedBox(10, x + 2, y + 2, math.max( 0, smoothHP ) / maxhp * barW, 16, Color(200, 0, 0, 230))
-	else
-		draw.RoundedBox(10, x + 2, y + 2, 236, 16, Color(200, 0, 0, 230))
-	end
-
-	if ply:Armor() <= 100 then
-		draw.RoundedBox(10, x + 2, y + 2, math.max( 0, smoothar ) / maxar * barW, 16, Color(0, 70, 160, 230))
-	else
-		draw.RoundedBox(10, x + 2, y + 2, 236, 16, Color(0, 70, 160, 230))
-	end
-
-	if !IsValid(wep) then return end
-	if wep:Clip1() == NULL or wep == "Camera" then return end
-	local ammo, reserve = wep:Clip1() < 0 and 0 or wep:Clip1(), ply:GetAmmoCount(wep:GetPrimaryAmmoType())
-	local disabled = ammo <= 0 and reserve <= 0 and true or false
-	if disabled then return end
-	if not wep.LRPGuns or GetConVarNumber("lrp_view") == 0 then
-		draw.SimpleText(ammo..'/'..reserve, "lrp-hud-font", ScrW() / 2, y + 9, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-	end
-	--draw.SimpleTextOutlined(wep.Instructions, "lrp-hud-font", 10, ScrH() + 50, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM, 1, Color(0,0,0,255))
-end)
-
-hook.Add("HUDPaint", "AmmoCheck", function()
-	local ply = LocalPlayer()
-	local wep = ply:GetActiveWeapon()
-	local hand = ply:GetAttachment(ply:LookupAttachment("anim_attachment_rh"))
-
-	if ply:InVehicle() then return end
-	if not ply:Alive() then return end
-	if not hand then return end
-	if GetConVarNumber("hud_type") == 1 then return end
-	if GetConVarNumber("lrp_view") == 0 then return end
-
-	if wep.LRPGuns then
-		if (wep:GetReloading() or ply:KeyDown(IN_WALK)) then
-			local ammo = wep:Clip1()
-			local reserve = ply:GetAmmoCount( wep:GetPrimaryAmmoType() )
-			
-			local x, y = ScrW() / 2.0, ScrH() / 2.0
-			
-			if wep.Sight == "revolver" or wep.Sight == "pistol" or wep.Sight == "duel" then
-				textpos = (hand.Pos + hand.Ang:Forward() * 5 + hand.Ang:Up() * 4.8 + hand.Ang:Right() * -1.1):ToScreen()
-			elseif wep.Sight == "ar2" then
-				textpos = (hand.Pos + hand.Ang:Forward() * 25 + hand.Ang:Up() * 8.7 + hand.Ang:Right() * -0.3):ToScreen()
-			elseif wep.Sight == "smg" then
-				textpos = (hand.Pos + hand.Ang:Forward() * 14 + hand.Ang:Up() * 7.2 + hand.Ang:Right() * -1):ToScreen()
-			end
-			
-			--draw.DrawText( "Патроны: " .. ammo, "lrp-hud-font", textpos.x, textpos.y, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
-			--draw.DrawText( "Запас: " .. reserve, "lrp-hud-font", textpos.x, textpos.y + 25, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
-			draw.SimpleTextOutlined( ammo, "lrp-hud-font", textpos.x, textpos.y, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP, 1, Color(0, 0, 0, 255) )
-			draw.SimpleTextOutlined( reserve, "lrp-hud-font", textpos.x, textpos.y + 20, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP, 1, Color(0, 0, 0, 255) )
-		end
-	end
-end)
-
-hook.Add("HUDPaint", "VoiceAndTextIcon", function()
-	local ply = LocalPlayer()
-
-	--if GetConVarNumber("hud_type") < 2 then return end
-	if !ply:Alive() then return end
-
-	local voice_mat = Material('talkicon/voice.png')
-	local text_mat = Material('talkicon/text.png')
-	
-	if ply:IsSpeaking() then
-		surface.SetMaterial(voice_mat)
-		surface.SetDrawColor( 0, 185, 150, 220 )
-		surface.DrawTexturedRect( ScrW() * .5 - 24, ScrH() - 80, 48, 48)
-	elseif ply:GetNW2Bool('ti_istyping') then
-		surface.SetMaterial(text_mat)
-		surface.SetDrawColor( 0, 185, 150, 220 )
-		surface.DrawTexturedRect( ScrW() * .5 - 24, ScrH() - 80, 48, 56)
-	end
-end)
-
 hook.Add("PlayerStartVoice", "HideVoicePanel", function()
-	return false
+	if GetConVar('cl_lrp_hud_type'):GetInt() == 1 then return end
+	return true
 end)
 
 local e = 0
 hook.Add("PostDrawHUD", "PostEffectsHealth", function() 
+	local ply = LocalPlayer()
+
 	local o
-	if LocalPlayer():Alive() then
-		o = 1 - math.Clamp((LocalPlayer():Health() or 0) / LocalPlayer():GetMaxHealth(), 0, 1)
+	if ply:Alive() then
+		o = 1 - math.Clamp((ply:Health() or 0) / ply:GetMaxHealth(), 0, 1)
 	else
 		o = 1
 	end
 	local a = (o - e) * (FrameTime() < 1 and FrameTime() or 1)
-	if math.abs(a) < .01 then
-		a = a > 0 and .01 or -.01
+	if math.abs(a) < 0.01 then
+		a = a > 0 and 0.01 or -0.01
 	end
-	if o - e < .01 then
+	if o - e < 0.01 then
 		a = o - e
 	end
 	e = e + a
@@ -190,17 +173,17 @@ hook.Add("PostDrawHUD", "PostEffectsHealth", function()
 			["$pp_colour_mulb"] = 0
 		}
 		DrawColorModify(o)
-		local e = (e > .5 and (e - .5) / .5 or 0)
+		local e = (e > 0.5 and (e - 0.5) / 0.5 or 0)
 		--DrawBloom(.1, (e ^ (3)) * 1, 6, 6, 1, .25, 1, 1, 1)
 		--DrawMotionBlur((1 - (e ^ (.2)) * .8), (e ^ (.2)) * (.8), .01)
 	end
 	local o = 1
-	if e > .8 then
+	if e > 0.8 then
 		o = 3 --16
 	elseif e > .65 then
 		o = 2 --15
 	elseif e > .5 then
 		o = 1 --14
 	end
-	LocalPlayer():SetDSP(o)
+	ply:SetDSP(o)
 end)
