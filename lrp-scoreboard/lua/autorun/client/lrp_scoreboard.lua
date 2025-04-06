@@ -1,5 +1,5 @@
+include('cl_quick_menu.lua')
 include('lrp_blur.lua')
-include('lrp_derma.lua')
 
 CreateClientConVar('lrp_sbtitle', '1', true, false)
 
@@ -29,6 +29,11 @@ function ToggleScoreboard(toggle)
 
     if toggle then
         hook.Add('RenderScreenspaceEffects', 'lrp.menu-blur', LRPBlur)
+        -- blurPanel = vgui.Create('DPanel')
+        -- blurPanel:SetSize(ScrW(), ScrH())
+        -- blurPanel.Paint = function(self, w, h)
+        --     LRPBlur()
+        -- end
 
         SBPanel = vgui.Create("DPanel")
         SBPanel:SetSize(scrw * 0.4, scrh * 0.8)
@@ -110,17 +115,17 @@ function ToggleScoreboard(toggle)
             nameLabel:SetTextColor(color_white)
             nameLabel:SizeToContents()
 
-            -- if v ~= LocalPlayer() then
-            --     local mute = vgui.Create("DImageButton", plypanel)
-            --     mute:Dock(RIGHT)
-            --     mute:SetWide(SBPanel:GetWide() * 0.05)
-            --     mute:DockMargin(0, 8, 8, 8)
-            --     mute:SetImage(v:IsMuted() and "icon32/muted.png" or "icon32/unmuted.png")
-            --     mute.DoClick = function()
-            --         v:SetMuted(not v:IsMuted())
-            --         mute:SetImage(v:IsMuted() and "icon32/muted.png" or "icon32/unmuted.png")
-            --     end
-            -- end
+            if v ~= LocalPlayer() then
+                local mute = vgui.Create("DImageButton", plypanel)
+                mute:Dock(RIGHT)
+                mute:SetWide(SBPanel:GetWide() * 0.05)
+                mute:DockMargin(0, 8, 8, 8)
+                mute:SetImage(v:IsMuted() and "icon32/muted.png" or "icon32/unmuted.png")
+                mute.DoClick = function()
+                    v:SetMuted(not v:IsMuted())
+                    mute:SetImage(v:IsMuted() and "icon32/muted.png" or "icon32/unmuted.png")
+                end
+            end
 
             local kdLabel = vgui.Create("DLabel", plypanel)
             kdLabel:Dock(RIGHT)
@@ -136,6 +141,7 @@ function ToggleScoreboard(toggle)
             SBPanel:MoveTo(scrw, scrh * 0.5 - SBPanel:GetTall() / 2, 0.2, 0)
             timer.Simple(0.2, function()
                 hook.Remove('RenderScreenspaceEffects', 'lrp.menu-blur')
+                -- blurPanel:Remove()
                 SBPanel:Remove()
             end)
         end
