@@ -1,129 +1,182 @@
-local function adminstration(cmd, text)
-	net.Receive( cmd, function( len, ply )
-		local p = net.ReadEntity()
-		if ply:IsAdmin() then
-			print(ply:GetName(), text, p:GetName())
-			if cmd == "kickuser" then
-				p:Kick( "Kicked from the server" )
-			elseif cmd == "5m" then
-				p:Ban( 5, true )
-			elseif cmd == "15m" then
-				p:Ban( 15, true )
-			elseif cmd == "freeze" then
-				p:Freeze( true )
-			elseif cmd == "unfreeze" then
-				p:Freeze( false )
-			elseif cmd == "5sec" then
-				if p:Alive() then
-					p:Ignite(5)
-				end
-			elseif cmd == "10sec" then
-				if p:Alive() then
-					p:Ignite(10)
-				end
-			elseif cmd == "unignite" then
-				if p:Alive() then
-					p:Extinguish()
-				end
-			elseif cmd == "5hp" then
-				if p:Alive() then
-					p:SetHealth(5)
-				end
-			elseif cmd == "25hp" then
-				if p:Alive() then
-					p:SetHealth(25)
-				end
-			elseif cmd == "50hp" then
-				if p:Alive() then
-					p:SetHealth(50)
-				end
-			elseif cmd == "100hp" then
-				if p:Alive() then
-					p:SetHealth(100)
-				end
-			elseif cmd == "kill" then
-				if p:Alive() then
-					p:Kill()
-				end
-			elseif cmd == "silkill" then
-				if p:Alive() then
-					p:KillSilent()
-				end
-			elseif cmd == "0ar" then
-				if p:Alive() then
-					p:SetArmor(0)
-				end
-			elseif cmd == "25ar" then
-				if p:Alive() then
-					p:SetArmor(25)
-				end
-			elseif cmd == "50ar" then
-				if p:Alive() then
-					p:SetArmor(50)
-				end
-			elseif cmd == "100ar" then
-				if p:Alive() then
-					p:SetArmor(100)
-				end
-			elseif cmd == "resp" then
-				p:Spawn()
-			-- elseif cmd == 'sb-setJob' then
-			-- 	local jobID = net.ReadInt(5)
-			-- 	p:SetJob(jobID, true)
-			else
-				return
-			end
-		end
-	end)
-end
-cmdnetwork = {
-	"kickuser",
-	"5m",
-	"15m",
-	"freeze",
-	"unfreeze",
-	"5sec",
-	"10sec",
-	"unignite",
-	"5hp",
-	"25hp",
-	"50hp",
-	"100hp",
-	"kill",
-	"silkill",
-	"0ar",
-	"25ar",
-	"50ar",
-	"100ar",
-	"resp",
-	-- 'sb-setJob'
+local ADMIN_COMMANDS = {
+    kickuser = {
+        description = "кикнул",
+        action = function(admin, target)
+            target:Kick("Kicked from the server")
+        end
+    },
+    ["5m"] = {
+        description = "забанил на 5 минут",
+        action = function(admin, target)
+            target:Ban(5, true)
+        end
+    },
+    ["15m"] = {
+        description = "забанил на 15 минут",
+        action = function(admin, target)
+            target:Ban(15, true)
+        end
+    },
+    freeze = {
+        description = "заморозил",
+        action = function(admin, target)
+            target:Freeze(true)
+        end
+    },
+    unfreeze = {
+        description = "разморозил",
+        action = function(admin, target)
+            target:Freeze(false)
+        end
+    },
+    ["5sec"] = {
+        description = "поджег на 5 секунд",
+        action = function(admin, target)
+            if target:Alive() then target:Ignite(5) end
+        end
+    },
+    ["10sec"] = {
+        description = "поджег на 10 секунд",
+        action = function(admin, target)
+            if target:Alive() then target:Ignite(10) end
+        end
+    },
+    unignite = {
+        description = "потушил",
+        action = function(admin, target)
+            if target:Alive() then target:Extinguish() end
+        end
+    },
+    ["5hp"] = {
+        description = "установил 5 здоровья",
+        action = function(admin, target)
+            if target:Alive() then target:SetHealth(5) end
+        end
+    },
+    ["25hp"] = {
+        description = "установил 25 здоровья",
+        action = function(admin, target)
+            if target:Alive() then target:SetHealth(25) end
+        end
+    },
+    ["50hp"] = {
+        description = "установил 50 здоровья",
+        action = function(admin, target)
+            if target:Alive() then target:SetHealth(50) end
+        end
+    },
+    ["100hp"] = {
+        description = "установил 100 здоровья",
+        action = function(admin, target)
+            if target:Alive() then target:SetHealth(100) end
+        end
+    },
+    kill = {
+        description = "убил",
+        action = function(admin, target)
+            if target:Alive() then target:Kill() end
+        end
+    },
+    silkill = {
+        description = "тихо убил",
+        action = function(admin, target)
+            if target:Alive() then target:KillSilent() end
+        end
+    },
+    ["0ar"] = {
+        description = "установил 0 брони",
+        action = function(admin, target)
+            if target:Alive() then target:SetArmor(0) end
+        end
+    },
+    ["25ar"] = {
+        description = "установил 25 брони",
+        action = function(admin, target)
+            if target:Alive() then target:SetArmor(25) end
+        end
+    },
+    ["50ar"] = {
+        description = "установил 50 брони",
+        action = function(admin, target)
+            if target:Alive() then target:SetArmor(50) end
+        end
+    },
+    ["100ar"] = {
+        description = "установил 100 брони",
+        action = function(admin, target)
+            if target:Alive() then target:SetArmor(100) end
+        end
+    },
+
+    teleport_to = {
+        description = "телепортировался к",
+        action = function(admin, target)
+            if not admin:InVehicle() then
+                local offset = Vector(0, 0, 50)
+                local target_pos = target:GetPos() + offset
+                admin:SetPos(target_pos)
+                admin:SetEyeAngles(target:EyeAngles())
+            else
+                admin:ChatPrint("Выйдите из транспорта для телепортации!")
+            end
+        end,
+        icon = "icon16/arrow_merge.png"
+    },
+
+    teleport_to_point = {
+        description = "телепортировал к точке",
+        action = function(admin, target)
+            local trace = admin:GetEyeTrace()
+            if trace.Hit then
+                local safe_pos = util.FindSafePosition(trace.HitPos, 
+                    {target}, 500, 30, Vector(16, 16, 64))
+                
+                if safe_pos then
+                    target:SetPos(safe_pos)
+                    target:SetVelocity(Vector(0,0,0))
+                end
+            end
+        end,
+        icon = "icon16/map_go.png"
+    },   
+    resp = {
+        description = "возродил",
+        action = function(admin, target)
+            target:Spawn()
+        end
+    }
 }
-for v, k in pairs(cmdnetwork) do
-	util.AddNetworkString(k)
+
+local function isCommandAllowed(admin)
+    return admin:IsAdmin() and admin:IsValid()
 end
 
-local cmdtable = {}
-cmdtable["kickuser"] = "кикнул"
-cmdtable["5m"] = "забанил на 5 минут"
-cmdtable["15m"] = "забанил на 15 минут"
-cmdtable["freeze"] = "заморозил"
-cmdtable["unfreeze"] = "разморозил"
-cmdtable["5sec"] = "поджег на 5 секунд"
-cmdtable["10sec"] = "поджег на 10 секунд"
-cmdtable["unignite"] = "потушил"
-cmdtable["5hp"] = "установил 5 здоровья"
-cmdtable["25hp"] = "установил 25 здоровья"
-cmdtable["50hp"] = "установил 50 здоровья"
-cmdtable["100hp"] = "установил 100 здоровья"
-cmdtable["kill"] = "убил"
-cmdtable["silkill"] = "тихо убил"
-cmdtable["0ar"] = "установил 0 брони"
-cmdtable["25ar"] = "установил 25 брони"
-cmdtable["50ar"] = "установил 50 брони"
-cmdtable["100ar"] = "установил 100 брони"
-cmdtable["resp"] = "возродил"
--- cmdtable['sb-setJob'] = 'установил профессию'
+local function registerAdminCommand(commandName, commandData)
+    util.AddNetworkString(commandName)
+    
+    net.Receive(commandName, function(len, admin)
+        if not isCommandAllowed(admin) then return end
+        
+        local target = net.ReadEntity()
+        if not IsValid(target) or not target:IsPlayer() then return end
 
-for v, k in pairs(cmdtable) do
-	adminstration(v, k)
+        print(string.format("[ADMIN] %s %s %s", 
+            admin:GetName(), 
+            commandData.description, 
+            target:GetName()))
+        
+        -- Выполнение действия с обработкой ошибок
+        local success, err = pcall(function()
+            commandData.action(admin, target)
+        end)
+        
+        if not success then
+            ErrorNoHalt("[TELEPORT ERROR] "..err.."\n")
+            admin:ChatPrint("Ошибка телепортации: "..tostring(err))
+        end
+    end)
+end
+
+for commandName, commandData in pairs(ADMIN_COMMANDS) do
+    registerAdminCommand(commandName, commandData)
 end
