@@ -1,3 +1,5 @@
+include('lrp_rating_menu.lua')
+
 local function addMenuOption(menu, text, icon, func)
     local option = menu:AddOption(text, func)
     option:SetIcon(icon)
@@ -10,71 +12,70 @@ local function addSubMenu(menu, text, icon)
     return subMenu
 end
 
+
+local function SendCommand(cmd, target)
+    net.Start(cmd)
+    net.WriteEntity(target)
+    net.SendToServer()
+end
+
 function LRPDerma(pl)
     local lrpDerma = DermaMenu()
-    local localPlayer = LocalPlayer()
 
     addMenuOption(lrpDerma, pl:GetName() .. " (" .. pl:GetUserGroup() .. ")", "icon16/user.png", function()
-        pl:ShowProfile()
+        if IsValid(pl) then
+            pl:ShowProfile()
+        end
     end)
 
     addMenuOption(lrpDerma, "Скопировать SteamID", "icon16/information.png", function() 
         SetClipboardText(pl:SteamID()) 
     end)
 
-    if localPlayer:IsAdmin() then
+    if LocalPlayer():IsAdmin() then
         lrpDerma:AddSpacer()
-        local adminSection = addSubMenu(lrpDerma, "Администрирование", "icon16/shield.png")
-        local moderation = addSubMenu(adminSection, "Модерация", "icon16/error.png")
-        addMenuOption(moderation, "Кикнуть", "icon16/user_delete.png", function() 
-            net.Start("kickuser") 
-            net.WriteEntity(pl) 
-            net.SendToServer() 
-        end)
-        
-        local banMenu = addSubMenu(moderation, "Забанить", "icon16/delete.png")
-        addMenuOption(banMenu, "5 Минут", "icon16/time.png", net.SendCommand("5m", pl))
-        addMenuOption(banMenu, "15 Минут", "icon16/time.png", net.SendCommand("15m", pl))
-        local teleportMenu = addSubMenu(adminSection, "Телепортация", "icon16/arrow_switch.png")
-        addMenuOption(teleportMenu, "К игроку", "icon16/arrow_merge.png", net.SendCommand("teleport_to", pl))
-        addMenuOption(teleportMenu, "К точке прицела", "icon16/map_go.png", net.SendCommand("teleport_to_point", pl))
-        local stateMenu = addSubMenu(adminSection, "Состояние", "icon16/status_online.png")
+        addMenuOption(lrpDerma, "Кикнуть", "icon16/user_delete.png", function() SendCommand('kick', pl) end)
+        local banMenu = addSubMenu(lrpDerma, "Забанить", "icon16/delete.png")
+        addMenuOption(banMenu, "5 минут", "icon16/time.png", function() SendCommand('5m', pl) end)
+        addMenuOption(banMenu, "15 минут", "icon16/time.png", function() SendCommand('15m', pl) end)
+
+        lrpDerma:AddSpacer()
+        addMenuOption(lrpDerma, 'К игроку', 'icon16/arrow_right.png', function() SendCommand('goto', pl) end)
+        addMenuOption(lrpDerma, 'Игрока к себе', 'icon16/arrow_left.png', function() SendCommand('bring', pl) end)
+
+        lrpDerma:AddSpacer()
         if pl:IsFrozen() then
-            addMenuOption(stateMenu, "Разморозить", "icon16/lock_open.png", net.SendCommand("unfreeze", pl))
+            addMenuOption(lrpDerma, "Разморозить", "icon16/lock_open.png", function() SendCommand("unfreeze", pl) end)
         else
-            addMenuOption(stateMenu, "Заморозить", "icon16/lock.png", net.SendCommand("freeze", pl))
+            addMenuOption(lrpDerma, "Заморозить", "icon16/lock.png", function() SendCommand("freeze", pl) end)
         end
         if pl:IsOnFire() then
-            addMenuOption(stateMenu, "Потушить", "icon16/weather_rain.png", net.SendCommand("unignite", pl))
+            addMenuOption(lrpDerma, "Потушить", "icon16/weather_rain.png", function() SendCommand("unignite", pl) end)
         else
-            local igniteSub = addSubMenu(stateMenu, "Поджечь", "icon16/weather_sun.png")
-            addMenuOption(igniteSub, "5 Секунд", "icon16/time.png", net.SendCommand("5sec", pl))
-            addMenuOption(igniteSub, "10 Секунд", "icon16/time.png", net.SendCommand("10sec", pl))
+            local igniteSub = addSubMenu(lrpDerma, "Поджечь", "icon16/weather_sun.png")
+            addMenuOption(igniteSub, "5 секунд", "icon16/time.png", function() SendCommand("5sec", pl) end)
+            addMenuOption(igniteSub, "10 секунд", "icon16/time.png", function() SendCommand("10sec", pl) end)
         end
-        local healthSub = addSubMenu(stateMenu, "Здоровье", "icon16/heart.png")
+        local healthSub = addSubMenu(lrpDerma, "Здоровье", "icon16/heart.png")
         for _, hp in ipairs({5, 25, 50, 100}) do
-            addMenuOption(healthSub, hp .. " HP", "icon16/heart_add.png", net.SendCommand(tostring(hp).."hp", pl))
+            addMenuOption(healthSub, hp .. " HP", "icon16/heart_add.png", function() SendCommand(tostring(hp).."hp", pl) end)
         end
-        local armorSub = addSubMenu(stateMenu, "Броня", "icon16/shield.png")
+        local armorSub = addSubMenu(lrpDerma, "Броня", "icon16/shield.png")
         for _, ar in ipairs({0, 25, 50, 100}) do
-            addMenuOption(armorSub, ar .. " AR", "icon16/shield_add.png", net.SendCommand(tostring(ar).."ar", pl))
+            addMenuOption(armorSub, ar .. " AR", "icon16/shield_add.png", function() SendCommand(tostring(ar).."ar", pl) end)
         end
-        local deathSub = addSubMenu(stateMenu, "Убийство", "icon16/user_red.png")
-        addMenuOption(deathSub, "Обычное", "icon16/heart_delete.png", net.SendCommand("kill", pl))
-        addMenuOption(deathSub, "Тиxое", "icon16/heart_delete.png", net.SendCommand("silkill", pl))
+        local deathSub = addSubMenu(lrpDerma, "Убийство", "icon16/user_red.png")
+        addMenuOption(deathSub, "Обычное", "icon16/heart_delete.png", function() SendCommand("kill", pl) end)
+        addMenuOption(deathSub, "Тиxое", "icon16/heart_delete.png", function() SendCommand("silkill", pl) end)
 
-        addMenuOption(stateMenu, "Возродить", "icon16/arrow_refresh.png", net.SendCommand("resp", pl))
+        addMenuOption(lrpDerma, "Возродить", "icon16/arrow_refresh.png", function() SendCommand("resp", pl) end)
 
-        adminSection:AddSpacer()
+        lrpDerma:AddSpacer()
+        addMenuOption(lrpDerma, 'Оценить игрока', "icon16/add.png", function()
+            ToggleScoreboard(false)
+            RatingMenu(pl)
+        end)
     end
 
     lrpDerma:Open()
-end
-
-function net.SendCommand(cmd, target)
-    return function()
-        net.Start(cmd)
-        net.WriteEntity(target)
-        net.SendToServer()
-    end
 end
