@@ -39,9 +39,11 @@ function LRPDerma(pl)
         addMenuOption(banMenu, "5 минут", "icon16/time.png", function() SendCommand('5m', pl) end)
         addMenuOption(banMenu, "15 минут", "icon16/time.png", function() SendCommand('15m', pl) end)
 
-        lrpDerma:AddSpacer()
-        addMenuOption(lrpDerma, 'К игроку', 'icon16/arrow_right.png', function() SendCommand('goto', pl) end)
-        addMenuOption(lrpDerma, 'Игрока к себе', 'icon16/arrow_left.png', function() SendCommand('bring', pl) end)
+        if pl ~= LocalPlayer() then
+            lrpDerma:AddSpacer()
+            addMenuOption(lrpDerma, 'К игроку', 'icon16/arrow_right.png', function() SendCommand('goto', pl) end)
+            addMenuOption(lrpDerma, 'Игрока к себе', 'icon16/arrow_left.png', function() SendCommand('bring', pl) end)
+        end
 
         lrpDerma:AddSpacer()
         if pl:IsFrozen() then
