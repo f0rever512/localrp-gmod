@@ -3,6 +3,8 @@ include('lrp_blur.lua')
 
 CreateClientConVar('lrp_sbtitle', '1', true, false)
 
+local scale = ScrW() >= 1600 and 1 or 0.8
+
 surface.CreateFont("lrp.sb-small", {
     font = "Calibri",
     size = 25,
@@ -11,34 +13,65 @@ surface.CreateFont("lrp.sb-small", {
     extended = true
 })
 
-surface.CreateFont("lrp.sb-medium", {
+surface.CreateFont('lrpSbTitle-font', {
     font = "Calibri",
-    size = 27,
+    size = 27 * scale,
     weight = 500,
     antialias = true,
     extended = true
 })
 
+local scrw, scrh = ScrW(), ScrH()
+local corner = 8
+
+local main = Color(0, 80, 65)
+local second = Color(0, 0, 0, 125)
+local hovbtn = Color(0, 125, 100)
+
+local blurMaterial = Material('pp/blurscreen')
+
 function ToggleScoreboard(toggle)
-    local scrw, scrh = ScrW(), ScrH()
-    local corner = 15
+    hook.Add( 'RenderScreenspaceEffects', 'lrpScoreboard.blur', function()
+        local state = blurAmmount
+        local a = 0.8 - math.pow( 1 - state, 4 )
 
-    local main = Color(0, 80, 65)
-    local second = Color(0, 0, 0, 125)
-    local hovbtn = Color(0, 125, 100)
-
+        if a > 0 then
+            local colMod = {
+                ['$pp_colour_addr'] = 0,
+                ['$pp_colour_addg'] = 0,
+                ['$pp_colour_addb'] = 0,
+                ['$pp_colour_mulr'] = 0,
+                ['$pp_colour_mulg'] = 0,
+                ['$pp_colour_mulb'] = 0,
+                ['$pp_colour_brightness'] = -a * 0.2,
+                ['$pp_colour_contrast'] = 1 + 0.5 * a,
+                ['$pp_colour_colour'] = 1 - a,
+            }
+    
+            DrawColorModify(colMod)
+            surface.SetDrawColor(255, 255, 255, a * 255)
+            surface.SetMaterial(blurMaterial)
+            
+            for i = 1, 3 do 
+                blurMaterial:SetFloat('$blur', a * i * 2)
+                blurMaterial:Recompute() 
+                render.UpdateScreenEffectTexture()
+                surface.DrawTexturedRect(-1, -1, ScrW() + 2, ScrH() + 2)
+            end
+            
+            draw.NoTexture()
+            surface.SetDrawColor(0, 45, 35, a * 250)
+            surface.DrawRect(-1, -1, ScrW() + 1, ScrH() + 1)
+        end
+    end)
+    
     if toggle then
-        hook.Add('RenderScreenspaceEffects', 'lrp.menu-blur', LRPBlur)
-        -- blurPanel = vgui.Create('DPanel')
-        -- blurPanel:SetSize(ScrW(), ScrH())
-        -- blurPanel.Paint = function(self, w, h)
-        --     LRPBlur()
-        -- end
+        sbActive = true
 
         SBPanel = vgui.Create("DPanel")
         SBPanel:SetSize(scrw * 0.4, scrh * 0.8)
-        SBPanel:SetPos(-SBPanel:GetWide(), scrh * 0.5 - SBPanel:GetTall() / 2)
-        SBPanel:MoveTo(scrw * 0.5 - SBPanel:GetWide() / 2, scrh * 0.5 - SBPanel:GetTall() / 2, 0.2, 0)
+        SBPanel:SetPos(scrw * 0.5 - SBPanel:GetWide() * 0.5, scrh * 0.52 - SBPanel:GetTall() * 0.5)
+        SBPanel:MoveTo(scrw * 0.5 - SBPanel:GetWide() * 0.5, scrh * 0.5 - SBPanel:GetTall() * 0.5, 0.2, 0)
         SBPanel:SetAlpha(0)
         SBPanel:AlphaTo(255, 0.2, 0)
         SBPanel:MakePopup()
@@ -49,10 +82,9 @@ function ToggleScoreboard(toggle)
         if GetConVar("lrp_sbtitle"):GetBool() then
             local top = vgui.Create('DPanel', SBPanel)
             top:Dock(TOP)
-            top:SetTall(32)
+            top:SetTall(scrh * 0.03)
             top.Paint = function(self, w, h)
-                draw.RoundedBox(corner, 0, 0, w, h, main)
-                draw.SimpleText('LocalRP - Scoreboard', "lrp.sb-medium", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                draw.SimpleText('LocalRP - Scoreboard', 'lrpSbTitle-font', w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             end
         end
 
@@ -68,15 +100,15 @@ function ToggleScoreboard(toggle)
         scroll:Dock(FILL)
 
         for _, v in ipairs(player.GetAll()) do
-            local plypanel = vgui.Create("DButton", scroll)
-            plypanel:Dock(TOP)
-            plypanel:DockMargin(6, 0, 6, 6)
-            plypanel:SetTall(SBPanel:GetTall() * 0.06)
-            plypanel:SetText("")
-            plypanel.DoClick = function()
+            local playerPnl = vgui.Create("DButton", scroll)
+            playerPnl:Dock(TOP)
+            playerPnl:DockMargin(6, 0, 6, 6)
+            playerPnl:SetTall(scrh * 0.045)
+            playerPnl:SetText("")
+            playerPnl.DoClick = function()
                 LRPDerma(v)
             end
-            plypanel.Paint = function(self, w, h)
+            playerPnl.Paint = function(self, w, h)
                 if IsValid(v) then
                     draw.RoundedBox(corner, 0, 0, w, h, self:IsHovered() and hovbtn or Color(0, 0, 0, 0))
                     if engine.ActiveGamemode() == 'localrp' then
@@ -85,15 +117,15 @@ function ToggleScoreboard(toggle)
                 end
             end
 
-            local rangicon = vgui.Create("DImage", plypanel)
-            rangicon:Dock(LEFT)
-            rangicon:SetWide(SBPanel:GetWide() * 0.02)
-            rangicon:DockMargin(12, SBPanel:GetTall() * 0.02, 12, SBPanel:GetTall() * 0.02)
-            rangicon:SetImage(v:IsAdmin() and "icon16/user_red.png" or "icon16/user.png")
+            local rangIcon = vgui.Create("DImage", playerPnl)
+            rangIcon:Dock(LEFT)
+            rangIcon:SetWide(SBPanel:GetWide() * 0.02)
+            rangIcon:DockMargin(12, SBPanel:GetTall() * 0.02, 12, SBPanel:GetTall() * 0.02)
+            rangIcon:SetImage(v:IsAdmin() and "icon16/user_red.png" or "icon16/user.png")
 
-            local img = vgui.Create("AvatarImage", plypanel)
+            local img = vgui.Create("AvatarImage", playerPnl)
             img:Dock(LEFT)
-            img:SetWide(SBPanel:GetWide() * 0.06)
+            img:SetWide(scrh * 0.04)
             img:DockMargin(0, 4, 0, 4)
             img:SetPlayer(v, 38)
 
@@ -107,7 +139,7 @@ function ToggleScoreboard(toggle)
                 end
             end
 
-            local nameLabel = vgui.Create("DLabel", plypanel)
+            local nameLabel = vgui.Create("DLabel", playerPnl)
             nameLabel:Dock(LEFT)
             nameLabel:DockMargin(12, 0, 0, 0)
             nameLabel:SetText(v:Name())
@@ -116,7 +148,7 @@ function ToggleScoreboard(toggle)
             nameLabel:SizeToContents()
 
             if v ~= LocalPlayer() then
-                local mute = vgui.Create("DImageButton", plypanel)
+                local mute = vgui.Create("DImageButton", playerPnl)
                 mute:Dock(RIGHT)
                 mute:SetWide(SBPanel:GetWide() * 0.05)
                 mute:DockMargin(0, 8, 8, 8)
@@ -127,7 +159,7 @@ function ToggleScoreboard(toggle)
                 end
             end
 
-            local kdLabel = vgui.Create("DLabel", plypanel)
+            local kdLabel = vgui.Create("DLabel", playerPnl)
             kdLabel:Dock(RIGHT)
             kdLabel:DockMargin(0, 0, v == LocalPlayer() and SBPanel:GetWide() * 0.1 or SBPanel:GetWide() * 0.04, 0)
             kdLabel:SetText(string.format("%d      %d      %d", v:Frags(), v:Deaths(), v:Ping()))
@@ -136,12 +168,12 @@ function ToggleScoreboard(toggle)
             kdLabel:SizeToContents()
         end
     else
+        sbActive = false
+
         if IsValid(SBPanel) then
             SBPanel:AlphaTo(0, 0.2, 0)
-            SBPanel:MoveTo(scrw, scrh * 0.5 - SBPanel:GetTall() / 2, 0.2, 0)
+            SBPanel:MoveTo(scrw * 0.5 - SBPanel:GetWide() * 0.5, scrh * 0.52 - SBPanel:GetTall() / 2, 0.2, 0)
             timer.Simple(0.2, function()
-                hook.Remove('RenderScreenspaceEffects', 'lrp.menu-blur')
-                -- blurPanel:Remove()
                 SBPanel:Remove()
             end)
         end
@@ -157,3 +189,7 @@ hook.Add( "ScoreboardHide", "Scoreboard_Close", function()
 	ToggleScoreboard(false)
 	CloseDermaMenus()
 end )
+
+hook.Add('Think', 'lrpScoreboard.think', function()
+    blurAmmount = math.Approach( blurAmmount or 0, sbActive and 0.8 or 0, FrameTime() / 0.3 )
+end)
