@@ -1,5 +1,4 @@
 include('cl_quick_menu.lua')
-include('lrp_blur.lua')
 
 CreateClientConVar('lrp_sbtitle', '1', true, false)
 
