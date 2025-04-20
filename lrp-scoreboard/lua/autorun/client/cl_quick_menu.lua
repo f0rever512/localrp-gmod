@@ -34,7 +34,7 @@ function LRPDerma(pl)
 
     if LocalPlayer():IsAdmin() then
         lrpDerma:AddSpacer()
-        addMenuOption(lrpDerma, "Кикнуть", "icon16/user_delete.png", function() SendCommand('kick', pl) end)
+        addMenuOption(lrpDerma, "Кикнуть", "icon16/user_delete.png", function() SendCommand('kickUser', pl) end)
         local banMenu = addSubMenu(lrpDerma, "Забанить", "icon16/delete.png")
         addMenuOption(banMenu, "5 минут", "icon16/time.png", function() SendCommand('5m', pl) end)
         addMenuOption(banMenu, "15 минут", "icon16/time.png", function() SendCommand('15m', pl) end)

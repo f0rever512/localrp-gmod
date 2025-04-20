@@ -1,5 +1,5 @@
 local adminCommands = {
-    kickuser = {
+    ['kickUser'] = {
         desc = "кикнул",
         action = function(admin, target)
             target:Kick("Kicked from the server")
@@ -71,7 +71,7 @@ local adminCommands = {
             if target:Alive() then target:SetHealth(100) end
         end
     },
-    kill = {
+    ['kill'] = {
         desc = "убил",
         action = function(admin, target)
             if target:Alive() then target:Kill() end
