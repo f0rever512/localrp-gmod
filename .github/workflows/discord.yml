@@ -1,0 +1,55 @@
+name: Push to Discord
+
+on:
+  push:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Send message to Discord
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          AUTHOR: ${{ github.actor }}
+          AVATAR_URL: https://github.com/${{ github.actor }}.png
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          COMMITS_JSON='${{ toJson(github.event.commits) }}'
+          if [ "$COMMITS_JSON" = "[]" ]; then
+            echo "Коммиты для отправки отсутствуют"
+            exit 0
+          fi
+
+          DESCRIPTION=$(echo "$COMMITS_JSON" | jq -r '.[] | "[`\(.id[0:7])`](\(.url)) – \(.author.username)\n\(.message | gsub("\n\n"; "\n"))\n"' | head -c 3900)
+
+          COMPARE_URL="https://github.com/$REPO/compare/${{ github.event.before }}...${{ github.sha }}"
+          REPO_NAME=$(echo "$REPO" | cut -d'/' -f2)
+          
+          DESCRIPTION=$(echo -e "⬆️ Новые коммиты в **[$REPO_NAME:$BRANCH]($COMPARE_URL)**\n\n$DESCRIPTION")
+          TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+
+          jq -n --arg title "" \
+                --arg description "$DESCRIPTION" \
+                --arg author_name "$AUTHOR" \
+                --arg author_icon "$AVATAR_URL" \
+                --arg timestamp "$TIMESTAMP" \
+                --argjson color 343090 \
+                '{
+                  embeds: [{
+                    title: $title,
+                    description: $description,
+                    color: $color,
+                    author: {
+                      name: $author_name,
+                      icon_url: $author_icon
+                    },
+                    timestamp: $timestamp
+                  }]
+                }' > payload.json
+
+          curl -X POST -H "Content-Type: application/json" -d @payload.json "$DISCORD_WEBHOOK"
