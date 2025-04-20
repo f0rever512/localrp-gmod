@@ -1,6 +1,6 @@
 include('cl_quick_menu.lua')
 
-CreateClientConVar('lrp_sbtitle', '1', true, false)
+CreateClientConVar('cl_lrp_sb_title', '1', true, false)
 
 local scale = ScrW() >= 1600 and 1 or 0.8
 
@@ -92,7 +92,7 @@ function ToggleScoreboard(toggle)
             draw.RoundedBox(corner, 0, 0, w, h, main)
         end
 
-        if GetConVar("lrp_sbtitle"):GetBool() then
+        if GetConVar("cl_lrp_sb_title"):GetBool() then
             local top = vgui.Create('DPanel', SBPanel)
             top:Dock(TOP)
             top:SetTall(height * 0.03)
@@ -103,7 +103,7 @@ function ToggleScoreboard(toggle)
 
         local fill = vgui.Create("DPanel", SBPanel)
         fill:Dock(FILL)
-        fill:DockMargin(6, GetConVar("lrp_sbtitle"):GetBool() and 0 or 6, 6, 6)
+        fill:DockMargin(6, GetConVar("cl_lrp_sb_title"):GetBool() and 0 or 6, 6, 6)
         fill:DockPadding(0, 6, 0, 6)
         fill.Paint = function(self, w, h)
             draw.RoundedBox(corner, 0, 0, w, h, second)
