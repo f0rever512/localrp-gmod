@@ -1,8 +1,8 @@
 local adminCommands = {
     ['kickUser'] = {
-        desc = "кикнул",
+        desc = 'кикнул',
         action = function(admin, target)
-            target:Kick("Kicked from the server")
+            target:Kick('Кикнут ' .. admin:Nick())
         end
     },
     ["5m"] = {
@@ -17,13 +17,13 @@ local adminCommands = {
             target:Ban(15, true)
         end
     },
-    freeze = {
+    ['freeze'] = {
         desc = "заморозил",
         action = function(admin, target)
             target:Freeze(true)
         end
     },
-    unfreeze = {
+    ['unfreeze'] = {
         desc = "разморозил",
         action = function(admin, target)
             target:Freeze(false)
@@ -41,7 +41,7 @@ local adminCommands = {
             if target:Alive() then target:Ignite(10) end
         end
     },
-    unignite = {
+    ['unignite'] = {
         desc = "потушил",
         action = function(admin, target)
             if target:Alive() then target:Extinguish() end
@@ -77,7 +77,7 @@ local adminCommands = {
             if target:Alive() then target:Kill() end
         end
     },
-    silkill = {
+    ['silkill'] = {
         desc = "тихо убил",
         action = function(admin, target)
             if target:Alive() then target:KillSilent() end
@@ -107,7 +107,7 @@ local adminCommands = {
             if target:Alive() then target:SetArmor(100) end
         end
     },
-	resp = {
+	['resp'] = {
         desc = "возродил",
         action = function(admin, target)
             target:Spawn()
@@ -123,7 +123,8 @@ local adminCommands = {
                 admin:SetPos(target_pos)
                 admin:SetEyeAngles(target:EyeAngles())
             end
-        end
+        end,
+        selfBlock = true,
     },
 
     ['bring'] = {
@@ -144,7 +145,8 @@ local adminCommands = {
 				target:SetPos(teleportPos)
 				target:SetVelocity(Vector(0, 0, 0))
 			end
-        end
+        end,
+        selfBlock = true,
     },
 }
 
@@ -157,7 +159,7 @@ local function registerAdminCommand(commandName, commandData)
         local target = net.ReadEntity()
         if not IsValid(target) or not target:IsPlayer() then return end
 
-		MsgC(Color(100, 220, 100, 220), string.format("[LocalRP] %s %s %s\n",
+		MsgC(Color(100, 220, 100), string.format("[LocalRP] %s %s %s\n",
 			admin:GetName(),
 			commandData.desc,
 			target:GetName()))
@@ -169,3 +171,61 @@ end
 for commandName, commandData in pairs(adminCommands) do
     registerAdminCommand(commandName, commandData)
 end
+
+local function RunConCommand(ply, cmd, args)
+    if not (IsValid(ply) and ply:IsAdmin()) then return end
+
+    local command = args[1]
+    local targetName = args[2]
+
+    if not targetName or not command then
+        ply:ChatPrint('[LRP - Admin] Использование: lrp_admin <команда> <ник/SteamID>')
+        return
+    end
+
+    local target
+    for _, v in ipairs(player.GetAll()) do
+        if string.find(string.lower(v:Nick()), string.lower(targetName), 1, true)
+            or string.lower(v:SteamID()) == string.lower(targetName) then
+            target = v
+        end
+    end
+
+    if not IsValid(target) then
+        ply:ChatPrint('[LRP - Admin] Игрок не найден')
+        return
+    end
+
+    local cmdData = adminCommands[command]
+    if not cmdData then
+        local availableCommands = {}
+        for cmdName, _ in pairs(adminCommands) do
+            table.insert(availableCommands, cmdName)
+        end
+        ply:ChatPrint('[LRP - Admin] Доступные команды: ' .. table.concat(availableCommands, '; '))
+        return
+    end
+
+    if cmdData.selfBlock and target == ply then
+        ply:ChatPrint('[LRP - Admin] Вы не можете использовать эту команду на себе')
+        return
+    end
+
+    MsgC(Color(100, 220, 100), string.format('[LRP - Admin] %s %s %s\n',
+            ply:Nick(),
+			cmdData.desc,
+			target:Nick()))
+
+    cmdData.action(ply, target)
+end
+
+local function AutoComplete(cmd, args)
+    local hints = {}
+    for cmdName, _ in pairs(adminCommands) do
+        table.insert(hints, string.format("%s %s", cmd, cmdName))
+    end
+
+    return hints
+end
+
+concommand.Add('lrp_admin', RunConCommand, AutoComplete)
