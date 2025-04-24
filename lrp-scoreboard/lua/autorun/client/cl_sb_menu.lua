@@ -92,6 +92,14 @@ function ToggleScoreboard(toggle)
             draw.RoundedBox(corner, 0, 0, w, h, main)
         end
 
+        function SBPanel:Think()
+            if self:IsValid() and gui.IsGameUIVisible() then
+                blurAmmount = 0
+                sbActive = false
+                self:Remove()
+            end
+        end
+
         if GetConVar("cl_lrp_sb_title"):GetBool() then
             local top = vgui.Create('DPanel', SBPanel)
             top:Dock(TOP)
