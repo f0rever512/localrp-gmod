@@ -212,20 +212,36 @@ local function RunConCommand(ply, cmd, args)
     end
 
     MsgC(Color(100, 220, 100), string.format('[LRP - Admin] %s %s %s\n',
-            ply:Nick(),
-			cmdData.desc,
-			target:Nick()))
+        ply:Nick(),
+        cmdData.desc,
+        target:Nick()))
 
     cmdData.action(ply, target)
 end
 
 local function AutoComplete(cmd, args)
-    local hints = {}
-    for cmdName, _ in pairs(adminCommands) do
-        table.insert(hints, string.format("%s %s", cmd, cmdName))
+    local autoCompletes = {}
+
+    local splitArgs = string.Split(args:Trim(), " ")
+    local numArgs = #splitArgs
+
+    if numArgs == 1 then
+        local partCmdName = string.lower(splitArgs[1])
+        for cmdName, _ in pairs(adminCommands) do
+            if string.find(string.lower(cmdName), partCmdName, 1) then
+                table.insert(autoCompletes, string.format("%s %s", cmd, cmdName))
+            end
+        end
+    elseif numArgs == 2 then
+        local partName = string.lower(splitArgs[2])
+        for _, ply in ipairs(player.GetAll()) do
+            if string.find(string.lower(ply:Nick()), partName, 1) then
+                table.insert(autoCompletes, string.format("%s %s %s", cmd, splitArgs[1], ply:Nick()))
+            end
+        end
     end
 
-    return hints
+    return autoCompletes
 end
 
 concommand.Add('lrp_admin', RunConCommand, AutoComplete)
