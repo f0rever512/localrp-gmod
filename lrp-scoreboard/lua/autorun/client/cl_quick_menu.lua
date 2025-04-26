@@ -1,5 +1,3 @@
-include('lrp_rating_menu.lua')
-
 local function addMenuOption(menu, text, icon, func)
     local option = menu:AddOption(text, func)
     option:SetIcon(icon)
@@ -123,12 +121,6 @@ function LRPDerma(target)
                 )
             end)
         end
-
-        lrpDerma:AddSpacer()
-        addMenuOption(lrpDerma, 'Оценить игрока', "icon16/add.png", function()
-            ToggleScoreboard(false)
-            RatingMenu(target)
-        end)
     end
 
     lrpDerma:Open()
