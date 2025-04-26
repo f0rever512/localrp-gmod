@@ -24,10 +24,12 @@ function LRPDerma(target)
     local ply = LocalPlayer()
 
     local function runCommand(cmdName, amount)
+        local cmdTarget = target:IsBot() and target:Nick() or ('"' .. target:SteamID() .. '"')
+
         if amount then
-            return ply:ConCommand('lrp_admin ' .. cmdName .. ' ' .. (target:IsBot() and target:Nick() or target:SteamID()) .. ' ' .. amount)
+            return ply:ConCommand('lrp_admin ' .. cmdName .. ' ' .. cmdTarget .. ' ' .. amount)
         else
-            return ply:ConCommand('lrp_admin ' .. cmdName .. ' ' .. (target:IsBot() and target:Nick() or target:SteamID()))
+            return ply:ConCommand('lrp_admin ' .. cmdName .. ' ' .. cmdTarget)
         end
     end
 
@@ -106,6 +108,8 @@ function LRPDerma(target)
         end
 
         if target ~= ply then
+            addMenuOption(lrpDerma, 'Отправить сообщение', 'icon16/wand.png', function() runCommand('message') end)
+
             lrpDerma:AddSpacer()
             addMenuOption(lrpDerma, "Кикнуть", "icon16/user_delete.png", function() runCommand('kick') end)
             local banMenu = addSubMenu(lrpDerma, "Забанить", "icon16/delete.png")

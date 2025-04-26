@@ -1,3 +1,6 @@
+util.AddNetworkString('lrpScoreboard.admin.messageMenu')
+util.AddNetworkString('lrpScoreboard.admin.messageSend')
+
 local cmdList = {
     ['kick'] = {
         desc = 'кикнул',
@@ -83,6 +86,17 @@ local cmdList = {
         end
     },
 
+    ['message'] = {
+        desc = 'отправил сообщение',
+        action = function(admin, target)
+            net.Start('lrpScoreboard.admin.messageMenu')
+            net.WriteEntity(admin)
+            net.WriteEntity(target)
+            net.Send(admin)
+        end,
+        selfBlock = true,
+    },
+
     ['hp'] = {
         desc = 'установил %d здоровья',
         action = function(admin, target, amount)
@@ -128,6 +142,14 @@ local cmdList = {
         end
     },
 }
+
+net.Receive('lrpScoreboard.admin.messageSend', function()
+    local message = net.ReadString()
+    local target = net.ReadEntity()
+    net.Start('lrpScoreboard.admin.messageSend')
+    net.WriteString(message)
+    net.Send(target)
+end)
 
 local function registerAdminCommand(commandName, commandData)
     util.AddNetworkString(commandName)
