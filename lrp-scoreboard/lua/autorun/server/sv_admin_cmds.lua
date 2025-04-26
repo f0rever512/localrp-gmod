@@ -1,117 +1,18 @@
-local adminCommands = {
-    ['kickUser'] = {
+local cmdList = {
+    ['kick'] = {
         desc = 'кикнул',
         action = function(admin, target)
             target:Kick('Кикнут ' .. admin:Nick())
         end
     },
-    ["5m"] = {
-        desc = "забанил на 5 минут",
-        action = function(admin, target)
-            target:Ban(5, true)
-        end
-    },
-    ["15m"] = {
-        desc = "забанил на 15 минут",
-        action = function(admin, target)
-            target:Ban(15, true)
-        end
-    },
-    ['freeze'] = {
-        desc = "заморозил",
-        action = function(admin, target)
-            target:Freeze(true)
-        end
-    },
-    ['unfreeze'] = {
-        desc = "разморозил",
-        action = function(admin, target)
-            target:Freeze(false)
-        end
-    },
-    ["5sec"] = {
-        desc = "поджег на 5 секунд",
-        action = function(admin, target)
-            if target:Alive() then target:Ignite(5) end
-        end
-    },
-    ["10sec"] = {
-        desc = "поджег на 10 секунд",
-        action = function(admin, target)
-            if target:Alive() then target:Ignite(10) end
-        end
-    },
-    ['unignite'] = {
-        desc = "потушил",
-        action = function(admin, target)
-            if target:Alive() then target:Extinguish() end
-        end
-    },
-    ["5hp"] = {
-        desc = "установил 5 здоровья",
-        action = function(admin, target)
-            if target:Alive() then target:SetHealth(5) end
-        end
-    },
-    ["25hp"] = {
-        desc = "установил 25 здоровья",
-        action = function(admin, target)
-            if target:Alive() then target:SetHealth(25) end
-        end
-    },
-    ["50hp"] = {
-        desc = "установил 50 здоровья",
-        action = function(admin, target)
-            if target:Alive() then target:SetHealth(50) end
-        end
-    },
-    ["100hp"] = {
-        desc = "установил 100 здоровья",
-        action = function(admin, target)
-            if target:Alive() then target:SetHealth(100) end
-        end
-    },
-    ['kill'] = {
-        desc = "убил",
-        action = function(admin, target)
-            if target:Alive() then target:Kill() end
-        end
-    },
-    ['silkill'] = {
-        desc = "тихо убил",
-        action = function(admin, target)
-            if target:Alive() then target:KillSilent() end
-        end
-    },
-    ["0ar"] = {
-        desc = "установил 0 брони",
-        action = function(admin, target)
-            if target:Alive() then target:SetArmor(0) end
-        end
-    },
-    ["25ar"] = {
-        desc = "установил 25 брони",
-        action = function(admin, target)
-            if target:Alive() then target:SetArmor(25) end
-        end
-    },
-    ["50ar"] = {
-        desc = "установил 50 брони",
-        action = function(admin, target)
-            if target:Alive() then target:SetArmor(50) end
-        end
-    },
-    ["100ar"] = {
-        desc = "установил 100 брони",
-        action = function(admin, target)
-            if target:Alive() then target:SetArmor(100) end
-        end
-    },
-	['resp'] = {
-        desc = "возродил",
-        action = function(admin, target)
-            target:Spawn()
-        end
+
+    ['ban'] = {
+        desc = 'забанил на %d минут',
+        action = function(admin, target, amount)
+            target:Ban(math.Clamp(tonumber(amount), 0, 1200), true)
+        end,
+        withArgs = true,
+        selfBlock = true,
     },
 
     ['goto'] = {
@@ -148,6 +49,84 @@ local adminCommands = {
         end,
         selfBlock = true,
     },
+
+    ['freeze'] = {
+        desc = "заморозил",
+        action = function(admin, target)
+            target:Freeze(true)
+        end
+    },
+
+    ['unfreeze'] = {
+        desc = "разморозил",
+        action = function(admin, target)
+            target:Freeze(false)
+        end
+    },
+
+    ['ignite'] = {
+        desc = 'поджег на %d секунд',
+        action = function(admin, target, amount)
+            if target:Alive() then
+                target:Ignite(math.Clamp(tonumber(amount), 1, 60))
+            else
+                admin:ChatPrint('[LRP - Admin] Выполнить эту команду на мертвом игроке нельзя')
+            end
+        end,
+        withArgs = true,
+    },
+
+    ['unignite'] = {
+        desc = "потушил",
+        action = function(admin, target)
+            if target:Alive() then target:Extinguish() end
+        end
+    },
+
+    ['hp'] = {
+        desc = 'установил %d здоровья',
+        action = function(admin, target, amount)
+            if target:Alive() then
+                target:SetHealth(math.Clamp(tonumber(amount), 1, target:GetMaxHealth()))
+            else
+                admin:ChatPrint('[LRP - Admin] Выполнить эту команду на мертвом игроке нельзя')
+            end
+        end,
+        withArgs = true,
+    },
+
+    ['ar'] = {
+        desc = 'установил %d брони',
+        action = function(admin, target, amount)
+            if target:Alive() then
+                target:SetArmor(math.Clamp(tonumber(amount), 1, target:GetMaxArmor()))
+            else
+                admin:ChatPrint('[LRP - Admin] Выполнить эту команду на мертвом игроке нельзя')
+            end
+        end,
+        withArgs = true,
+    },
+
+    ['kill'] = {
+        desc = "убил",
+        action = function(admin, target)
+            if target:Alive() then target:Kill() end
+        end
+    },
+
+    ['killsilent'] = {
+        desc = "тихо убил",
+        action = function(admin, target)
+            if target:Alive() then target:KillSilent() end
+        end
+    },
+
+	['respawn'] = {
+        desc = "возродил",
+        action = function(admin, target)
+            target:Spawn()
+        end
+    },
 }
 
 local function registerAdminCommand(commandName, commandData)
@@ -168,7 +147,7 @@ local function registerAdminCommand(commandName, commandData)
     end)
 end
 
-for commandName, commandData in pairs(adminCommands) do
+for commandName, commandData in pairs(cmdList) do
     registerAdminCommand(commandName, commandData)
 end
 
@@ -184,12 +163,13 @@ local function RunConCommand(ply, cmd, args)
         return
     end
 
-    local cmdData = adminCommands[command]
+    local cmdData = cmdList[command]
     if not cmdData then
         local availableCommands = {}
-        for cmdName, _ in pairs(adminCommands) do
+        for cmdName, _ in SortedPairs(cmdList) do
             table.insert(availableCommands, cmdName)
         end
+        
         ply:ChatPrint('[LRP - Admin] Доступные команды: ' .. table.concat(availableCommands, '; '))
         return
     end
@@ -242,7 +222,7 @@ local function AutoComplete(cmd, args)
 
     if numArgs == 1 then
         local partCmdName = string.lower(splitArgs[1])
-        for cmdName, _ in pairs(adminCommands) do
+        for cmdName, _ in pairs(cmdList) do
             if string.find(string.lower(cmdName), partCmdName, 1) then
                 table.insert(autoCompletes, string.format('%s %s', cmd, cmdName))
             end
