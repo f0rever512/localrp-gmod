@@ -177,10 +177,34 @@ local function RunConCommand(ply, cmd, args)
 
     local command = args[1]
     local targetName = args[2]
+    local amount = args[3]
 
-    if not targetName or not command then
+    if not command or not targetName then
         ply:ChatPrint('[LRP - Admin] Использование: lrp_admin <команда> <ник/SteamID>')
         return
+    end
+
+    local cmdData = adminCommands[command]
+    if not cmdData then
+        local availableCommands = {}
+        for cmdName, _ in pairs(adminCommands) do
+            table.insert(availableCommands, cmdName)
+        end
+        ply:ChatPrint('[LRP - Admin] Доступные команды: ' .. table.concat(availableCommands, '; '))
+        return
+    end
+
+    if cmdData.withArgs then
+        -- проверка на наличие 3 аргумента
+        if not amount then
+            ply:ChatPrint('[LRP - Admin] Использование: lrp_admin ' .. command .. ' <ник/SteamID> <параметр>')
+            return
+        end
+
+        if not tonumber(amount) then
+            ply:ChatPrint('[LRP - Admin] Параметр должен быть числом')
+            return
+        end
     end
 
     local target
@@ -196,16 +220,6 @@ local function RunConCommand(ply, cmd, args)
         return
     end
 
-    local cmdData = adminCommands[command]
-    if not cmdData then
-        local availableCommands = {}
-        for cmdName, _ in pairs(adminCommands) do
-            table.insert(availableCommands, cmdName)
-        end
-        ply:ChatPrint('[LRP - Admin] Доступные команды: ' .. table.concat(availableCommands, '; '))
-        return
-    end
-
     if cmdData.selfBlock and target == ply then
         ply:ChatPrint('[LRP - Admin] Вы не можете использовать эту команду на себе')
         return
@@ -213,10 +227,11 @@ local function RunConCommand(ply, cmd, args)
 
     MsgC(Color(100, 220, 100), string.format('[LRP - Admin] %s %s %s\n',
         ply:Nick(),
-        cmdData.desc,
-        target:Nick()))
+        amount and string.format(cmdData.desc, amount) or cmdData.desc,
+        target:Nick()
+    ))
 
-    cmdData.action(ply, target)
+    cmdData.action(ply, target, amount)
 end
 
 local function AutoComplete(cmd, args)
@@ -229,14 +244,14 @@ local function AutoComplete(cmd, args)
         local partCmdName = string.lower(splitArgs[1])
         for cmdName, _ in pairs(adminCommands) do
             if string.find(string.lower(cmdName), partCmdName, 1) then
-                table.insert(autoCompletes, string.format("%s %s", cmd, cmdName))
+                table.insert(autoCompletes, string.format('%s %s', cmd, cmdName))
             end
         end
     elseif numArgs == 2 then
         local partName = string.lower(splitArgs[2])
         for _, ply in ipairs(player.GetAll()) do
             if string.find(string.lower(ply:Nick()), partName, 1) then
-                table.insert(autoCompletes, string.format("%s %s %s", cmd, splitArgs[1], ply:Nick()))
+                table.insert(autoCompletes, string.format('%s %s "%s"', cmd, splitArgs[1], ply:Nick()))
             end
         end
     end
