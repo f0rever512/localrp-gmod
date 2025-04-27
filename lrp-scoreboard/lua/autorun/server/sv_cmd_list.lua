@@ -16,13 +16,29 @@ lrpConCommands = lrpConCommands or {
     },
 
     ['goto'] = {
-        desc = "телепортировался к",
+        desc = 'телепортировался к',
         action = function(admin, target)
             if not admin:InVehicle() then
-                local offset = Vector(0, 0, 80)
-                local target_pos = target:GetPos() + offset
+                local offset = target:GetForward() * 60
+                local target_pos = target:GetPos() - offset
+
+                local hullTrace = util.TraceHull({
+                    start = target_pos,
+                    endpos = target_pos,
+                    mins = Vector(-16, -16, 0),
+                    maxs = Vector(16, 16, 72),
+                    filter = {admin, target}
+                })
+
+                if admin:GetMoveType() ~= MOVETYPE_NOCLIP and (hullTrace.Hit or not util.IsInWorld(target_pos)) then
+                    admin:ChatPrint('[LRP - Admin] Нет свободного места для телепортации')
+                    return
+                end
+
                 admin:SetPos(target_pos)
                 admin:SetEyeAngles(target:EyeAngles())
+            else
+                admin:ChatPrint('[LRP - Admin] Телепортироваться, находясь в транспорте нельзя')
             end
         end,
         selfBlock = true,
@@ -31,21 +47,25 @@ lrpConCommands = lrpConCommands or {
     ['bring'] = {
         desc = 'телепортировал к себе',
         action = function(admin, target)
-            local maxDistance = 200
-			local trace = admin:GetEyeTrace()
-	
-			if trace.Hit then
-				local distance = admin:GetPos():DistToSqr(trace.HitPos)
-				local teleportPos = trace.HitPos
-	
-				if distance > maxDistance * maxDistance then
-					local direction = (trace.HitPos - admin:GetPos()):GetNormalized()
-					teleportPos = admin:GetPos() + direction * maxDistance
-				end
-	
-				target:SetPos(teleportPos)
-				target:SetVelocity(Vector(0, 0, 0))
-			end
+            local offset = admin:GetForward() * 80
+            local target_pos = admin:GetPos() + offset
+
+            local hullTrace = util.TraceHull({
+                start = target_pos,
+                endpos = target_pos,
+                mins = Vector(-16, -16, 0),
+                maxs = Vector(16, 16, 72),
+                filter = {admin, target}
+            })
+
+            if hullTrace.Hit or not util.IsInWorld(target_pos) then
+                admin:ChatPrint('[LRP - Admin] Нет свободного места для телепортации')
+                return
+            end
+
+            target:SetPos(target_pos)
+            target:SetEyeAngles((admin:GetPos() - target:GetPos()):Angle())
+            target:SetVelocity(Vector(0, 0, 0))
         end,
         selfBlock = true,
     },
