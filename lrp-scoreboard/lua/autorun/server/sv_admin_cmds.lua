@@ -1,6 +1,9 @@
 include('sv_cmd_list.lua')
 AddCSLuaFile('sv_cmd_list.lua')
 
+resource.AddFile('resource/localization/en/lrp_scoreboard.properties')
+resource.AddFile('resource/localization/ru/lrp_scoreboard.properties')
+
 local function RunConCommand(ply, cmd, args)
     if not (IsValid(ply) and ply:IsAdmin()) then return end
 
