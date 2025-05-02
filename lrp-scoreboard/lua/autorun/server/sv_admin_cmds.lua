@@ -4,6 +4,15 @@ AddCSLuaFile('sv_cmd_list.lua')
 resource.AddFile('resource/localization/en/lrp_scoreboard.properties')
 resource.AddFile('resource/localization/ru/lrp_scoreboard.properties')
 
+util.AddNetworkString('lrpScoreboard.admin.hints')
+
+local function sendHint(ply, hintName, option)
+    net.Start('lrpScoreboard.admin.hints')
+    net.WriteUInt(hintName, 3)
+    if option then net.WriteString(option) end
+    net.Send(ply)
+end
+
 local function RunConCommand(ply, cmd, args)
     if not (IsValid(ply) and ply:IsAdmin()) then return end
 
@@ -12,7 +21,7 @@ local function RunConCommand(ply, cmd, args)
     local amount = args[3]
 
     if not command or not targetName then
-        ply:ChatPrint('[LRP - Admin] Использование: lrp_admin <команда> <ник/SteamID>')
+        sendHint(ply, lrpAdminHints.USAGE)
         return
     end
 
@@ -23,19 +32,19 @@ local function RunConCommand(ply, cmd, args)
             table.insert(availableCommands, cmdName)
         end
         
-        ply:ChatPrint('[LRP - Admin] Доступные команды: ' .. table.concat(availableCommands, '; '))
+        sendHint(ply, lrpAdminHints.AVAILABLE_COMMANDS, table.concat(availableCommands, '; '))
         return
     end
 
     if cmdData.withArgs then
         -- проверка на наличие 3 аргумента
         if not amount then
-            ply:ChatPrint('[LRP - Admin] Использование: lrp_admin ' .. command .. ' <ник/SteamID> <параметр>')
+            sendHint(ply, lrpAdminHints.USAGE_ARGS, command)
             return
         end
 
         if not tonumber(amount) then
-            ply:ChatPrint('[LRP - Admin] Параметр должен быть числом')
+            sendHint(ply, lrpAdminHints.PARAMETER)
             return
         end
     end
@@ -49,12 +58,12 @@ local function RunConCommand(ply, cmd, args)
     end
 
     if not IsValid(target) then
-        ply:ChatPrint('[LRP - Admin] Игрок не найден')
+        sendHint(ply, lrpAdminHints.PLAYER_NOT_FOUND)
         return
     end
 
     if cmdData.selfBlock and target == ply then
-        ply:ChatPrint('[LRP - Admin] Вы не можете использовать эту команду на себе')
+        sendHint(ply, lrpAdminHints.SELF_BLOCK)
         return
     end
 
