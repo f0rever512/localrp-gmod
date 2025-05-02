@@ -97,6 +97,7 @@ function ToggleScoreboard(toggle)
                 blurAmmount = 0
                 sbActive = false
                 self:Remove()
+                CloseDermaMenus()
             end
         end
 
