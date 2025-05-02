@@ -1,13 +1,13 @@
 lrpConCommands = lrpConCommands or {
     ['kick'] = {
-        desc = 'кикнул',
+        desc = 'kicked',
         action = function(admin, target)
             target:Kick('Кикнут ' .. admin:Nick())
         end
     },
 
     ['ban'] = {
-        desc = 'забанил на %d минут',
+        desc = 'banned for %d minutes',
         action = function(admin, target, amount)
             target:Ban(math.Clamp(tonumber(amount), 0, 1200), true)
         end,
@@ -16,7 +16,7 @@ lrpConCommands = lrpConCommands or {
     },
 
     ['goto'] = {
-        desc = 'телепортировался к',
+        desc = 'teleported to',
         action = function(admin, target)
             if not admin:InVehicle() then
                 local offset = target:GetForward() * 60
@@ -45,7 +45,7 @@ lrpConCommands = lrpConCommands or {
     },
 
     ['bring'] = {
-        desc = 'телепортировал к себе',
+        desc = 'teleported to himself',
         action = function(admin, target)
             local offset = admin:GetForward() * 80
             local target_pos = admin:GetPos() + offset
@@ -71,21 +71,21 @@ lrpConCommands = lrpConCommands or {
     },
 
     ['freeze'] = {
-        desc = "заморозил",
+        desc = 'froze',
         action = function(admin, target)
             target:Freeze(true)
         end
     },
 
     ['unfreeze'] = {
-        desc = "разморозил",
+        desc = 'unfroze',
         action = function(admin, target)
             target:Freeze(false)
         end
     },
 
     ['ignite'] = {
-        desc = 'поджег на %d секунд',
+        desc = 'ignited for %d seconds',
         action = function(admin, target, amount)
             if target:Alive() then
                 target:Ignite(math.Clamp(tonumber(amount), 1, 60))
@@ -97,14 +97,14 @@ lrpConCommands = lrpConCommands or {
     },
 
     ['unignite'] = {
-        desc = "потушил",
+        desc = 'extinguished',
         action = function(admin, target)
             if target:Alive() then target:Extinguish() end
         end
     },
 
     ['message'] = {
-        desc = 'отправил сообщение',
+        desc = 'sent message',
         action = function(admin, target)
             net.Start('lrpScoreboard.admin.messageMenu')
             net.WriteEntity(admin)
@@ -115,7 +115,7 @@ lrpConCommands = lrpConCommands or {
     },
 
     ['hp'] = {
-        desc = 'установил %d здоровья',
+        desc = 'set %d health',
         action = function(admin, target, amount)
             if target:Alive() then
                 target:SetHealth(math.Clamp(tonumber(amount), 1, target:GetMaxHealth()))
@@ -127,7 +127,7 @@ lrpConCommands = lrpConCommands or {
     },
 
     ['ar'] = {
-        desc = 'установил %d брони',
+        desc = 'set %d armor',
         action = function(admin, target, amount)
             if target:Alive() then
                 target:SetArmor(math.Clamp(tonumber(amount), 1, target:GetMaxArmor()))
@@ -139,21 +139,21 @@ lrpConCommands = lrpConCommands or {
     },
 
     ['kill'] = {
-        desc = "убил",
+        desc = 'killed',
         action = function(admin, target)
             if target:Alive() then target:Kill() end
         end
     },
 
     ['killsilent'] = {
-        desc = "тихо убил",
+        desc = 'silently killed',
         action = function(admin, target)
             if target:Alive() then target:KillSilent() end
         end
     },
 
 	['respawn'] = {
-        desc = "возродил",
+        desc = 'respawned',
         action = function(admin, target)
             target:Spawn()
         end
