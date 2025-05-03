@@ -12,6 +12,7 @@ net.Receive('lrpScoreboard.admin.messageMenu', function()
             net.Start('lrpScoreboard.admin.messageSend')
             net.WriteString(text)
             net.WriteEntity(target)
+            net.WriteEntity(admin)
             net.SendToServer()
         end
     )
@@ -19,9 +20,9 @@ end)
 
 net.Receive('lrpScoreboard.admin.messageSend', function()
     local message = net.ReadString()
-    local target = net.ReadEntity()
+    local admin = net.ReadEntity()
 
-    notification.AddLegacy(string.format(language.GetPhrase('lrp_sb.input.message_from'), target:Nick(), message), NOTIFY_GENERIC, 6)
+    notification.AddLegacy(string.format(language.GetPhrase('lrp_sb.input.message_from'), admin:Nick(), message), NOTIFY_GENERIC, 6)
     surface.PlaySound('buttons/lightswitch2.wav')
 end)
 

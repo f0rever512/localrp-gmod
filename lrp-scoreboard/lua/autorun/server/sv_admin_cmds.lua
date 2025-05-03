@@ -1,8 +1,8 @@
 include('sv_cmd_list.lua')
 AddCSLuaFile('sv_cmd_list.lua')
 
-resource.AddFile('resource/localization/en/lrp_scoreboard.properties')
-resource.AddFile('resource/localization/ru/lrp_scoreboard.properties')
+resource.AddSingleFile('resource/localization/en/lrp_scoreboard.properties')
+resource.AddSingleFile('resource/localization/ru/lrp_scoreboard.properties')
 
 util.AddNetworkString('lrpScoreboard.admin.hints')
 
