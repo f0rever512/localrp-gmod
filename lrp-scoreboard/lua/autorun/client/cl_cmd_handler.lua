@@ -44,5 +44,9 @@ net.Receive('lrpScoreboard.admin.hints', function()
         chat.AddText(hintClr, prefix .. language.GetPhrase('lrp_sb.hints.player_not_found'))
     elseif hint == lrpAdminHints.SELF_BLOCK then
         chat.AddText(hintClr, prefix .. language.GetPhrase('lrp_sb.hints.self_block'))
+    elseif hint == lrpAdminHints.NO_FREE_SPACE then
+        chat.AddText(hintClr, prefix .. language.GetPhrase('lrp_sb.hints.no_free_space'))
+    elseif hint == lrpAdminHints.DEAD_PLAYER then
+        chat.AddText(hintClr, prefix .. language.GetPhrase('lrp_sb.hints.dead_player'))
     end
 end)

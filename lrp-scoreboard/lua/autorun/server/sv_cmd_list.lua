@@ -1,8 +1,14 @@
+local function sendHint(ply, hintName)
+    net.Start('lrpScoreboard.admin.hints')
+    net.WriteUInt(hintName, 3)
+    net.Send(ply)
+end
+
 lrpConCommands = lrpConCommands or {
     ['kick'] = {
         desc = 'kicked',
         action = function(admin, target)
-            target:Kick('Кикнут ' .. admin:Nick())
+            target:Kick('Kicked by ' .. admin:Nick())
         end
     },
 
@@ -18,28 +24,25 @@ lrpConCommands = lrpConCommands or {
     ['goto'] = {
         desc = 'teleported to',
         action = function(admin, target)
-            if not admin:InVehicle() then
-                local offset = target:GetForward() * 60
-                local target_pos = target:GetPos() - offset
+            local offset = target:GetForward() * 60
+            local target_pos = target:GetPos() - offset
 
-                local hullTrace = util.TraceHull({
-                    start = target_pos,
-                    endpos = target_pos,
-                    mins = Vector(-16, -16, 0),
-                    maxs = Vector(16, 16, 72),
-                    filter = {admin, target}
-                })
+            local hullTrace = util.TraceHull({
+                start = target_pos,
+                endpos = target_pos,
+                mins = Vector(-16, -16, 0),
+                maxs = Vector(16, 16, 72),
+                filter = {admin, target}
+            })
 
-                if admin:GetMoveType() ~= MOVETYPE_NOCLIP and (hullTrace.Hit or not util.IsInWorld(target_pos)) then
-                    admin:ChatPrint('[LRP - Admin] Нет свободного места для телепортации')
-                    return
-                end
-
-                admin:SetPos(target_pos)
-                admin:SetEyeAngles(target:EyeAngles())
-            else
-                admin:ChatPrint('[LRP - Admin] Телепортироваться, находясь в транспорте нельзя')
+            if admin:GetMoveType() ~= MOVETYPE_NOCLIP and (hullTrace.Hit or not util.IsInWorld(target_pos)) then
+                sendHint(admin, lrpAdminHints.NO_FREE_SPACE)
+                return
             end
+
+            admin:ExitVehicle()
+            admin:SetPos(target_pos)
+            admin:SetEyeAngles(target:EyeAngles())
         end,
         selfBlock = true,
     },
@@ -59,10 +62,11 @@ lrpConCommands = lrpConCommands or {
             })
 
             if hullTrace.Hit or not util.IsInWorld(target_pos) then
-                admin:ChatPrint('[LRP - Admin] Нет свободного места для телепортации')
+                sendHint(admin, lrpAdminHints.NO_FREE_SPACE)
                 return
             end
 
+            target:ExitVehicle()
             target:SetPos(target_pos)
             target:SetEyeAngles((admin:GetPos() - target:GetPos()):Angle())
             target:SetVelocity(Vector(0, 0, 0))
@@ -90,7 +94,7 @@ lrpConCommands = lrpConCommands or {
             if target:Alive() then
                 target:Ignite(math.Clamp(tonumber(amount), 1, 60))
             else
-                admin:ChatPrint('[LRP - Admin] Выполнить эту команду на мертвом игроке нельзя')
+                sendHint(admin, lrpAdminHints.DEAD_PLAYER)
             end
         end,
         withArgs = true,
@@ -120,7 +124,7 @@ lrpConCommands = lrpConCommands or {
             if target:Alive() then
                 target:SetHealth(math.Clamp(tonumber(amount), 1, target:GetMaxHealth()))
             else
-                admin:ChatPrint('[LRP - Admin] Выполнить эту команду на мертвом игроке нельзя')
+                sendHint(admin, lrpAdminHints.DEAD_PLAYER)
             end
         end,
         withArgs = true,
@@ -132,7 +136,7 @@ lrpConCommands = lrpConCommands or {
             if target:Alive() then
                 target:SetArmor(math.Clamp(tonumber(amount), 1, target:GetMaxArmor()))
             else
-                admin:ChatPrint('[LRP - Admin] Выполнить эту команду на мертвом игроке нельзя')
+                sendHint(admin, lrpAdminHints.DEAD_PLAYER)
             end
         end,
         withArgs = true,
