@@ -20,7 +20,7 @@ local function InputMenu(title, subTitle, defaultText, callback)
     )
 end
 
-function LRPDerma(target)
+function adminQuickMenu(target)
     local ply = LocalPlayer()
 
     local function runCommand(cmdName, amount)

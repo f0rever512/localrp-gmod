@@ -4,7 +4,7 @@ local function sendHint(ply, hintName)
     net.Send(ply)
 end
 
-lrpConCommands = lrpConCommands or {
+lrpAdminCommands = lrpAdminCommands or {
     ['kick'] = {
         desc = 'kicked',
         action = function(admin, target)
@@ -24,7 +24,7 @@ lrpConCommands = lrpConCommands or {
     ['goto'] = {
         desc = 'teleported to',
         action = function(admin, target)
-            local offset = target:GetForward() * 60
+            local offset = target:EyeAngles():Forward() * 60
             local target_pos = target:GetPos() - offset
 
             local hullTrace = util.TraceHull({

@@ -1,5 +1,3 @@
-include('cl_quick_menu.lua')
-
 CreateClientConVar('cl_lrp_sb_title', '1', true, false)
 
 local scale = ScrW() >= 1600 and 1 or 0.8
@@ -129,7 +127,7 @@ function ToggleScoreboard(toggle)
             playerPnl:SetText("")
             playerPnl.DoClick = function()
                 if v:IsValid() then
-                    LRPDerma(v)
+                    adminQuickMenu(v)
                 end
             end
             playerPnl.Paint = function(self, w, h)

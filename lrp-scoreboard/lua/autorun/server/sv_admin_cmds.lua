@@ -1,6 +1,3 @@
-include('sv_cmd_list.lua')
-AddCSLuaFile('sv_cmd_list.lua')
-
 resource.AddSingleFile('resource/localization/en/lrp_scoreboard.properties')
 resource.AddSingleFile('resource/localization/ru/lrp_scoreboard.properties')
 
@@ -25,10 +22,10 @@ local function RunConCommand(ply, cmd, args)
         return
     end
 
-    local cmdData = lrpConCommands[command]
+    local cmdData = lrpAdminCommands[command]
     if not cmdData then
         local availableCommands = {}
-        for cmdName, _ in SortedPairs(lrpConCommands) do
+        for cmdName, _ in SortedPairs(lrpAdminCommands) do
             table.insert(availableCommands, cmdName)
         end
         
@@ -84,7 +81,7 @@ local function AutoComplete(cmd, args)
 
     if numArgs == 1 then
         local partCmdName = string.lower(splitArgs[1])
-        for cmdName, _ in pairs(lrpConCommands) do
+        for cmdName, _ in pairs(lrpAdminCommands) do
             if string.find(string.lower(cmdName), partCmdName, 1) then
                 table.insert(autoCompletes, string.format('%s %s', cmd, cmdName))
             end
