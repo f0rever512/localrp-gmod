@@ -24,7 +24,7 @@ lrpAdminCommands = lrpAdminCommands or {
     ['goto'] = {
         desc = 'teleported to',
         action = function(admin, target)
-            local offset = target:EyeAngles():Forward() * 60
+            local offset = target:GetForward() * 60
             local target_pos = target:GetPos() - offset
 
             local hullTrace = util.TraceHull({
