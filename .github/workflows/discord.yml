@@ -20,21 +20,42 @@ jobs:
           BRANCH: ${{ github.ref_name }}
         run: |
           COMMITS_JSON='${{ toJson(github.event.commits) }}'
+
           if [ "$COMMITS_JSON" = "[]" ]; then
             echo "Коммиты для отправки отсутствуют"
             exit 0
           fi
 
-          DESCRIPTION=$(echo "$COMMITS_JSON" | jq -r '.[] | "[`\(.id[0:7])`](\(.url)) – \(.author.username)\n\(.message | gsub("\n\n"; "\n"))\n"' | head -c 3900)
-
           COMPARE_URL="https://github.com/$REPO/compare/${{ github.event.before }}...${{ github.sha }}"
           REPO_NAME=$(echo "$REPO" | cut -d'/' -f2)
-          
-          DESCRIPTION=$(echo -e "⬆️ Новые коммиты в **[$REPO_NAME:$BRANCH]($COMPARE_URL)**\n\n$DESCRIPTION")
           TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
 
+          DESCRIPTION=""
+          for commit in $(echo "$COMMITS_JSON" | jq -r '.[] | @base64'); do
+            _jq() {
+              echo "$commit" | base64 --decode | jq -r "$1"
+            }
+
+            MSG=$(_jq '.message')
+            ID=$(_jq '.id' | cut -c1-7)
+            URL=$(_jq '.url')
+            USER=$(_jq '.author.username')
+
+            if echo "$MSG" | grep -qE '^Merge branch'; then
+              FROM_BRANCH=$(echo "$MSG" | sed -nE 's/Merge branch[[:space:]]+(.+)/\1/p' | tr -d "'")
+              DESCRIPTION="[\`$ID\`]($URL) – $USER\n🔀 Слияние веток: **$FROM_BRANCH** в **$BRANCH**\n🔀 Merge branch: **$FROM_BRANCH** into **$BRANCH**"
+              break
+            fi
+          done
+
+          if [ -z "$DESCRIPTION" ]; then
+            DESCRIPTION=$(echo "$COMMITS_JSON" | jq -r '.[:10][] | "[`\(.id[0:7])`](\(.url)) – \(.author.username)\n\(.message | gsub("\n\n"; "\n"))\n"' | head -c 3900)
+          fi
+
+          FINAL_MESSAGE=$(echo -e "⬆️ Новые коммиты в **[$REPO_NAME:$BRANCH]($COMPARE_URL)**\n\n$DESCRIPTION")
+
           jq -n --arg title "" \
-                --arg description "$DESCRIPTION" \
+                --arg description "$FINAL_MESSAGE" \
                 --arg author_name "$AUTHOR" \
                 --arg author_icon "$AVATAR_URL" \
                 --arg timestamp "$TIMESTAMP" \
