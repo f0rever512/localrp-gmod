@@ -43,7 +43,7 @@ jobs:
 
             if echo "$MSG" | grep -qE '^Merge branch'; then
               FROM_BRANCH=$(echo "$MSG" | sed -nE 's/Merge branch[[:space:]]+(.+)/\1/p' | tr -d "'")
-              DESCRIPTION="[\`$ID\`]($URL) – $USER\n🔀 Слияние: **$FROM_BRANCH** в **$BRANCH**\n🔀 Merge: **$FROM_BRANCH** into **$BRANCH**"
+              DESCRIPTION="[\`$ID\`]($URL) – $USER\n🔀 Слияние веток: **$FROM_BRANCH** в **$BRANCH**\n🔀 Merge branch: **$FROM_BRANCH** into **$BRANCH**"
               break
             fi
           done
