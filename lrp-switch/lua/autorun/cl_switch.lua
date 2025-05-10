@@ -5,43 +5,29 @@ if SERVER then return end
 local NewEquipTime = EquipTime
 -- local WeaponName = ""
 
-CanSwitch, Switching = false, false
+CanSwitch, isSwitching = false, false
 -- SwitchingToWeapon = ""
 
-net.Receive("WepSwitch_Switching", function()
-
-    -- SwitchingToWeapon = net.ReadString()
-    NewEquipTime = tonumber(net.ReadString())
-    
-    -- Get the print name of the weapon.
-    -- WeaponName = SwitchingToWeapon -- If there is no weapon found, just in case.
-    -- for _, weapon in pairs(ents.FindByClass(SwitchingToWeapon)) do
-    --     WeaponName = weapon:GetPrintName() or weapon.PrintName or WeaponName
-    -- end
-    
-    -- if not WeaponName then
-    --     WeaponName = "undefined"
-    -- end
-    
-    Switching = true
+net.Receive('lrpSwitch.sendTime', function()
+    NewEquipTime = net.ReadFloat()
+    isSwitching = true
 end)
 
 hook.Add('CreateMove', 'lrp-switchRemoveKeys', function(cmd)
-    if Switching then
+    if isSwitching then
         cmd:RemoveKey(IN_ATTACK)
         cmd:RemoveKey(IN_ATTACK2)
     end
 end)
 
-local ply = NULL
-local chPosOff, chAngOff = Vector(0, 0, 0), Angle(0, 90, 90) -- octoteam/icons/percent0.png
+local chPosOff, chAngOff = Vector(0, 0, 0), Angle(0, 90, 90)
 
 local function postDrawTranslucentRenderables()
     local ply = LocalPlayer()
     local override = hook.Run('dbg-view.chShouldDraw', ply)
     if override == nil then
         local wep, veh = ply:GetActiveWeapon(), ply:GetVehicle()
-        if IsValid(wep) and not whiteList[wep:GetClass()] and wep.DrawCrosshair then
+        if IsValid(wep) and wep.DrawCrosshair then
             override = not IsValid(veh) or ply:GetAllowWeaponsInVehicle()
         end
     end
@@ -50,10 +36,9 @@ local function postDrawTranslucentRenderables()
 
     local aim = ply:EyeAngles():Forward()
     local tr = hook.Run('dbg-view.chTraceOverride')
-    --local eyes = ply:GetAttachment(ply:LookupAttachment("eyes"))
     if not tr then
-        local pos = ply:GetShootPos() --eyes.Pos
-        local endpos = pos + aim * 2200
+        local pos = ply:GetShootPos()
+        local endpos = pos + aim * 2000
         tr = util.TraceLine({
             start = pos,
             endpos = endpos,
@@ -69,14 +54,13 @@ local function postDrawTranslucentRenderables()
         n:Add(-aim * 0.01)
     end
     local chPos, chAng = LocalToWorld(chPosOff, chAngOff, tr.HitPos or endpos, n:Angle())
-    cam.Start3D2D(chPos, chAng, math.pow(tr.Fraction, 0.5) * (0.25))
+    cam.Start3D2D(chPos, chAng, math.pow(tr.Fraction, 0.5) * 0.25)
     cam.IgnoreZ(true)
     if not hook.Run('dbg-view.chPaint', tr, _icon) then
         surface.SetDrawColor(255, 255, 255, 150)
     end
     cam.IgnoreZ(false)
     cam.End3D2D()
-
 end
 
 hook.Add('PostDrawTranslucentRenderables', 'dbg-view', postDrawTranslucentRenderables)
@@ -91,10 +75,10 @@ surface.CreateFont('lrp.switchFont', {
 })
 
 local function PaintTimer()
-    local id = 1
+    local id = 'switchDelay'
     local time = NewEquipTime
 
-    if Switching then
+    if isSwitching then
         if (cd or 0) < CurTime() then
             cd = CurTime() + time * 2
             delays[id] = {
@@ -135,10 +119,10 @@ hook.Add('dbg-view.chPaint', 'lrp.delay', function(tr, icon)
 	for id, data in pairs(delays) do
 		local segs = math.min(math.ceil((CurTime() - data.start) / data.time * 36), 36)
 		local text = data.text .. ('.'):rep(math.floor(CurTime() * 2 % 4))
-		draw.SimpleTextOutlined(text, 'lrp.switchFont', 0 + 60, 0, Color(255, 255, 255, 200), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, 2, Color(0, 0, 0, 200))
+		draw.SimpleTextOutlined(text, 'lrp.switchFont', 0 + 60, 0, Color(255, 255, 255, 150), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, 2, Color(0, 0, 0, 220))
 
 		draw.NoTexture()
-		surface.SetDrawColor(0, 0, 0, 200)
+		surface.SetDrawColor(0, 0, 0, 220)
 		surface.DrawPoly(p1)
 
 		surface.SetDrawColor(255,255,255, 150)
@@ -152,10 +136,10 @@ end)
 
 hook.Add('dbg-view.chOverride', 'lrp.delay', function(tr, icon)
     local ply = LocalPlayer()
-    --local eyes = ply:GetAttachment(ply:LookupAttachment("eyes"))
+    -- local eyes = ply:GetAttachment(ply:LookupAttachment("eyes"))
     if override and (not tr.Hit or tr.Fraction > 0.03) then
         local aim = ply:EyeAngles():Forward()
-        tr.HitPos =  ply:GetShootPos() + aim * 65 --eyes.Pos
+        tr.HitPos =  ply:GetShootPos() + aim * 60 -- eyes.Pos
         tr.HitNormal = -aim
         tr.Fraction = 0.03
     end
@@ -166,18 +150,16 @@ net.Receive("WepSwitch_EnableSwitch", function()
     
     if weapon == "NULL" then
         CanSwitch = false
-        Switching = false
+        isSwitching = false
         return
     end
     
     CanSwitch = true
     
     net.Start("WepSwitch_EnableSwitch_received")
-        -- net.WriteString( WeaponName or "" )
     net.SendToServer()
 end)
 
-net.Receive('lrp-switchDisable', function()
-    CanSwitch = false
-    Switching = false
+net.Receive('switchDelay.disable', function()
+    CanSwitch, isSwitching = false, false
 end)
