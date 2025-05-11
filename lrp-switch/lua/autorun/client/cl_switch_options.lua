@@ -15,7 +15,7 @@ hook.Add('AddToolMenuTabs', 'switchDelay.tab', function()
 
 		pnl:AddControl('Label', {text = 'Серверные настройки смены оружия'})
 		pnl:AddControl('CheckBox', {
-			label = 'Запрет Half-Life 2 оружия',
+			label = 'Запрет на взятие Half-Life 2 оружия',
 			command = 'sv_lrp_switch_block'
 		})
 	end)

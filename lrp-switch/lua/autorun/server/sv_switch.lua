@@ -1,3 +1,5 @@
+CreateConVar('sv_lrp_switch_block', '0', FCVAR_ARCHIVE, 'Block on taking weapons from the blacklist')
+
 util.AddNetworkString('switchDelay')
 
 local specialTime = {
@@ -18,7 +20,7 @@ local specialTime = {
 }
 
 local holdTypeTime = {
-    normal = 0.75,
+    normal = 0.75, -- default switch time
     revolver = 1,
     pistol = 1,
     duel = 1,
@@ -35,7 +37,7 @@ local holdTypeTime = {
     rpg = 2
 }
 
-local whiteList = {
+local noDelay = {
     weapon_physgun = true,
     gmod_tool = true,
     gmod_camera = true,
@@ -66,8 +68,6 @@ local blackList = {
 }
 
 local function getSwitchTime(ply, newWeapon)
-    local switchTime = EquipTime
-
     local weaponClass = newWeapon:GetClass()
     if specialTime[weaponClass] then
         switchTime = specialTime[weaponClass]
@@ -155,7 +155,7 @@ function playerMeta:SwitchDelay(newWeapon, oldWeapon)
             if newWeapon.Base == 'localrp_gun_base' then
                 self:SetAnimation(PLAYER_ATTACK1)
             end
-            -- oldWeapon:CallOnClient("Holster", newWeapon)
+            -- oldWeapon:CallOnClient('Holster', newWeapon)
 
             if FAS_Temp_Fix then
                 self.WepSwitchAttempts = 0
@@ -194,9 +194,9 @@ end
 -- Allow the player to switch to a white listed weapon while switching. (This will not stop the switching to the other weapon)
 local canSwitchWhileSwitching = false
 hook.Add('PlayerSwitchWeapon', 'switchDelay', function(ply, oldWeapon, newWeapon)
-    if blackList[newWeapon:GetClass()] then return true end
+    if GetConVar('sv_lrp_switch_block'):GetBool() and blackList[newWeapon:GetClass()] then return true end
 
-    if whiteList[newWeapon:GetClass()] then -- Skip the weapon switch
+    if noDelay[newWeapon:GetClass()] then -- Skip the weapon switch
         if not canSwitchWhileSwitching then
             if ply.IsSwitchingWeapons then
                 return true
