@@ -1,8 +1,3 @@
--- AddCSLuaFile('sh_switch.lua')
--- include('sh_switch.lua')
-
-if CLIENT then return end
-
 util.AddNetworkString('switchDelay')
 
 local specialTime = {

@@ -1,7 +1,3 @@
--- include('sh_switch.lua')
-
-if SERVER then return end
-
 CreateClientConVar('cl_lrp_silentswitch', 0, true, true)
 
 local chPosOff, chAngOff = Vector(0, 0, 0), Angle(0, 90, 90)
