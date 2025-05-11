@@ -90,8 +90,7 @@ local function switchAnim(ply, switchTime)
 
     -- first animation
     ply:DoAnimationEvent(ACT_GMOD_GESTURE_ITEM_DROP)
-    -- ply:EmitSound('npc/combine_soldier/gear5.wav', 55, 100)
-    ply:EmitSound(switchSound, 70, 100)
+    ply:EmitSound(switchSound, 65)
 
     timer.Create(id, 1.5, 0, function()
         if not IsValid(ply) or not timer.Exists(id) then
@@ -100,8 +99,7 @@ local function switchAnim(ply, switchTime)
         end
 
         ply:DoAnimationEvent(ACT_GMOD_GESTURE_ITEM_DROP)
-        -- ply:EmitSound('npc/combine_soldier/gear5.wav', 55, 100)
-        ply:EmitSound(switchSound, 70, 100)
+        ply:EmitSound(switchSound, 65)
     end)
 
     timer.Simple(switchTime, function()
