@@ -65,7 +65,7 @@ local blackList = {
     weapon_stunstick = true,
 }
 
-local function getSwitchTime(newWeapon)
+local function getSwitchTime(ply, newWeapon)
     local switchTime = EquipTime
 
     local weaponClass = newWeapon:GetClass()
@@ -80,12 +80,14 @@ local function getSwitchTime(newWeapon)
 end
 
 local switchSound = 'weapons-new/shared/switch4.ogg'
-local function switchAnim(ply, switchTime)
+local function switchAnim(ply, switchTime, silent)
     local id = 'switchDelay.anim' .. ply:SteamID64()
 
     -- first animation
     ply:DoAnimationEvent(ACT_GMOD_GESTURE_ITEM_DROP)
-    ply:EmitSound(switchSound, 65)
+    if not silent then
+        ply:EmitSound(switchSound, 65)
+    end
 
     timer.Create(id, 1.5, 0, function()
         if not IsValid(ply) or not timer.Exists(id) then
@@ -94,10 +96,12 @@ local function switchAnim(ply, switchTime)
         end
 
         ply:DoAnimationEvent(ACT_GMOD_GESTURE_ITEM_DROP)
-        ply:EmitSound(switchSound, 65)
+        if not silent then
+            ply:EmitSound(switchSound, 65)
+        end
     end)
 
-    timer.Simple(switchTime, function()
+    timer.Create('switchDelay.animRemove' .. ply:SteamID64(), switchTime, 1, function()
         if timer.Exists(id) then
             timer.Remove(id)
         end
@@ -113,6 +117,7 @@ end
 local function switchCancel(ply)
     timerRemove(ply, 'switchDelay.timer')
     timerRemove(ply, 'switchDelay.anim')
+    timerRemove(ply, 'switchDelay.animRemove')
     
     -- We want the player to be able to switch again ofcourse.
     ply.switchBlock = false
@@ -131,10 +136,11 @@ local playerMeta = FindMetaTable('Player')
 function playerMeta:SwitchDelay(newWeapon, oldWeapon)
     self.IsSwitchingWeapons = true -- Player is switching weapon.
     self.switchBlock = true -- Player can't switch weapon now.
-    
-    local switchTime = getSwitchTime(newWeapon)
 
-    switchAnim(self, switchTime)
+    local silent = self:GetInfoNum('cl_lrp_silent_switch', 0) == 1
+    local switchTime = getSwitchTime(self, newWeapon) * (silent and 2 or 1)
+
+    switchAnim(self, switchTime, silent)
 
     -- start switch on client
     net.Start('switchDelay')
@@ -146,6 +152,9 @@ function playerMeta:SwitchDelay(newWeapon, oldWeapon)
         if IsValid(self) and IsValid(newWeapon) and self:HasWeapon(newWeapon:GetClass()) and self:Alive() then
             self.switchBlock = false
             self:SelectWeapon(newWeapon:GetClass())
+            if newWeapon.Base == 'localrp_gun_base' then
+                self:SetAnimation(PLAYER_ATTACK1)
+            end
             -- oldWeapon:CallOnClient("Holster", newWeapon)
 
             if FAS_Temp_Fix then
