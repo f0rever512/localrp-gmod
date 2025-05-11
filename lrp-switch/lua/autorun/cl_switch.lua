@@ -1,24 +1,8 @@
-include('sh_switch.lua')
+-- include('sh_switch.lua')
 
 if SERVER then return end
 
-local NewEquipTime = EquipTime
--- local WeaponName = ""
-
-CanSwitch, isSwitching = false, false
--- SwitchingToWeapon = ""
-
-net.Receive('lrpSwitch.sendTime', function()
-    NewEquipTime = net.ReadFloat()
-    isSwitching = true
-end)
-
-hook.Add('CreateMove', 'lrp-switchRemoveKeys', function(cmd)
-    if isSwitching then
-        cmd:RemoveKey(IN_ATTACK)
-        cmd:RemoveKey(IN_ATTACK2)
-    end
-end)
+CreateClientConVar('cl_lrp_silentswitch', 0, true, true)
 
 local chPosOff, chAngOff = Vector(0, 0, 0), Angle(0, 90, 90)
 
@@ -74,26 +58,29 @@ surface.CreateFont('lrp.switchFont', {
 	weight = 350,
 })
 
-local function PaintTimer()
-    local id = 'switchDelay'
-    local time = NewEquipTime
+local isSwitching = false
+local id = 'switchDelay'
+
+net.Receive('switchDelay', function()
+    isSwitching = net.ReadBool()
+    local switchTime = net.ReadFloat()
 
     if isSwitching then
-        if (cd or 0) < CurTime() then
-            cd = CurTime() + time * 2
-            delays[id] = {
-                text = 'Смена оружия',
-                start = CurTime(),
-                time = time,
-            }
-        end
+        delays[id] = {
+            text = 'Смена оружия',
+            start = CurTime(),
+            time = switchTime,
+        }
     else
-        cd = 0
         delays[id] = nil
     end
-end
+end)
 
-hook.Add("DrawOverlay", 'lrp-switchTimerPaint', PaintTimer)
+hook.Add('StartCommand', 'switchDelay.removeKeys', function(ply, cmd)
+    if not isSwitching then return end
+    cmd:RemoveKey(IN_ATTACK)
+    cmd:RemoveKey(IN_ATTACK2)
+end)
 
 local cx, cy = 0, 0
 local size = 40
@@ -136,30 +123,10 @@ end)
 
 hook.Add('dbg-view.chOverride', 'lrp.delay', function(tr, icon)
     local ply = LocalPlayer()
-    -- local eyes = ply:GetAttachment(ply:LookupAttachment("eyes"))
     if override and (not tr.Hit or tr.Fraction > 0.03) then
         local aim = ply:EyeAngles():Forward()
-        tr.HitPos =  ply:GetShootPos() + aim * 60 -- eyes.Pos
+        tr.HitPos =  ply:GetShootPos() + aim * 60
         tr.HitNormal = -aim
         tr.Fraction = 0.03
     end
-end)
-
-net.Receive("WepSwitch_EnableSwitch", function()
-    local weapon = net.ReadString()
-    
-    if weapon == "NULL" then
-        CanSwitch = false
-        isSwitching = false
-        return
-    end
-    
-    CanSwitch = true
-    
-    net.Start("WepSwitch_EnableSwitch_received")
-    net.SendToServer()
-end)
-
-net.Receive('switchDelay.disable', function()
-    CanSwitch, isSwitching = false, false
 end)

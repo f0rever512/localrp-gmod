@@ -1,14 +1,9 @@
-AddCSLuaFile('sh_switch.lua')
-include('sh_switch.lua')
+-- AddCSLuaFile('sh_switch.lua')
+-- include('sh_switch.lua')
 
 if CLIENT then return end
 
-util.AddNetworkString("WepSwitch_EnableSwitch")
-util.AddNetworkString('switchDelay.disable')
-util.AddNetworkString('lrpSwitch.sendTime')
-util.AddNetworkString("WepSwitch_EnableSwitch_received")
-
-CreateConVar('sv_lrp_silentswitch', 0, FCVAR_ARCHIVE, 'Enable or disable silent switch weapon', 0, 1)
+util.AddNetworkString('switchDelay')
 
 local specialTime = {
     localrp_air_pistol = 0.7,
@@ -22,6 +17,8 @@ local specialTime = {
     localrp_scout = 2,
     localrp_sg550 = 2,
     localrp_tmp = 1.4,
+    lrp_battering_ram = 1.5,
+    lrp_shield = 1.5,
     lrp_stungun = 0.5,
 }
 
@@ -43,153 +40,191 @@ local holdTypeTime = {
     rpg = 2
 }
 
-local function GetEquipTime(ply, newWeapon)
-    local NewEquipTime = EquipTime
+local whiteList = {
+    weapon_physgun = true,
+    gmod_tool = true,
+    gmod_camera = true,
+    localrp_hands = true,
+    localrp_flashlight = true,
+    lrp_lockpick = true,
+    weapon_handcuffed = true,
+    weapon_fists = true,
+    weapon_simfillerpistol = true,
+    weapon_simrepair = true,
+    weapon_simremote = true,
+}
+
+local blackList = {
+    weapon_357 = true,
+    weapon_ar2 = true,
+    weapon_bugbait = true,
+    weapon_crossbow = true,
+    weapon_crowbar = true,
+    weapon_frag = true,
+    weapon_physcannon = true,
+    weapon_pistol = true,
+    weapon_rpg = true,
+    weapon_shotgun = true,
+    weapon_slam = true,
+    weapon_smg1 = true,
+    weapon_stunstick = true,
+}
+
+local function getSwitchTime(newWeapon)
+    local switchTime = EquipTime
 
     local weaponClass = newWeapon:GetClass()
     if specialTime[weaponClass] then
-        NewEquipTime = specialTime[weaponClass]
+        switchTime = specialTime[weaponClass]
     else
         local newWepHoldType = newWeapon.Base == 'localrp_gun_base' and newWeapon.Sight or newWeapon:GetHoldType()
-        if holdTypeTime[newWepHoldType] then
-            NewEquipTime = holdTypeTime[newWepHoldType]
-        end
+        switchTime = holdTypeTime[newWepHoldType] or holdTypeTime['normal']
     end
 
-    return NewEquipTime
+    return switchTime
 end
 
-local function switchAnim(ply)
-    -- first anim
-    timer.Simple(0, function()
+local switchSound = 'weapons-new/shared/switch4.ogg'
+local function switchAnim(ply, switchTime)
+    local id = 'switchDelay.anim' .. ply:SteamID64()
+
+    -- first animation
+    ply:DoAnimationEvent(ACT_GMOD_GESTURE_ITEM_DROP)
+    -- ply:EmitSound('npc/combine_soldier/gear5.wav', 55, 100)
+    ply:EmitSound(switchSound, 70, 100)
+
+    timer.Create(id, 1.5, 0, function()
+        if not IsValid(ply) or not timer.Exists(id) then
+            timer.Remove(id)
+            return
+        end
+
         ply:DoAnimationEvent(ACT_GMOD_GESTURE_ITEM_DROP)
-        ply:EmitSound('npc/combine_soldier/gear5.wav', 55, 100)
-    end)
-end
-
-local playerMeta = FindMetaTable('Player')
-function playerMeta:SwitchDelay(newWeapon, oldWeapon)
-    self.IsSwitchingWeapons = true -- Player is switching weapon.
-    self.switchBlock = true -- Player can't switch weapon now.
-    self.SwitchingToWeapon = newWeapon
-    self.SwitchingFromWeapon = oldWeapon
-    
-    local NewEquipTime = GetEquipTime(self, newWeapon)
-    -- if GetConVarNumber('sv_lrp_silentswitch') == 1 then
-    --     NewEquipTime = NewEquipTime + 2.5
-    -- end
-    
-    -- timer.Create('lrp-switchAnimationStart_' .. ply:SteamID64(), 0.1, 1, function()
-    --     ply:EmitSound( "npc/combine_soldier/gear5.wav", 55, 100 )
-    --     ply:DoAnimationEvent(ACT_GMOD_GESTURE_ITEM_DROP)
-    -- end)
-
-    switchAnim(self)
-
-    local animationDelay = NewEquipTime <= 1.4 and NewEquipTime or NewEquipTime / 2
-    local animationRepeat = NewEquipTime <= 1.4 and 1 or 2
-
-    timer.Create('lrp-switchAnimation_' .. self:SteamID64(), animationDelay, animationRepeat, function()
-        -- if CurTime() > CurTime() + 1 or not IsValid(self) then return timer.Destroy('lrp-switchAnimation_' .. ply:SteamID64()) end
-        self:DoAnimationEvent(ACT_GMOD_GESTURE_ITEM_DROP)
-        self:EmitSound('npc/combine_soldier/gear5.wav', 55, 100)
+        -- ply:EmitSound('npc/combine_soldier/gear5.wav', 55, 100)
+        ply:EmitSound(switchSound, 70, 100)
     end)
 
-    timer.Create('lrp-switchAnimationEnd_' .. self:SteamID64(), NewEquipTime + 0.2, 1, function() self:SetAnimation(PLAYER_ATTACK1) end)
-
-    net.Start('lrpSwitch.sendTime')
-    net.WriteFloat(tonumber(NewEquipTime))
-    net.Send(self)
-
-    timer.Create('lrp-switchTimer_' .. self:SteamID64(), NewEquipTime, 1, function()
-        if IsValid(self) or self:Alive() then
-            net.Start("WepSwitch_EnableSwitch")
-                if not IsValid(newWeapon) then
-                    -- Weapon doesn't exist anymore, tell the client to do nothing.
-                    net.WriteString("NULL")
-                    -- We want the player to be able to switch again ofcourse.
-                    self.IsSwitchingWeapons = false
-                    self.switchBlock = false
-                else
-                    -- Tell the client to enable weaponswitch.
-                end
-            net.Send(self)
+    timer.Simple(switchTime, function()
+        if timer.Exists(id) then
+            timer.Remove(id)
         end
     end)
 end
 
-function playerMeta:DisableSwitch()
-    net.Start('switchDelay.disable')
-    net.Send(self)
-end
-
-local FAS_Temp_Fix = false
-net.Receive("WepSwitch_EnableSwitch_received", function(len, ply)
-    -- Now switch the weapon.
-    if IsValid(ply) and ply:Alive() then
-        if IsValid(ply.SwitchingToWeapon) and ply:HasWeapon(ply.SwitchingToWeapon:GetClass()) then
-            ply.switchBlock = false
-            ply:SelectWeapon(ply.SwitchingToWeapon:GetClass())
-            --ply.SwitchingFromWeapon:CallOnClient("Holster", ply.SwitchingToWeapon)
-            if FAS_Temp_Fix then
-                ply.WepSwitchAttempts = 0
-                local function HasSwitched()
-                    if ply.SwitchingToWeapon ~= ply:GetActiveWeapon() then
-                        ply.IsSwitchingWeapons = true
-                        ply.switchBlock = true
-                        
-                        ply.WepSwitchAttempts = ply.WepSwitchAttempts + 1
-                    
-                        timer.Simple(0.02, function()
-                            ply.switchBlock = false
-                            ply:SelectWeapon(ply.SwitchingToWeapon:GetClass())
-                        
-                            -- We don't want it to get stuck in an infinite loop.
-                            if ply.WepSwitchAttempts < 100 then
-                                HasSwitched()
-                            else
-                                ply.switchBlock = false
-                                ply.IsSwitchingWeapons = false
-                                -- Tell client to disable CanSwitch
-                                ply:DisableSwitch()
-                            end
-                        end)
-                    else
-                        ply:DisableSwitch()
-                    end
-                end
-                HasSwitched()
-            else
-                ply:DisableSwitch()
-            end
-        else
-            ply:DisableSwitch()
-        end
-    else
-        ply:DisableSwitch()
-    end
-end)
-
-local function TimerRemove(ply, id)
+local function timerRemove(ply, id)
     if timer.Exists(id .. ply:SteamID64()) then
         timer.Remove(id .. ply:SteamID64())
     end
 end
 
-function SwitchCancel(ply)
-    if ply.IsSwitchingWeapons then
-        -- local delays = {}
-        TimerRemove(ply, 'lrp-switchTimer_')
-        TimerRemove(ply, 'lrp-switchAnimation_')
-        TimerRemove(ply, 'lrp-switchAnimationEnd_')
-        
-        ply.switchBlock = false
-        ply.IsSwitchingWeapons = false
+local function switchCancel(ply)
+    timerRemove(ply, 'switchDelay.timer')
+    timerRemove(ply, 'switchDelay.anim')
     
-        net.Start('switchDelay.disable')
-        net.Send(ply)
-    end
+    -- We want the player to be able to switch again ofcourse.
+    ply.switchBlock = false
+    ply.IsSwitchingWeapons = false
+    
+    -- cancel switch on client
+    net.Start('switchDelay')
+    net.WriteBool(false)
+    net.Send(ply)
 end
 
-hook.Add('PlayerDeath', 'switchDelay.death', SwitchCancel)
-hook.Add('PlayerSilentDeath', 'switchDelay.silentDeath', SwitchCancel)
+local FAS_Temp_Fix = false
+
+local playerMeta = FindMetaTable('Player')
+
+function playerMeta:SwitchDelay(newWeapon, oldWeapon)
+    self.IsSwitchingWeapons = true -- Player is switching weapon.
+    self.switchBlock = true -- Player can't switch weapon now.
+    
+    local switchTime = getSwitchTime(newWeapon)
+
+    switchAnim(self, switchTime)
+
+    -- start switch on client
+    net.Start('switchDelay')
+    net.WriteBool(true)
+    net.WriteFloat(tonumber(switchTime)) -- send time to client
+    net.Send(self)
+
+    timer.Create('switchDelay.timer' .. self:SteamID64(), switchTime, 1, function()
+        if IsValid(self) and IsValid(newWeapon) and self:HasWeapon(newWeapon:GetClass()) and self:Alive() then
+            self.switchBlock = false
+            self:SelectWeapon(newWeapon:GetClass())
+            -- oldWeapon:CallOnClient("Holster", newWeapon)
+
+            if FAS_Temp_Fix then
+                self.WepSwitchAttempts = 0
+                local function HasSwitched()
+                    if newWeapon ~= self:GetActiveWeapon() then
+                        self.IsSwitchingWeapons = true
+                        self.switchBlock = true
+                        
+                        self.WepSwitchAttempts = self.WepSwitchAttempts + 1
+                    
+                        timer.Simple(0.02, function()
+                            self.switchBlock = false
+                            self:SelectWeapon(newWeapon:GetClass())
+                        
+                            -- We don't want it to get stuck in an infinite loop.
+                            if self.WepSwitchAttempts < 100 then
+                                HasSwitched()
+                            else
+                                switchCancel(self)
+                            end
+                        end)
+                    else
+                        switchCancel(self)
+                    end
+                end
+                HasSwitched()
+            else
+                switchCancel(self)
+            end
+        else
+            switchCancel(self)
+        end
+    end)
+end
+
+-- Allow the player to switch to a white listed weapon while switching. (This will not stop the switching to the other weapon)
+local canSwitchWhileSwitching = false
+hook.Add('PlayerSwitchWeapon', 'switchDelay', function(ply, oldWeapon, newWeapon)
+    if blackList[newWeapon:GetClass()] then return true end
+
+    if whiteList[newWeapon:GetClass()] then -- Skip the weapon switch
+        if not canSwitchWhileSwitching then
+            if ply.IsSwitchingWeapons then
+                return true
+            end
+        end
+    else
+        if not ply.switchBlock and not ply.IsSwitchingWeapons then
+            ply:SwitchDelay(newWeapon, oldWeapon)
+        end
+
+        -- Will be true after the timer succeeded, so we can switch the weapon.
+        if not ply.switchBlock then
+            ply.IsSwitchingWeapons = false
+            return false
+        else
+            return true
+        end
+    end
+end)
+
+hook.Add('KeyPress', 'lrp-switchCancel', function(ply, key)
+    if key ~= IN_RELOAD then return end
+    switchCancel(ply)
+end)
+
+hook.Add('StartCommand', 'switchDelay.removeKeys', function(ply, cmd)
+    if not ply.IsSwitchingWeapons then return end
+    cmd:RemoveKey(IN_ATTACK)
+    cmd:RemoveKey(IN_ATTACK2)
+end)
+
+hook.Add('PlayerDeath', 'switchDelay.death', switchCancel)
+hook.Add('PlayerSilentDeath', 'switchDelay.silentDeath', switchCancel)
