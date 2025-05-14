@@ -63,7 +63,7 @@ net.Receive('switchDelay', function()
 
     if isSwitching then
         delays[id] = {
-            text = 'Смена оружия',
+            text = language.GetPhrase('lrp_switch.display_text'),
             start = CurTime(),
             time = switchTime,
         }
@@ -93,12 +93,12 @@ for i = 1, 36 do
 end
 
 local override
-hook.Add('dbg-view.chShouldDraw', 'lrp.delay', function()
+hook.Add('dbg-view.chShouldDraw', 'switchDelay', function()
     override = table.Count(delays) > 0
     if override then return true end
 end)
 
-hook.Add('dbg-view.chPaint', 'lrp.delay', function(tr, icon)
+hook.Add('dbg-view.chPaint', 'switchDelay', function(tr, icon)
 	for id, data in pairs(delays) do
 		local segs = math.min(math.ceil((CurTime() - data.start) / data.time * 36), 36)
 		local text = data.text .. ('.'):rep(math.floor(CurTime() * 2 % 4))
@@ -117,7 +117,7 @@ hook.Add('dbg-view.chPaint', 'lrp.delay', function(tr, icon)
 	end
 end)
 
-hook.Add('dbg-view.chOverride', 'lrp.delay', function(tr, icon)
+hook.Add('dbg-view.chOverride', 'switchDelay', function(tr, icon)
     local ply = LocalPlayer()
     if override and (not tr.Hit or tr.Fraction > 0.03) then
         local aim = ply:EyeAngles():Forward()

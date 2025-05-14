@@ -1,5 +1,8 @@
 CreateConVar('sv_lrp_switch_block', '0', FCVAR_ARCHIVE, 'Block on taking weapons from the blacklist')
 
+resource.AddSingleFile('resource/localization/en/lrp_switch.properties')
+resource.AddSingleFile('resource/localization/ru/lrp_switch.properties')
+
 util.AddNetworkString('switchDelay')
 
 local specialTime = {
