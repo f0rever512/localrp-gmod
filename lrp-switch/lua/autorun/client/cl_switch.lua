@@ -72,16 +72,6 @@ net.Receive('switchDelay', function()
     end
 end)
 
-hook.Add('StartCommand', 'switchDelay.removeKeys', function(ply, cmd)
-    if not isSwitching then return end
-    cmd:RemoveKey(IN_ATTACK)
-    cmd:RemoveKey(IN_ATTACK2)
-end)
-
-hook.Add('PlayerSwitchWeapon', 'switchDelay', function()
-    if isSwitching then return true end
-end)
-
 local cx, cy = 0, 0
 local size = 40
 local p1, p2 = {}, {}

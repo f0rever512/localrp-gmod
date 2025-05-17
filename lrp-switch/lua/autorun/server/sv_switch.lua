@@ -5,6 +5,10 @@ resource.AddSingleFile('resource/localization/ru/lrp_switch.properties')
 
 util.AddNetworkString('switchDelay')
 
+local switchSound = 'weapons-new/shared/switch4.ogg'
+local FAS_Temp_Fix = false
+local switchCancelKey = IN_RELOAD
+
 local specialTime = {
     localrp_air_pistol = 0.7,
     localrp_air_revolver = 0.7,
@@ -35,39 +39,9 @@ local holdTypeTime = {
     melee2 = 0.6,
     knife = 0.6,
     slam = 0.75,
-    shotgun = 1.5,
-    crossbow = 1.5,
+    shotgun = 1.4,
+    crossbow = 1.8,
     rpg = 2
-}
-
-local noDelay = {
-    weapon_physgun = true,
-    gmod_tool = true,
-    gmod_camera = true,
-    localrp_hands = true,
-    localrp_flashlight = true,
-    lrp_lockpick = true,
-    weapon_handcuffed = true,
-    weapon_fists = true,
-    weapon_simfillerpistol = true,
-    weapon_simrepair = true,
-    weapon_simremote = true,
-}
-
-local blackList = {
-    weapon_357 = true,
-    weapon_ar2 = true,
-    weapon_bugbait = true,
-    weapon_crossbow = true,
-    weapon_crowbar = true,
-    weapon_frag = true,
-    weapon_physcannon = true,
-    weapon_pistol = true,
-    weapon_rpg = true,
-    weapon_shotgun = true,
-    weapon_slam = true,
-    weapon_smg1 = true,
-    weapon_stunstick = true,
 }
 
 local function getSwitchTime(ply, newWeapon)
@@ -82,15 +56,16 @@ local function getSwitchTime(ply, newWeapon)
     return switchTime
 end
 
-local switchSound = 'weapons-new/shared/switch4.ogg'
 local function switchAnim(ply, switchTime, silent)
     local id = 'switchDelay.anim' .. ply:SteamID64()
 
     -- first animation
-    ply:DoAnimationEvent(ACT_GMOD_GESTURE_ITEM_DROP)
-    if not silent then
-        ply:EmitSound(switchSound, 65)
-    end
+    timer.Simple(0, function()
+        ply:DoAnimationEvent(ACT_GMOD_GESTURE_ITEM_DROP)
+        if not silent then
+            ply:EmitSound(switchSound, 65)
+        end
+    end)
     
     timer.Create(id, 1.5, 0, function()
         if not IsValid(ply) or not timer.Exists(id) then
@@ -131,8 +106,6 @@ local function switchCancel(ply)
     net.WriteBool(false)
     net.Send(ply)
 end
-
-local FAS_Temp_Fix = false
 
 local playerMeta = FindMetaTable('Player')
 
@@ -194,41 +167,9 @@ function playerMeta:SwitchDelay(newWeapon, oldWeapon)
     end)
 end
 
--- Allow the player to switch to a white listed weapon while switching. (This will not stop the switching to the other weapon)
-local canSwitchWhileSwitching = false
-hook.Add('PlayerSwitchWeapon', 'switchDelay', function(ply, oldWeapon, newWeapon)
-    if GetConVar('sv_lrp_switch_block'):GetBool() and blackList[newWeapon:GetClass()] then return true end
-
-    if noDelay[newWeapon:GetClass()] then -- Skip the weapon switch
-        if not canSwitchWhileSwitching then
-            if ply.isSwitching then
-                return true
-            end
-        end
-    else
-        if not ply.switchBlock and not ply.isSwitching then
-            ply:SwitchDelay(newWeapon, oldWeapon)
-        end
-
-        -- Will be true after the timer succeeded, so we can switch the weapon.
-        if not ply.switchBlock then
-            ply.isSwitching = false
-            return false
-        else
-            return true
-        end
-    end
-end)
-
 hook.Add('KeyPress', 'lrp-switchCancel', function(ply, key)
-    if key ~= IN_RELOAD then return end
+    if key ~= switchCancelKey then return end
     switchCancel(ply)
-end)
-
-hook.Add('StartCommand', 'switchDelay.removeKeys', function(ply, cmd)
-    if not ply.isSwitching then return end
-    cmd:RemoveKey(IN_ATTACK)
-    cmd:RemoveKey(IN_ATTACK2)
 end)
 
 hook.Add('PlayerDeath', 'switchDelay.death', switchCancel)
