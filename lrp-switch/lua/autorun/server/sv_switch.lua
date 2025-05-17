@@ -91,7 +91,7 @@ local function switchAnim(ply, switchTime, silent)
     if not silent then
         ply:EmitSound(switchSound, 65)
     end
-
+    
     timer.Create(id, 1.5, 0, function()
         if not IsValid(ply) or not timer.Exists(id) then
             timer.Remove(id)
@@ -124,7 +124,7 @@ local function switchCancel(ply)
     
     -- We want the player to be able to switch again ofcourse.
     ply.switchBlock = false
-    ply.IsSwitchingWeapons = false
+    ply.isSwitching = false
     
     -- cancel switch on client
     net.Start('switchDelay')
@@ -137,7 +137,7 @@ local FAS_Temp_Fix = false
 local playerMeta = FindMetaTable('Player')
 
 function playerMeta:SwitchDelay(newWeapon, oldWeapon)
-    self.IsSwitchingWeapons = true -- Player is switching weapon.
+    self.isSwitching = true -- Player is switching weapon.
     self.switchBlock = true -- Player can't switch weapon now.
 
     local silent = self:GetInfoNum('cl_lrp_silent_switch', 0) == 1
@@ -164,7 +164,7 @@ function playerMeta:SwitchDelay(newWeapon, oldWeapon)
                 self.WepSwitchAttempts = 0
                 local function HasSwitched()
                     if newWeapon ~= self:GetActiveWeapon() then
-                        self.IsSwitchingWeapons = true
+                        self.isSwitching = true
                         self.switchBlock = true
                         
                         self.WepSwitchAttempts = self.WepSwitchAttempts + 1
@@ -201,18 +201,18 @@ hook.Add('PlayerSwitchWeapon', 'switchDelay', function(ply, oldWeapon, newWeapon
 
     if noDelay[newWeapon:GetClass()] then -- Skip the weapon switch
         if not canSwitchWhileSwitching then
-            if ply.IsSwitchingWeapons then
+            if ply.isSwitching then
                 return true
             end
         end
     else
-        if not ply.switchBlock and not ply.IsSwitchingWeapons then
+        if not ply.switchBlock and not ply.isSwitching then
             ply:SwitchDelay(newWeapon, oldWeapon)
         end
 
         -- Will be true after the timer succeeded, so we can switch the weapon.
         if not ply.switchBlock then
-            ply.IsSwitchingWeapons = false
+            ply.isSwitching = false
             return false
         else
             return true
@@ -226,7 +226,7 @@ hook.Add('KeyPress', 'lrp-switchCancel', function(ply, key)
 end)
 
 hook.Add('StartCommand', 'switchDelay.removeKeys', function(ply, cmd)
-    if not ply.IsSwitchingWeapons then return end
+    if not ply.isSwitching then return end
     cmd:RemoveKey(IN_ATTACK)
     cmd:RemoveKey(IN_ATTACK2)
 end)

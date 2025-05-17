@@ -78,13 +78,17 @@ hook.Add('StartCommand', 'switchDelay.removeKeys', function(ply, cmd)
     cmd:RemoveKey(IN_ATTACK2)
 end)
 
+hook.Add('PlayerSwitchWeapon', 'switchDelay', function()
+    if isSwitching then return true end
+end)
+
 local cx, cy = 0, 0
 local size = 40
 local p1, p2 = {}, {}
 for i = 1, 36 do
     local a1 = math.rad((i-1) * -10 + 180)
     local a2 = math.rad(i * -10 + 180)
-    p1[i] = { x = cx + math.sin(a1) * (size + 5), y = cy + math.cos(a1) * (size + 5) }
+    p1[i] = { x = cx + math.sin(a1) * (size + 6), y = cy + math.cos(a1) * (size + 6) }
     p2[i] = {
         { x = cx, y = cy },
         { x = cx + math.sin(a1) * size, y = cy + math.cos(a1) * size },
@@ -102,10 +106,10 @@ hook.Add('dbg-view.chPaint', 'switchDelay', function(tr, icon)
 	for id, data in pairs(delays) do
 		local segs = math.min(math.ceil((CurTime() - data.start) / data.time * 36), 36)
 		local text = data.text .. ('.'):rep(math.floor(CurTime() * 2 % 4))
-		draw.SimpleTextOutlined(text, 'lrp.switchFont', 0 + 60, 0, Color(255, 255, 255, 150), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, 2, Color(0, 0, 0, 220))
+		draw.SimpleTextOutlined(text, 'lrp.switchFont', 0 + 60, 0, Color(255, 255, 255, 150), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, 2, Color(0, 0, 0, 230))
 
 		draw.NoTexture()
-		surface.SetDrawColor(0, 0, 0, 220)
+		surface.SetDrawColor(0, 0, 0, 230)
 		surface.DrawPoly(p1)
 
 		surface.SetDrawColor(255,255,255, 150)
