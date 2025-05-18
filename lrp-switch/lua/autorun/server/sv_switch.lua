@@ -172,5 +172,11 @@ hook.Add('KeyPress', 'lrp-switchCancel', function(ply, key)
     switchCancel(ply)
 end)
 
+hook.Add('StartCommand', 'switchDelay.removeKeys', function(ply, cmd)
+    if not ply.isSwitching then return end
+    cmd:RemoveKey(IN_ATTACK)
+    cmd:RemoveKey(IN_ATTACK2)
+end)
+
 hook.Add('PlayerDeath', 'switchDelay.death', switchCancel)
 hook.Add('PlayerSilentDeath', 'switchDelay.silentDeath', switchCancel)

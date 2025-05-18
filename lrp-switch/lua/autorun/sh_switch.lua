@@ -60,9 +60,3 @@ hook.Add('PlayerSwitchWeapon', 'switchDelay', function(ply, oldWeapon, newWeapon
         end
     end
 end)
-
-hook.Add('StartCommand', 'switchDelay.removeKeys', function(ply, cmd)
-    if (SERVER and not ply.isSwitching) or (CLIENT and not isSwitching) then return end
-    cmd:RemoveKey(IN_ATTACK)
-    cmd:RemoveKey(IN_ATTACK2)
-end)
