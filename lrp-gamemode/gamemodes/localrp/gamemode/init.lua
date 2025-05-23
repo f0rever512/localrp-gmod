@@ -2,65 +2,31 @@ AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 include('shared.lua')
 
-local function processFiles(folder, isServer) -- by nsfw (https://steamcommunity.com/id/NsfwS)
-    local files, folders = file.Find(folder .. "/*", "LUA")
-    local filesToAddCS, filesToInclude = {}, {}
-    local processedFiles = processedFiles or {}
+local function loadFiles(folder)
+    local files, folders = file.Find(folder .. '/*', 'LUA')
 
-    local function shouldAddCS(f)
-        return string.StartWith(f, "cl_") or string.StartWith(f, "sh")
-    end
+    for _, fileName in ipairs(files) do
+        local fullPath = folder .. '/' .. fileName
 
-    local function shouldInclude(f)
-        return string.StartWith(f, "sv_") or string.StartWith(f, "sh") or string.StartWith(f, "init")
-    end
+        if string.StartWith(fileName, 'cl_') or string.StartWith(fileName, 'sh') then
+            AddCSLuaFile(fullPath)
+        end
 
-    for _, f in ipairs(files) do
-        local fullPath = folder .. "/" .. f
-
-        if not processedFiles[fullPath] then
-            processedFiles[fullPath] = true
-
-            if shouldAddCS(f) then
-                table.insert(filesToAddCS, fullPath)
-            end
-
-            if isServer and shouldInclude(f) then
-                table.insert(filesToInclude, fullPath)
-            end
+        if string.StartWith(fileName, 'sv_') or string.StartWith(fileName, 'sh') or string.StartWith(fileName, 'init') then
+            include(fullPath)
         end
     end
 
-    for _, f in ipairs(folders) do
-        processFiles(folder .. "/" .. f, isServer)
-    end
-
-    for _, fullPath in ipairs(filesToAddCS) do
-        AddCSLuaFile(fullPath)
-    end
-
-    for _, fullPath in ipairs(filesToInclude) do
-        include(fullPath)
+    for _, subFolder in ipairs(folders) do
+        loadFiles(folder .. '/' .. subFolder)
     end
 end
 
-local folders = {
-    'anims',
-    'commands',
-    'core',
-    'damage',
-    'dropweapon',
-    'jobs',
-    'other',
-    'panicbutton',
-    'pushing',
-    'ragdoll',
-    'respawn',
-    'vgui',
-}
+local directory = GM.FolderName .. '/gamemode/'
+local _, folders = file.Find(directory .. '*', 'LUA')
 
-for _, name in pairs(folders) do
-	processFiles('localrp/gamemode/' .. name, SERVER)
+for _, folderName in SortedPairs(folders) do
+    loadFiles(directory .. folderName)
 end
 
 util.AddNetworkString('lrp-loadData')
