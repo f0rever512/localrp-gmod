@@ -22,6 +22,8 @@ function SWEP:Initialize()
 	self:SetHoldType('normal')
 end
 
+function SWEP:Think() end
+
 function SWEP:SecondaryAttack() end
 
 function SWEP:Reload() end

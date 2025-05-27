@@ -28,11 +28,3 @@ hook.Add("PlayerSay", "customChatCommandsRun", function(pl, str, team)
         end
     end
 end)
-
-hook.Add('PlayerCanHearPlayersVoice', 'lrpGamemode.voiceDist', function(listener, talker)
-    return listener:GetPos():DistToSqr(talker:GetPos()) <= 160000 and talker:Alive()
-end)
-
-hook.Add('PlayerCanSeePlayersChat', 'lrpGamemode.chatDist', function(text, teamOnly, listener, speaker)
-    return listener:GetPos():DistToSqr(speaker:GetPos()) <= 160000 and talker:Alive()
-end)
