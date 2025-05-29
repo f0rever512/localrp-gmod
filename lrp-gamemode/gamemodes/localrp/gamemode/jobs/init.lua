@@ -7,24 +7,23 @@ util.AddNetworkString('lrp.menu-clGetSkin')
 util.AddNetworkString('lrp.menu-svGetSkin')
 util.AddNetworkString('lrp-sendData2')
 
-local walk = 80
-local run = 180
-
+local cfg = lrp_cfg
 local jobs = lrp_jobs
 
-local ply = FindMetaTable("Player")
-function ply:SetJob(jobID)
+local meta = FindMetaTable('Player')
+
+function meta:SetJob(jobID)
 	if not jobs[jobID] then return end
 
 	self:SetTeam(jobID)
 	self:SetHealth(100)
 	self:SetArmor(jobs[jobID].ar or 0)
 	self:SetMaxHealth(100)
-	self:SetWalkSpeed(walk)
-	self:SetRunSpeed(run)
+	self:SetWalkSpeed(cfg.walkSpeed)
+	self:SetRunSpeed(cfg.runSpeed)
 	self:SetLadderClimbSpeed(140)
 	if not self:IsBot() then
-		net.Receive('lrp-sendData2', function(len, ply)
+		net.Receive('lrp-sendData2', function(_, ply)
 			local playerData = net.ReadTable()
 			
 			self:SetModel(string.format(jobs[jobID].model, playerData.model))
@@ -41,7 +40,7 @@ function ply:SetJob(jobID)
 	end
 end
 
-net.Receive('lrp.menu-clGetModel', function(len, ply)
+net.Receive('lrp.menu-clGetModel', function(_, ply)
 	local modelNum = net.ReadInt(5)
 	local jobID = net.ReadInt(4)
 	
@@ -50,7 +49,7 @@ net.Receive('lrp.menu-clGetModel', function(len, ply)
 	net.Send(ply)
 end)
 
-net.Receive('lrp.menu-clGetSkin', function(len, ply)
+net.Receive('lrp.menu-clGetSkin', function(_, ply)
 	local modelNum = net.ReadInt(5)
 	local jobID = net.ReadInt(4)
 	

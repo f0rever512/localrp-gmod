@@ -12,10 +12,7 @@ function GM:PlayerCanPickupWeapon( ply, wep )
     return not ply:HasWeapon(wep:GetClass())
 end
 
-local whiteList = {
-    ['weapon_physgun'] = true,
-    ['gmod_tool'] = true
-}
+local whiteList = lrp_cfg.sboxMenuWhiteList
 
 local function sboxMenuBlock(ply)
     local wep = ply:GetActiveWeapon()

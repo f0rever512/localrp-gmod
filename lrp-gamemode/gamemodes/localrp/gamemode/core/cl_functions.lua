@@ -26,10 +26,7 @@ hook.Add('DrawPhysgunBeam', 'lrp-gamemode.physgunColor', function(ply, wep, enab
     ply:SetWeaponColor(enabled and color or Vector(0, 0, 0))
 end)
 
-local whiteList = {
-    ['weapon_physgun'] = true,
-    ['gmod_tool'] = true
-}
+local whiteList = lrp_cfg.sboxMenuWhiteList
 
 local function sboxMenuBlock()
     local ply = LocalPlayer()

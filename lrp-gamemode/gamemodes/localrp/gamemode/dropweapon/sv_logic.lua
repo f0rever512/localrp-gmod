@@ -1,14 +1,10 @@
-local dropBlacklist = {
-    ['weapon_physgun'] = true,
-    ['gmod_tool'] = true,
-    ['gmod_camera'] = true,
-    ['localrp_hands'] = true
-} -- Позже вынести в отдельный конфиг-файл
-playerMeta = FindMetaTable('Player')
+util.AddNetworkString( 'dropweapon' )
 
-util.AddNetworkString( 'dropweapon' ) -- В будущем будем инициализировать где-то в другом месте, например: sv(sh)_nets.lua
+local dropBlacklist = lrp_cfg.dropBlacklist
 
-function playerMeta:dropWeapon()
+local meta = FindMetaTable('Player')
+
+function meta:DropWeaponAnim()
     local ply = self
     local wep = ply:GetActiveWeapon()
 
@@ -24,4 +20,4 @@ function playerMeta:dropWeapon()
     timer.Simple(1, function() ply:DropWeapon(wep) end)
 end
 
-concommand.Add('lrp_dropweapon', function(ply, cmd, args) ply:dropWeapon() end)
+concommand.Add('lrp_dropweapon', function(ply, cmd, args) ply:DropWeaponAnim() end)

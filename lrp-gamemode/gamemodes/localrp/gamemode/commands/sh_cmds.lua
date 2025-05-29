@@ -19,7 +19,7 @@ local function sendMessageToNearbyPlayers(pl, messageParts, distance)
 end
 
 createCommand('dropweapon', function(pl, args)
-    pl:dropWeapon()
+    pl:DropWeaponAnim()
 end)
 
 createCommand("roll", function(pl, args)
