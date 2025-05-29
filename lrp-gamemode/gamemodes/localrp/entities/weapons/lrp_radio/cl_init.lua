@@ -14,6 +14,8 @@ local radioPos = Vector(1.3, 0.7, 1)
 local radioAng = Angle(-140, -15, 100)
 
 local wModel = ClientsideModel(SWEP.WorldModel)
+wModel:SetSkin(1)
+wModel:SetNoDraw(true)
 
 function SWEP:DrawWorldModel()
     local ply = self:GetOwner()
@@ -25,8 +27,6 @@ function SWEP:DrawWorldModel()
         wModel:SetParent(ply, attID)
         wModel:SetLocalPos(radioPos)
         wModel:SetLocalAngles(radioAng)
-        wModel:SetSkin(1)
-        wModel:SetNoDraw(true)
 
         wModel:SetupBones()
         wModel:DrawModel()

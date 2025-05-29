@@ -2,8 +2,10 @@ AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 include('shared.lua')
 
+local files, catalogs, folders
+
 local function loadFiles(folder)
-    local files, folders = file.Find(folder .. '/*', 'LUA')
+    local files, catalogs = file.Find(folder .. '/*', 'LUA')
 
     for _, fileName in ipairs(files) do
         local fullPath = folder .. '/' .. fileName
@@ -17,7 +19,7 @@ local function loadFiles(folder)
         end
     end
 
-    for _, subFolder in ipairs(folders) do
+    for _, subFolder in ipairs(catalogs) do
         loadFiles(folder .. '/' .. subFolder)
     end
 end
