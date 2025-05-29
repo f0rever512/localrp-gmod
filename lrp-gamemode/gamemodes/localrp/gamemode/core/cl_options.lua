@@ -1,17 +1,23 @@
-hook.Add("AddToolMenuTabs", "LRPGamemode", function()
-	spawnmenu.AddToolTab('LocalRP', '#LocalRP', 'icon16/brick.png')
-	spawnmenu.AddToolMenuOption("LocalRP", "Client Options", "Client LocalRP Gamemode", "Gamemode", "", "", function(pnl)
-		pnl:Help('Клиентские настройки режима LocalRP')
-		pnl:CheckBox('Надпись "Толкнуть" у прицела', 'lrp_pushtext')
+hook.Add('AddToolMenuTabs', 'lrp-gamemode.toolMenuTab', function()
 
-		pnl:Help('\nНастройки рации')
+	spawnmenu.AddToolTab('LocalRP', 'LocalRP', 'icon16/brick.png')
+
+	spawnmenu.AddToolMenuOption('LocalRP', 'Client Options', 'cl_lrp_gamemode', 'Gamemode', nil, nil, function(pnl)
+		pnl:Help('Клиентские настройки режима LocalRP')
+
 		pnl:KeyBinder('Кнопка активации рации', 'cl_lrp_radio_key')
+
+		pnl:CheckBox('Надпись "Толкнуть" у прицела', 'lrp_pushtext')
 	end)
-	spawnmenu.AddToolMenuOption("LocalRP", "Server Options", "Server LocalRP Gamemode", "Gamemode", "", "", function(pnl)
-		pnl:ClearControls()
-		pnl:AddControl('label', {Text = "Серверные настройки режима LocalRP"})
-		pnl:AddControl('textbox', {Label = 'Время возрождения', Command = 'lrp_respawntime'})
-		pnl:AddControl('checkbox', {Label = 'Перелом ноги', Command = 'lrp_legbreak'})
-		pnl:AddControl('checkbox', {Label = 'Урон при утоплении в воде', Command = 'lrp_drowning'})
+
+	spawnmenu.AddToolMenuOption('LocalRP', 'Server Options', 'sv_lrp_gamemode', 'Gamemode', nil, nil, function(pnl)
+		pnl:Help('Серверные настройки режима LocalRP')
+
+		pnl:TextEntry('Время возрождения', 'lrp_respawntime')
+		pnl:CheckBox('Перелом ноги', 'lrp_legbreak')
+		pnl:CheckBox('Урон при утоплении в воде', 'lrp_drowning')
+
+		pnl:CheckBox('Разрешить noclip всем игрокам', 'sbox_noclip')
 	end)
+
 end)
