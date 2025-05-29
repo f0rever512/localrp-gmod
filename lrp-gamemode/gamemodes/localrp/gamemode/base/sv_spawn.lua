@@ -12,10 +12,6 @@ function GM:PlayerSpawn(ply)
     if not ply:IsBot() then
         net.Start('lrp-loadData')
         net.Send(ply)
-        net.Receive('lrp-sendData', function(_, ply)
-            local playerData = net.ReadTable()
-            ply:SetJob(playerData.job)
-        end)
     else
         ply:SetJob(1)
     end
@@ -28,3 +24,11 @@ function GM:PlayerSpawn(ply)
 
 	return true
 end
+
+net.Receive('lrp-sendData', function(_, ply)
+    local playerData = net.ReadTable()
+
+    if IsValid(ply) and playerData.job then
+        ply:SetJob(playerData.job)
+    end
+end)

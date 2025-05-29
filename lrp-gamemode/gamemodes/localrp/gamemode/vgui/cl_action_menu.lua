@@ -1,5 +1,6 @@
 local nextRagdoll = 0
-local function LRPCMenu()
+
+local function actionMenu()
     local ply = LocalPlayer()
     local wep = ply:GetActiveWeapon()
     if not ply:Alive() then return end
@@ -160,10 +161,11 @@ local function LRPCMenu()
     end
 end
 
-hook.Add('OnContextMenuOpen', 'CMenuOpen', function()
+hook.Add('OnContextMenuOpen', 'lrp-actionMenu', function()
     local pl = LocalPlayer()
     local wep = pl:GetActiveWeapon()
     if not pl:Alive() then return false end
     if wep.LRPGuns and wep:GetReady() then return false end
-    LRPCMenu()
+
+    actionMenu()
 end)

@@ -107,7 +107,7 @@ local function createLabel(parent, text, font, color, dock, margin, inset)
     return label
 end
 
-local function LRPMenuMain()
+local function playerMenu()
     local ply = LocalPlayer()
     local scrw, scrh = ScrW(), ScrH()
     local corner = 8
@@ -278,5 +278,5 @@ local function LRPMenuMain()
 end
 
 net.Receive('lrp.menu-main', function()
-    LRPMenuMain()
+    playerMenu()
 end)
