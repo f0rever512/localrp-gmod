@@ -6,7 +6,7 @@ function GM:HUDAmmoPickedUp(itemName, amount)
     local ply = LocalPlayer()
     if not IsValid(ply) or not ply:Alive() then return end
 
-    notification.AddLegacy('Вы подобрали: ' .. itemName .. ' x' .. amount, NOTIFY_HINT, 2)
+    notification.AddLegacy(lrp.lang('lrp_gm.hud_ammo_picked_up', itemName, amount), NOTIFY_HINT, 2)
     surface.PlaySound('buttons/lightswitch2.wav')
 end
 
@@ -14,7 +14,7 @@ function GM:HUDItemPickedUp(itemName)
     local ply = LocalPlayer()
     if not IsValid(ply) or not ply:Alive() then return end
 
-    notification.AddLegacy('Вы использовали: ' .. language.GetPhrase(itemName), NOTIFY_HINT, 2)
+    notification.AddLegacy(lrp.lang('lrp_gm.hud_item_picked_up', lrp.lang(itemName)), NOTIFY_HINT, 2)
     surface.PlaySound('buttons/lightswitch2.wav')
 end
 
@@ -41,3 +41,16 @@ end
 
 hook.Add('ContextMenuOpen', 'sboxMenuBlock', sboxMenuBlock)
 hook.Add('SpawnMenuOpen', 'sboxMenuBlock', sboxMenuBlock)
+
+lrp = lrp or {}
+
+function lrp.lang(key, ...)
+    local text = language.GetPhrase(key)
+    local args = {...}
+
+    if #args > 0 then
+        return string.format(text, unpack(args))
+    else
+        return text
+    end
+end

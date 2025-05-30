@@ -1,23 +1,23 @@
 hook.Add('AddToolMenuTabs', 'lrp-gamemode.toolMenuTab', function()
 
-	spawnmenu.AddToolTab('LocalRP', 'LocalRP', 'icon16/brick.png')
+    spawnmenu.AddToolTab('LocalRP', 'LocalRP', 'icon16/brick.png')
 
-	spawnmenu.AddToolMenuOption('LocalRP', 'Client Options', 'cl_lrp_gamemode', 'Gamemode', nil, nil, function(pnl)
-		pnl:Help('Клиентские настройки режима LocalRP')
+    spawnmenu.AddToolMenuOption('LocalRP', 'Client Options', 'cl_lrp_gamemode', 'Gamemode', nil, nil, function(pnl)
+        pnl:Help(lrp.lang('lrp_gm.options.label_cl'))
 
-		pnl:KeyBinder('Кнопка активации рации', 'cl_lrp_radio_key')
+        pnl:KeyBinder(lrp.lang('lrp_gm.options.radio_key'), 'cl_lrp_radio_key')
 
-		pnl:CheckBox('Надпись "Толкнуть" у прицела', 'lrp_pushtext')
-	end)
+        pnl:CheckBox(lrp.lang('lrp_gm.options.push_text'), 'lrp_pushtext')
+    end)
 
-	spawnmenu.AddToolMenuOption('LocalRP', 'Server Options', 'sv_lrp_gamemode', 'Gamemode', nil, nil, function(pnl)
-		pnl:Help('Серверные настройки режима LocalRP')
+    spawnmenu.AddToolMenuOption('LocalRP', 'Server Options', 'sv_lrp_gamemode', 'Gamemode', nil, nil, function(pnl)
+        pnl:Help(lrp.lang('lrp_gm.options.label_sv'))
 
-		pnl:TextEntry('Время возрождения', 'lrp_respawntime')
-		pnl:CheckBox('Перелом ноги', 'lrp_legbreak')
-		pnl:CheckBox('Урон при утоплении в воде', 'lrp_drowning')
+        pnl:TextEntry(lrp.lang('lrp_gm.options.respawn_time'), 'lrp_respawntime')
+        pnl:CheckBox(lrp.lang('lrp_gm.options.leg_break'), 'lrp_legbreak')
+        pnl:CheckBox(lrp.lang('lrp_gm.options.drowning'), 'lrp_drowning')
 
-		pnl:CheckBox('Разрешить noclip всем игрокам', 'sbox_noclip')
-	end)
+        pnl:CheckBox(lrp.lang('lrp_gm.options.noclip'), 'sbox_noclip')
+    end)
 
 end)

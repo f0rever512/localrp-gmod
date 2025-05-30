@@ -4,11 +4,11 @@ SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = false
 
 SWEP.Category = 'LocalRP - Gamemode'
-SWEP.PrintName = 'Walkie Talkie'
+SWEP.PrintName = lrp.lang('lrp_gm.radio_name')
 
 SWEP.Author = 'forever512'
 SWEP.Contact = 'https://github.com/f0rever512'
-SWEP.Instructions = 'ЛКМ - Включить / выключить рацию'
+SWEP.Instructions = lrp.lang('lrp_gm.radio_instructions')
 
 local radioPos = Vector(1.3, 0.7, 1)
 local radioAng = Angle(-140, -15, 100)
@@ -43,7 +43,7 @@ function SWEP:PrimaryAttack()
 
     local radioActive = not GetConVar('cl_lrp_radio'):GetBool()
 
-    local msg = radioActive and 'Рация включена' or 'Рация выключена'
+    local msg = radioActive and lrp.lang('lrp_gm.radio_on') or lrp.lang('lrp_gm.radio_off')
     local notifyType = radioActive and NOTIFY_GENERIC or NOTIFY_ERROR
     local sound = radioActive and 'npc/combine_soldier/vo/on2.wav' or 'npc/combine_soldier/vo/on1.wav'
     

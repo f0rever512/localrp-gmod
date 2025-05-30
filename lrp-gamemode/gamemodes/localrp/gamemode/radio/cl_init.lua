@@ -1,5 +1,5 @@
-CreateClientConVar('cl_lrp_radio', '0', true, true, 'Enable / Disable walkie talkie', 0, 1)
-CreateClientConVar('cl_lrp_radio_key', KEY_H, true, false, 'Key to toggle walkie talkie')
+CreateClientConVar('cl_lrp_radio', '0', true, true, 'Enable / Disable walkie-talkie', 0, 1)
+CreateClientConVar('cl_lrp_radio_key', KEY_H, true, false, 'Key to toggle walkie-talkie')
 
 local radioPos = Vector(1.3, 0.7, 1)
 local radioAng = Angle(-140, -15, 100)

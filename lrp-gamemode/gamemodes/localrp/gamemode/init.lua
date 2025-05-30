@@ -2,6 +2,10 @@ AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 include('shared.lua')
 
+-- localization
+resource.AddSingleFile('resource/localization/en/lrp_gamemode.properties')
+resource.AddSingleFile('resource/localization/ru/lrp_gamemode.properties')
+
 local files, catalogs, folders
 
 local function loadFiles(folder)
