@@ -47,6 +47,5 @@ function SWEP:PrimaryAttack()
     local notifyType = radioActive and NOTIFY_GENERIC or NOTIFY_ERROR
     local sound = radioActive and 'npc/combine_soldier/vo/on2.wav' or 'npc/combine_soldier/vo/on1.wav'
     
-    notification.AddLegacy(msg, notifyType, 2)
-    surface.PlaySound(sound)
+    self:GetOwner():NotifySound(msg, 2, notifyType, sound)
 end
