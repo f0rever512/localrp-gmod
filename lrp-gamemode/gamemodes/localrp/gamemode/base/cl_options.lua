@@ -13,9 +13,9 @@ hook.Add('AddToolMenuTabs', 'lrp-gamemode.toolMenuTab', function()
     spawnmenu.AddToolMenuOption('LocalRP', 'Server Options', 'sv_lrp_gamemode', 'Gamemode', nil, nil, function(pnl)
         pnl:Help(lrp.lang('lrp_gm.options.label_sv'))
 
-        pnl:TextEntry(lrp.lang('lrp_gm.options.respawn_time'), 'lrp_respawntime')
-        pnl:CheckBox(lrp.lang('lrp_gm.options.leg_break'), 'lrp_legbreak')
-        pnl:CheckBox(lrp.lang('lrp_gm.options.drowning'), 'lrp_drowning')
+        pnl:TextEntry(lrp.lang('lrp_gm.options.respawn_time'), 'sv_lrp_respawn_time')
+        pnl:CheckBox(lrp.lang('lrp_gm.options.breaking_leg'), 'sv_lrp_breaking_leg')
+        pnl:CheckBox(lrp.lang('lrp_gm.options.drowning'), 'sv_lrp_drowning')
 
         pnl:CheckBox(lrp.lang('lrp_gm.options.noclip'), 'sbox_noclip')
     end)

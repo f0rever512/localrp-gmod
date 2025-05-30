@@ -10,8 +10,8 @@
 	{
 		1
 		{
-			"name"		"lrp_respawntime"
-			"text"		"Время возрождения"
+			"name"		"sv_lrp_respawn_time"
+			"text"		"#lrp_gm.options.respawn_time"
 			"help"		"Set respawn time"
 			"type"		"Numeric"
 			"default"	"7"
@@ -20,8 +20,8 @@
 		
 		2
 		{
-			"name"		"lrp_legbreak"
-			"text"		"Перелом ноги"
+			"name"		"sv_lrp_breaking_leg"
+			"text"		"#lrp_gm.options.breaking_leg"
 			"help"		"Enable/disable breaking leg"
 			"type"		"CheckBox"
 			"default"	"1"
@@ -29,11 +29,20 @@
 
 		3
 		{
-			"name"		"lrp_drowning"
-			"text"		"Урон при утоплении в воде"
-			"help"		"Enable/disable drowning"
+			"name"		"sv_lrp_drowning"
+			"text"		"#lrp_gm.options.drowning"
+			"help"		"Enable / disable water drowning damage"
 			"type"		"CheckBox"
 			"default"	"1"
+		}
+
+		4
+		{
+			"name"		"sbox_noclip"
+			"text"		"#lrp_gm.options.noclip"
+			"help"		"Allow noclip for all players"
+			"type"		"CheckBox"
+			"default"	"0"
 		}
 	}
 }
