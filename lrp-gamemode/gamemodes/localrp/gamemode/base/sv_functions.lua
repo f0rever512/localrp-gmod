@@ -12,7 +12,9 @@ function GM:PlayerCanPickupWeapon( ply, wep )
     return not ply:HasWeapon(wep:GetClass())
 end
 
-local whiteList = lrp_cfg.sboxMenuWhiteList
+local cfg = lrp_cfg
+
+local whiteList = cfg.sboxMenuWhiteList
 
 local function sboxMenuBlock(ply)
     local wep = ply:GetActiveWeapon()
@@ -32,3 +34,17 @@ for _, hookName in pairs(hooks) do
         return sboxMenuBlock(ply)
     end)
 end
+
+local useAnimWhitelist = cfg.useAnimWhitelist
+local animCooldown = cfg.useAnimCooldown
+
+hook.Add('PlayerUse', 'lrp-gamemode.useAnim', function(ply, ent)
+    if not IsValid(ent) or not useAnimWhitelist[ent:GetClass()] then return end
+
+    ply.NextUseAnim = ply.NextUseAnim or 0
+
+    if ply.NextUseAnim > CurTime() then return end
+
+    ply.NextUseAnim = CurTime() + animCooldown
+    ply:PlayAnimation(ACT_GMOD_GESTURE_MELEE_SHOVE_1HAND)
+end)

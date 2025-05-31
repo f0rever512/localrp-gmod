@@ -1,26 +1,33 @@
 util.AddNetworkString('lrp-gamemode.notify')
+util.AddNetworkString('lrp-gamemode.anim')
 
 local dropBlacklist = lrp_cfg.dropBlacklist
 
-local meta = FindMetaTable('Player')
+local ply = FindMetaTable('Player')
 
-function meta:DropWeaponAnim()
-    local ply = self
-    local wep = ply:GetActiveWeapon()
+function ply:DropWeaponAnim()
+    local wep = self:GetActiveWeapon()
 
-    if IsValid(wep) and dropBlacklist[wep:GetClass()] or ply:InVehicle() then
-        ply:NotifySound(ply:InVehicle() and 'В автомобиле нельзя выбросить оружие' or 'Это оружие нельзя выбросить', 3, NOTIFY_ERROR)
+    if not IsValid(self) or not IsValid(wep) then return end
+
+    if IsValid(wep) and dropBlacklist[wep:GetClass()] or self:InVehicle() then
+        self:NotifySound(self:InVehicle() and 'В автомобиле нельзя выбросить оружие' or 'Это оружие нельзя выбросить', 3, NOTIFY_ERROR)
 
         return
     end
 
-    if not IsValid(ply) or not IsValid(wep) then return end
+    self:PlayAnimation(ACT_GMOD_GESTURE_ITEM_DROP)
 
-    ply:DoCustomAnimEvent(PLAYERANIMEVENT_CUSTOM, 229)
-    timer.Simple(1, function() ply:DropWeapon(wep) end)
+    timer.Simple(1, function() self:DropWeapon(wep) end)
 end
 
 concommand.Add('lrp_dropweapon', function(ply, cmd, args) ply:DropWeaponAnim() end)
+
+net.Receive('lrp-gamemode.anim', function(_, ply)
+    local animID = net.ReadUInt(12)
+
+    ply:AnimRestartGesture(GESTURE_SLOT_CUSTOM, animID, true)
+end)
 
 -- enums
 NOTIFY_GENERIC	= 0

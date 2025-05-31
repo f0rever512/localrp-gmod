@@ -18,3 +18,14 @@ cfg.dropBlacklist = {
     gmod_camera = true,
     localrp_hands = true,
 }
+
+cfg.useAnimCooldown = 1
+cfg.useAnimWhitelist = {
+    func_door = true,
+    func_door_rotating = true,
+    prop_door_rotating = true,
+    func_movelinear = true,
+}
+
+cfg.pushForce = 300
+cfg.pushCooldown = 3
