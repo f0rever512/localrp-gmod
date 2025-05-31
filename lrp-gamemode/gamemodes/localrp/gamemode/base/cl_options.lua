@@ -7,7 +7,7 @@ hook.Add('AddToolMenuTabs', 'lrp-gamemode.toolMenuTab', function()
 
         pnl:KeyBinder(lrp.lang('lrp_gm.options.radio_key'), 'cl_lrp_radio_key')
 
-        pnl:CheckBox(lrp.lang('lrp_gm.options.push_text'), 'lrp_pushtext')
+        pnl:CheckBox(lrp.lang('lrp_gm.options.push_text'), 'cl_lrp_push_hint')
     end)
 
     spawnmenu.AddToolMenuOption('LocalRP', 'Server Options', 'sv_lrp_gamemode', 'Gamemode', nil, nil, function(pnl)

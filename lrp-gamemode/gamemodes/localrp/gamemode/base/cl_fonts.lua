@@ -23,14 +23,12 @@ surface.CreateFont( 'lrp.menu-large', {
     extended = true
 } )
 
---anim
-surface.CreateFont('postdraw-font', {
+surface.CreateFont('lrp-postDraw.font', {
     font = 'Calibri',
-    size = 45,
+    size = 60,
     weight = 350,
     extended = true,
     antialias = true,
-    shadow = false,
 })
 
 surface.CreateFont('lrp-deathfont', {
