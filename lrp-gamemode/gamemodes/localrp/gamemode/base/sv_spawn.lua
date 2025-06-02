@@ -1,34 +1,77 @@
-util.AddNetworkString('lrp-loadData')
-util.AddNetworkString('lrp-sendData')
+-- util.AddNetworkString('lrp-loadData')
+-- util.AddNetworkString('lrp-sendData')
 
-function GM:PlayerInitialSpawn(ply)
-	ply:SetCanWalk(false)
-	ply:SetCanZoom(false)
-end
+util.AddNetworkString('lrp-gamemode.sendData')
 
 local cfg = lrp_cfg
 
-function GM:PlayerSpawn(ply)
-    if not ply:IsBot() then
-        net.Start('lrp-loadData')
-        net.Send(ply)
-    else
-        ply:SetJob(1)
+function GM:PlayerInitialSpawn(ply)
+    if ply:IsBot() then
+        ply:SetNW2Int('JobID', 0)
+        ply:SetNW2Int('PlayerModel', 1)
+        ply:SetNW2Int('PlayerSkin', 0)
     end
+
+	ply:SetCanWalk(false)
+	ply:SetCanZoom(false)
+    
+    ply:SetMaxHealth(100)
+    ply:SetWalkSpeed(cfg.walkSpeed)
+    ply:SetRunSpeed(cfg.runSpeed)
+    ply:SetLadderClimbSpeed(140)
+end
+
+function GM:PlayerSpawn(ply)
+    ply:SetTeam(ply:GetNW2Int('JobID'))
+    
+    local plyJob = ply:GetJob()
+    
+    ply:SetHealth(100)
+    ply:SetArmor(plyJob.ar or 0)
+
+    hook.Call('PlayerLoadout', self, ply)
+    hook.Call('PlayerSetModel', self, ply)
+end
+
+function GM:PlayerLoadout(ply)
+    self.BaseClass.PlayerLoadout(self, ply)
 
     for ammoName, amount in pairs(cfg.giveAmmo) do
 		ply:GiveAmmo(amount, ammoName, true)
 	end
 
-    ply:SetupHands()
+    -- for _, wep in pairs(cfg.defaultWeapons) do
+	-- 	ply:Give(wep)
+	-- end
 
-	return true
+    local plyJob = ply:GetJob()
+
+    for _, wep in pairs(plyJob.weapons) do
+		ply:Give(wep)
+	end
 end
 
-net.Receive('lrp-sendData', function(_, ply)
-    local playerData = net.ReadTable()
+function GM:PlayerSetModel(ply)
+    local plyJob = ply:GetJob()
 
-    if IsValid(ply) and playerData.job then
-        ply:SetJob(playerData.job)
+    ply:SetModel(string.format(plyJob.model, ply:GetNW2Int('PlayerModel')))
+    ply:SetSkin(ply:GetNW2Int('PlayerSkin'))
+    ply:SetPlayerColor(Vector(plyJob.color.r / 255, plyJob.color.g / 255, plyJob.color.b / 255))
+
+    ply:SetupHands()
+end
+
+net.Receive('lrp-gamemode.sendData', function(_, ply)
+    if not IsValid(ply) then return end
+    local playerData = net.ReadTable()
+    local isInit = net.ReadBool()
+
+    ply:SetNW2Int('JobID', playerData.job)
+    ply:SetNW2Int('PlayerModel', playerData.model)
+    ply:SetNW2Int('PlayerSkin', playerData.skin)
+
+    -- send data only for initialization
+    if isInit then
+        hook.Call('PlayerSpawn', GAMEMODE, ply)
     end
 end)

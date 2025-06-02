@@ -5,40 +5,9 @@ util.AddNetworkString('lrp.menu-clGetModel')
 util.AddNetworkString('lrp.menu-svGetModel')
 util.AddNetworkString('lrp.menu-clGetSkin')
 util.AddNetworkString('lrp.menu-svGetSkin')
-util.AddNetworkString('lrp-sendData2')
+-- util.AddNetworkString('lrp-sendData2')
 
-local cfg = lrp_cfg
 local jobs = lrp_jobs
-
-local meta = FindMetaTable('Player')
-
-function meta:SetJob(jobID)
-	if not jobs[jobID] then return end
-
-	self:SetTeam(jobID)
-	self:SetHealth(100)
-	self:SetArmor(jobs[jobID].ar or 0)
-	self:SetMaxHealth(100)
-	self:SetWalkSpeed(cfg.walkSpeed)
-	self:SetRunSpeed(cfg.runSpeed)
-	self:SetLadderClimbSpeed(140)
-	if not self:IsBot() then
-		net.Receive('lrp-sendData2', function(_, ply)
-			local playerData = net.ReadTable()
-			
-			self:SetModel(string.format(jobs[jobID].model, playerData.model))
-			self:SetSkin(playerData.skin)
-		end)
-	else
-		self:SetModel(string.format(jobs[jobID].model, 1))
-		self:SetSkin(0)
-	end
-	self:SetPlayerColor(Vector(jobs[jobID].color.r / 255, jobs[jobID].color.g / 255, jobs[jobID].color.b / 255))
-
-	for _, weapon in pairs(jobs[jobID].weapons) do
-		self:Give(weapon)
-	end
-end
 
 net.Receive('lrp.menu-clGetModel', function(_, ply)
 	local modelNum = net.ReadInt(5)

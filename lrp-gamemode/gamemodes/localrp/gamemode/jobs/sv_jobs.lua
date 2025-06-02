@@ -1,5 +1,15 @@
 lrp_jobs = lrp_jobs or {
 
+	[0] = {
+		name = "Гражданин",
+		color = Color(255, 255, 255),
+		model = "models/humans/modern/male_0%s_01.mdl",
+		icon = 'user',
+		weapons = {
+			'localrp_hands', 'weapon_physgun', 'gmod_tool', 'gmod_camera', 'lrp_medkit', 'localrp_flashlight'
+		},
+	},
+
 	[1] = {
 		name = "Гражданин",
 		color = Color(255, 255, 255),

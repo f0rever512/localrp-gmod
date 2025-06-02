@@ -3,15 +3,16 @@ include('sv_jobs.lua')
 
 local jobs = lrp_jobs -- Кеширование в локальной переменной для ускорения обращения
 
-local plyMeta = FindMetaTable("Player")
-
-function plyMeta:GetJob()
-	local ply = self
-	local plyTeam = self:Team()
-	return jobs[plyTeam]
+function GM:CreateTeams()
+	for jobID, job in pairs(jobs) do
+		team.SetUp(jobID, job.name, job.color)
+	end
 end
 
--- Создаем команды для каждой работы
-for jobID, job in pairs(jobs) do
-	team.SetUp(jobID, job.name, job.color)
+local ply = FindMetaTable("Player")
+
+function ply:GetJob()
+	local plyJob = self:Team()
+	
+	return jobs[plyJob]
 end

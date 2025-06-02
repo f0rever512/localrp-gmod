@@ -5,6 +5,13 @@ local cfg = lrp_cfg
 cfg.walkSpeed = 80
 cfg.runSpeed = 180
 
+cfg.defaultWeapons = {
+    'weapon_physgun',
+    'gmod_tool',
+    'gmod_camera',
+    'localrp_hands',
+}
+
 cfg.giveAmmo = {
     ammo_air = 150,
     ammo_large = 120,
