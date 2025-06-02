@@ -1,4 +1,3 @@
---menu
 surface.CreateFont( 'lrp.menu-small', {
     font = 'Calibri',
     size = 15,
@@ -15,10 +14,10 @@ surface.CreateFont( 'lrp.menu-medium', {
     extended = true
 } )
 
-surface.CreateFont( 'lrp.menu-large', {
+surface.CreateFont( 'lrp-playerMenu.large-font', {
     font = 'Calibri',
     size = 27,
-    weight = 300,
+    weight = 350,
     antialias = true,
     extended = true
 } )
