@@ -26,7 +26,7 @@ end)
 
 net.Receive('lrp-respawn', function(_, ply)
     ply:KillSilent()
-    timer.Simple(0.1, function()
+    timer.Simple(0, function()
         if not IsValid(ply) then return end
         ply:Spawn()
     end)

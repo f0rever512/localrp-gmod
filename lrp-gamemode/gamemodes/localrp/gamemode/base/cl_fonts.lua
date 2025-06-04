@@ -6,7 +6,7 @@ surface.CreateFont( 'lrp.menu-small', {
     extended = true
 } )
 
-surface.CreateFont( 'lrp.menu-medium', {
+surface.CreateFont( 'lrp-mainMenu.medium-font', {
     font = 'Calibri',
     size = 25,
     weight = 300,
@@ -14,12 +14,19 @@ surface.CreateFont( 'lrp.menu-medium', {
     extended = true
 } )
 
-surface.CreateFont( 'lrp-playerMenu.large-font', {
+surface.CreateFont( 'lrp-mainMenu.large-font', {
     font = 'Calibri',
     size = 27,
     weight = 350,
     antialias = true,
     extended = true
+} )
+
+surface.CreateFont( 'lrp-mainMenu.icons', {
+	font = 'FontAwesome',
+	extended = true,
+	size = 13,
+	weight = 400,
 } )
 
 surface.CreateFont('lrp-postDraw.font', {
