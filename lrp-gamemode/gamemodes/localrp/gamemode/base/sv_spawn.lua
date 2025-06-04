@@ -1,13 +1,10 @@
--- util.AddNetworkString('lrp-loadData')
--- util.AddNetworkString('lrp-sendData')
-
 util.AddNetworkString('lrp-gamemode.sendData')
 
 local cfg = lrp_cfg
 
 function GM:PlayerInitialSpawn(ply)
     if ply:IsBot() then
-        ply:SetNW2Int('JobID', 0)
+        ply:SetNW2Int('JobID', 1)
         ply:SetNW2Int('PlayerModel', 1)
         ply:SetNW2Int('PlayerSkin', 0)
     end
@@ -40,9 +37,9 @@ function GM:PlayerLoadout(ply)
 		ply:GiveAmmo(amount, ammoName, true)
 	end
 
-    -- for _, wep in pairs(cfg.defaultWeapons) do
-	-- 	ply:Give(wep)
-	-- end
+    for _, wep in pairs(cfg.defaultWeapons) do
+		ply:Give(wep)
+	end
 
     local plyJob = ply:GetJob()
 
@@ -54,7 +51,7 @@ end
 function GM:PlayerSetModel(ply)
     local plyJob = ply:GetJob()
 
-    ply:SetModel(string.format(plyJob.model, ply:GetNW2Int('PlayerModel')))
+    ply:SetModel( plyJob.models[ ply:GetNW2Int('PlayerModel') == 0 and 1 or ply:GetNW2Int('PlayerModel') ] )
     ply:SetSkin(ply:GetNW2Int('PlayerSkin'))
     ply:SetPlayerColor(Vector(plyJob.color.r / 255, plyJob.color.g / 255, plyJob.color.b / 255))
 
