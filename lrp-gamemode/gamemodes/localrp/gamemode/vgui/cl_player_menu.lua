@@ -1,27 +1,23 @@
 local jobs = lrp_jobs
+local cfg = lrp_cfg
 
 local respawnDelay = 10
 local nextRespawn = 0
 
-local jobData = 1
-local modelData = 1
-local skinData = 0
-
-local cfg = lrp_cfg
-
 local clr = cfg.colors
 
-local playerData = {
-    job = jobData,
-    model = modelData,
-    skin = skinData
-}
-
-local playerData2 = {
+local defPlayerData = {
     job = 1,
     model = 1,
     skin = 0,
 }
+
+local function loadPlayerData()
+    return file.Exists('lrp_player_data.txt', 'DATA') and
+    util.JSONToTable( file.Read('lrp_player_data.txt', 'DATA') ) or defPlayerData
+end
+
+local playerData = loadPlayerData()
 
 local function createPanel(parent, dock, width, height, margin, paintFunc)
     local panel = vgui.Create('DPanel', parent)
@@ -60,13 +56,6 @@ local function ease(t, b, c, d)
 	return -c * t * (t - 2) + b
 end
 
-local function loadPlayerData()
-    local data = file.Exists('lrp_player_data.txt', 'DATA') and
-        util.JSONToTable( file.Read('lrp_player_data.txt', 'DATA') ) or playerData
-        
-    return data
-end
-
 -- local lastCursorPos = { ScrW() * 0.5, ScrH() * 0.5 }
 
 local blurMat = Material('pp/blurscreen')
@@ -75,8 +64,6 @@ local corner = 8
 local function playerMenu()
     local ply = LocalPlayer()
     if not IsValid(ply) then return end
-
-    local plyJob = ply:GetJob()
 
     local blur = vgui.Create('DPanel')
 	blur:SetSize(ScrW(), ScrH())
@@ -122,7 +109,6 @@ local function playerMenu()
         draw.RoundedBox(corner, 0, 0, w, h, clr.main)
     end)
     mainPanel:SetPos(ScrW() * 0.5 - mainPanel:GetWide() / 2, ScrH() * 0.52 - mainPanel:GetTall() / 2)
-    -- mainPanel:MakePopup()
     
     local top = createPanel(mainPanel, TOP, nil, 40, nil, function(self, w, h)
         draw.RoundedBox(corner, 0, 0, w, h, Color(0, 0, 0, 0))
@@ -131,7 +117,7 @@ local function playerMenu()
     local close = vgui.Create('DButton', top)
     close:Dock(RIGHT)
     close:SetText('')
-    close:SetWide(40)
+    close:SetWide(top:GetTall())
     
     function close:DoClick()
         blur:Hide()
@@ -153,7 +139,7 @@ local function playerMenu()
         draw.SimpleText(utf8.char(0xf00d), 'lrp-mainMenu.icons', sizeX, sizeY - (self.Depressed and 0 or 1), Color(0,0,0, 150), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
-    createLabel(top, 'LocalRP Menu - Настройки игрока', 'lrp-mainMenu.large-font', color_white, FILL, nil, {12, 0})
+    createLabel(top, lrp.lang('lrp_gm.main_menu.title'), 'lrp-mainMenu.large-font', color_white, FILL, nil, {12, 0})
 
     local fill = createPanel(mainPanel, FILL, nil, nil, {6, 0, 6, 6}, function(self, w, h)
         draw.RoundedBox(corner, 0, 0, w, h, clr.second)
@@ -166,10 +152,10 @@ local function playerMenu()
     local modelPanel = vgui.Create('DModelPanel', infoPanel)
     modelPanel:Dock(RIGHT)
     modelPanel:SetSize(mainPanel:GetWide() * 0.3, 0)
-    modelPanel:SetModel(ply:GetModel())
+    modelPanel:SetModel(jobs[playerData.job].models[playerData.model])
     modelPanel:SetFOV(24)
     modelPanel:SetCamPos(Vector(60, 0, 60))
-    modelPanel.Entity:SetSkin(ply:GetSkin())
+    modelPanel.Entity:SetSkin(playerData.skin)
     modelPanel.Angles = angle_zero
     
     function modelPanel:DragMousePress()
@@ -192,49 +178,48 @@ local function playerMenu()
         ent:SetAngles(self.Angles)
     end
 
-    createLabel(infoPanel, 'Никнейм игрока', 'lrp-mainMenu.medium-font', color_white, TOP, {0, 12, 0, 0}, {16, 0})
+    createLabel(infoPanel, lrp.lang('lrp_gm.main_menu.nickname'), 'lrp-mainMenu.medium-font', color_white, TOP, {0, 12, 0, 0}, {16, 0})
     createLabel(infoPanel, ply:GetName(), 'lrp-mainMenu.medium-font', color_white, TOP, {0, 12, 0, 0}, {32, 0})
 
-    createLabel(infoPanel, 'Здоровье / броня игрока', 'lrp-mainMenu.medium-font', color_white, TOP, {0, 36, 0, 0}, {16, 0})
+    createLabel(infoPanel, lrp.lang('lrp_gm.main_menu.health_armor'), 'lrp-mainMenu.medium-font', color_white, TOP, {0, 36, 0, 0}, {16, 0})
     createLabel(infoPanel, ply:Health() .. ' здоровья / ' .. ply:Armor() .. ' брони', 'lrp-mainMenu.medium-font', color_white, TOP, {0, 12, 0, 0}, {32, 0})
 
-    createLabel(infoPanel, 'Класс игрока', 'lrp-mainMenu.medium-font', color_white, TOP, {0, 36, 0, 0}, {16, 0})
-    local jobComboB = vgui.Create("DComboBox", infoPanel)
+    createLabel(infoPanel, lrp.lang('lrp_gm.main_menu.class'), 'lrp-mainMenu.medium-font', color_white, TOP, {0, 36, 0, 0}, {16, 0})
+    local jobComboB = vgui.Create('DComboBox', infoPanel)
     jobComboB:Dock(TOP)
     jobComboB:DockMargin(32, 12, 32, 0)
-    jobComboB:SetValue(plyJob.name)
+    jobComboB:SetValue(jobs[playerData.job].name)
     jobComboB:SetIcon('icon16/status_offline.png')
     jobComboB:SetSortItems(false)
     for _, job in SortedPairs(jobs) do
         jobComboB:AddChoice(job.name, nil, false, 'icon16/' .. job.icon .. '.png')
     end
 
-    createLabel(infoPanel, 'Модель игрока', 'lrp-mainMenu.medium-font', color_white, TOP, {0, 36, 0, 0}, {16, 0})
+    createLabel(infoPanel, lrp.lang('lrp_gm.main_menu.model'), 'lrp-mainMenu.medium-font', color_white, TOP, {0, 36, 0, 0}, {16, 0})
     local empty = createPanel(infoPanel, TOP, nil, nil, {32, 12, 32, 0}, function(self, w, h)
         draw.RoundedBox(corner, 0, 0, w, h, Color(0, 0, 0, 0))
     end)
     local modelComboB = vgui.Create('DComboBox', empty)
     modelComboB:Dock(FILL)
     modelComboB:DockMargin(0, 0, 16, 0)
-    modelComboB:SetValue(jobs[jobData].models[1])
+    modelComboB:SetValue(jobs[playerData.job].models[playerData.model])
     modelComboB:SetIcon('icon16/bricks.png')
-    for _, model in pairs(jobs[jobData].models) do
+    for _, model in pairs(jobs[playerData.job].models) do
         modelComboB:AddChoice(model, nil, false)
 	end
 
-    createLabel(infoPanel, 'Скин игрока', 'lrp-mainMenu.medium-font', color_white, TOP, {0, 36, 0, 0}, {16, 0})
-    local skinSlider = vgui.Create("DNumSlider", infoPanel)
+    createLabel(infoPanel, lrp.lang('lrp_gm.main_menu.skin'), 'lrp-mainMenu.medium-font', color_white, TOP, {0, 36, 0, 0}, {16, 0})
+    local skinSlider = vgui.Create('DNumSlider', infoPanel)
     skinSlider:Dock(TOP)
     skinSlider:DockMargin((mainPanel:GetWide() * -0.5) + 64, 12, 0, 0)
     skinSlider:SetMin(0)
     skinSlider:SetMax(modelPanel.Entity:SkinCount() - 1)
     skinSlider:SetDecimals(0)
-    skinSlider:SetValue(ply:GetSkin())
+    skinSlider:SetValue(playerData.skin)
     function skinSlider:OnValueChanged(value)
-        modelPanel.Entity:SetSkin(value)
+        playerData.skin = math.modf(value)
 
-        skinData = value
-        playerData2.skin = value
+        modelPanel.Entity:SetSkin(playerData.skin)
     end
 
     local empty = createPanel(empty, RIGHT, 24, nil, nil, function(self, w, h)
@@ -270,14 +255,15 @@ local function playerMenu()
     end
 
     local function selectModel(id)
-        local models = jobs[jobData].models
+        local models = jobs[playerData.job].models
         if not models or not models[id] then return end
         
-        modelData = id
+        playerData.model = id
 
         modelComboB:SetValue(models[id])
 
         modelPanel:SetModel(models[id])
+        modelPanel.Entity:SetSkin(playerData.skin)
         timer.Simple(0, function()
             if not IsValid(modelPanel.Entity) then return end
 
@@ -285,21 +271,20 @@ local function playerMenu()
 
             skinSlider:SetMax(skinCount - 1)
 
-            if skinData > (skinCount - 1) then
+            if playerData.skin > (skinCount - 1) then
                 modelPanel.Entity:SetSkin(0)
                 skinSlider:SetValue(0)
 
-                skinData = 0
-                playerData2.skin = 0
+                playerData.skin = 0
             end
         end)
     end
 
     function upBtn:DoClick()
-        local models = jobs[jobData].models
+        local models = jobs[playerData.job].models
         if not models then return end
 
-        local id = (modelData or 1) - 1
+        local id = (playerData.model or 1) - 1
 
         if id < 1 then id = #models end
 
@@ -307,10 +292,10 @@ local function playerMenu()
     end
 
     function downBtn:DoClick()
-        local models = jobs[jobData].models
+        local models = jobs[playerData.job].models
         if not models then return end
         
-        local id = (modelData or 1) + 1
+        local id = (playerData.model or 1) + 1
 
         if id > #models then id = 1 end
 
@@ -323,15 +308,15 @@ local function playerMenu()
     end
 
     function jobComboB:OnSelect(index, text, data)
-        jobData = index
+        playerData.job = index
 
         selectModel(1)
         skinSlider:SetValue(0)
 
         -- update model list
         modelComboB:Clear()
-        modelComboB:SetValue(jobs[jobData].models[1])
-        for _, model in pairs(jobs[jobData].models) do
+        modelComboB:SetValue(jobs[playerData.job].models[1])
+        for _, model in pairs(jobs[playerData.job].models) do
             modelComboB:AddChoice(model, nil, false, 'icon16/bricks.png')
         end
     end
@@ -339,26 +324,14 @@ local function playerMenu()
     local spawnBtn = vgui.Create('DButton', infoPanel)
     spawnBtn:Dock(BOTTOM)
     spawnBtn:DockMargin(16, 0, 16, 16)
-    spawnBtn:SetText('Сохранить и возродиться')
+    spawnBtn:SetText(lrp.lang('lrp_gm.main_menu.respawn'))
     spawnBtn:SetFont('lrp-mainMenu.large-font')
     spawnBtn:SetTall(40)
 
     function spawnBtn:DoClick()
-        if nextRespawn > CurTime() then
-            -- local timeLeft = math.ceil(nextRespawn - CurTime())
-            -- ply:NotifySound('Вы не можете возродиться еще: ' .. timeLeft .. ' с', 2, NOTIFY_ERROR)
-            
-            return
-        end
+        if nextRespawn > CurTime() then return end
 
-        local playerData = {
-            job = jobData or 1,
-            model = math.modf(modelData) or 1,
-            skin = math.modf(skinData) or 0,
-        }
-
-        local jsonData = util.TableToJSON(playerData)
-        file.Write('lrp_player_data.txt', jsonData)
+        file.Write('lrp_player_data.txt', util.TableToJSON(playerData))
 
         net.Start('lrp-gamemode.sendData')
         net.WriteTable(playerData)
@@ -369,7 +342,19 @@ local function playerMenu()
 
         blur:Hide()
 
+        self.oldText = self:GetText()
         nextRespawn = CurTime() + respawnDelay
+
+        spawnBtn:SetText( lrp.lang('lrp_gm.main_menu.respawn_delay', respawnDelay) )
+        timer.Create('lrp-mainMenu.respawnTimer', 1, respawnDelay, function()
+            local timeLeft = math.ceil(nextRespawn - CurTime())
+            if timeLeft > 0 then
+                spawnBtn:SetText( lrp.lang('lrp_gm.main_menu.respawn_delay', timeLeft) )
+            else
+                spawnBtn:SetText(self.oldText)
+                timer.Remove('lrp-mainMenu.respawnTimer')
+            end
+        end)
     end
 
     function blur:Think()
@@ -419,6 +404,8 @@ local function playerMenu()
 	end
 
 	function blur:Toggle()
+        if gui.IsGameUIVisible() then return end
+        
 		if self:IsVisible() then
 			self:Hide()
 		else
@@ -440,11 +427,8 @@ local function playerMenu()
 end
 
 function GM:InitPostEntity()
-    local data = file.Exists('lrp_player_data.txt', 'DATA') and
-        util.JSONToTable( file.Read('lrp_player_data.txt', 'DATA') ) or playerData
-
     net.Start('lrp-gamemode.sendData')
-    net.WriteTable(data)
+    net.WriteTable( loadPlayerData() )
     net.WriteBool(true) -- send data only for initialization
     net.SendToServer()
 
@@ -452,3 +436,7 @@ function GM:InitPostEntity()
         playerMenu()
     end)
 end
+
+cvars.AddChangeCallback('gmod_language', function()
+    playerMenu()
+end, 'lrp-playerMenu.lang')
