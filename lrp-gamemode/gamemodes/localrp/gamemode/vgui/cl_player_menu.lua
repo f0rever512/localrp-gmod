@@ -192,7 +192,7 @@ local function playerMenu()
     jobComboB:SetIcon('icon16/status_offline.png')
     jobComboB:SetSortItems(false)
     for _, job in SortedPairs(jobs) do
-        jobComboB:AddChoice(job.name, nil, false, 'icon16/' .. job.icon .. '.png')
+        jobComboB:AddChoice(job.name, nil, false, job.icon)
     end
 
     createLabel(infoPanel, lrp.lang('lrp_gm.main_menu.model'), 'lrp-mainMenu.medium-font', color_white, TOP, {0, 36, 0, 0}, {16, 0})
@@ -262,7 +262,7 @@ local function playerMenu()
 
         modelComboB:SetValue(models[id])
 
-        modelPanel:SetModel(models[id])
+        modelPanel:SetModel(models[id] or 'models/player.mdl')
         modelPanel.Entity:SetSkin(playerData.skin)
         timer.Simple(0, function()
             if not IsValid(modelPanel.Entity) then return end

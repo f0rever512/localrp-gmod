@@ -1,3 +1,5 @@
+local jobs = lrp_jobs
+
 function GM:GrabEarAnimation(ply) end
 
 function GM:PlayerNoClip(ply, desiredState)
@@ -26,4 +28,10 @@ function GM:StartCommand(ply, cmd)
     if ((ply:KeyDown(IN_MOVELEFT) or ply:KeyDown(IN_MOVERIGHT)) and not ply:KeyDown(IN_FORWARD)) or ply:KeyDown(IN_BACK) then
         cmd:RemoveKey(IN_SPEED)
     end
+end
+
+function GM:CreateTeams()
+	for jobID, job in pairs(jobs) do
+		team.SetUp(jobID, job.name, job.color)
+	end
 end

@@ -2,8 +2,8 @@ lrp_jobs = lrp_jobs or {
 
     [1] = {
         name = 'Гражданин',
+        icon = 'icon16/user.png',
         color = Color(255, 255, 255),
-        icon = 'user',
 
         models = {
             'models/humans/modern/male_01_01.mdl',
@@ -63,8 +63,8 @@ lrp_jobs = lrp_jobs or {
 
     [2] = {
         name = 'Бездомный',
+        icon = 'icon16/user_gray.png',
         color = Color(125, 65, 55),
-        icon = 'user_gray',
 
         models = {
             'models/player/Group01/male_01.mdl',
@@ -85,8 +85,8 @@ lrp_jobs = lrp_jobs or {
     
     [3] = {
         name = 'Офицер полиции',
+        icon = 'icon16/medal_gold_1.png',
         color = Color(80, 80, 220),
-        icon = 'medal_gold_1',
 
         models = {
             'models/player/policeofficer/male_01.mdl',
@@ -111,8 +111,8 @@ lrp_jobs = lrp_jobs or {
 
     [4] = {
         name = 'Детектив',
+        icon = 'icon16/asterisk_yellow.png',
         color = Color(80, 80, 220),
-        icon = 'asterisk_yellow',
 
         models = {
             'models/kerry/detective/male_01.mdl',
@@ -138,8 +138,8 @@ lrp_jobs = lrp_jobs or {
 
     [5] = {
         name = 'Оперативник спецназа',
+        icon = 'icon16/award_star_gold_1.png',
         color = Color(80, 80, 220),
-        icon = 'award_star_gold_1',
 
         models = {
             'models/player/plattsburg_swat/swat.mdl'
@@ -157,8 +157,8 @@ lrp_jobs = lrp_jobs or {
 
     [6] = {
         name = 'Медик',
+        icon = 'icon16/pill.png',
         color = Color(225, 120, 120),
-        icon = 'pill',
 
         models = {
             'models/kerry/plats_medical_01.mdl',
