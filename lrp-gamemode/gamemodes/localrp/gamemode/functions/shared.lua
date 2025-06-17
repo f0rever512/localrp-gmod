@@ -28,7 +28,7 @@ function ply:PlayAnimation(animID)
 end
 
 function ply:GetJob()
-	if self:Team() == 0 then
+    if self:Team() == 0 or self:Team() > #jobs then
 		return jobs[1]
 	else
 		return jobs[self:Team()]

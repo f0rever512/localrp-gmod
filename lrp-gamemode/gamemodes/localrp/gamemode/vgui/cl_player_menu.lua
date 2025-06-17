@@ -65,6 +65,11 @@ local function playerMenu()
     local ply = LocalPlayer()
     if not IsValid(ply) then return end
 
+    if playerData.job > #jobs then
+        playerData.job = 1
+        file.Write('lrp_player_data.txt', util.TableToJSON(playerData))
+    end
+
     local blur = vgui.Create('DPanel')
 	blur:SetSize(ScrW(), ScrH())
 	blur:MakePopup()
@@ -188,12 +193,20 @@ local function playerMenu()
     local jobComboB = vgui.Create('DComboBox', infoPanel)
     jobComboB:Dock(TOP)
     jobComboB:DockMargin(32, 12, 32, 0)
-    jobComboB:SetValue(jobs[playerData.job].name)
     jobComboB:SetIcon('icon16/status_offline.png')
     jobComboB:SetSortItems(false)
+
+    local function updateJobs()
+        jobComboB:Clear()
+
     for _, job in SortedPairs(jobs) do
         jobComboB:AddChoice(job.name, nil, false, job.icon)
     end
+
+        jobComboB:SetValue(jobs[playerData.job].name)
+    end
+
+    updateJobs()
 
     createLabel(infoPanel, lrp.lang('lrp_gm.main_menu.model'), 'lrp-mainMenu.medium-font', color_white, TOP, {0, 36, 0, 0}, {16, 0})
     local empty = createPanel(infoPanel, TOP, nil, nil, {32, 12, 32, 0}, function(self, w, h)
@@ -417,6 +430,11 @@ local function playerMenu()
         if IsValid(blur) then
 			blur:Toggle()
 		end
+    end)
+
+    net.Receive('lrp-jobs.updateUI', function()
+        -- updateJobs()
+        playerMenu()
     end)
 
     function blur:OnKeyCodeReleased(key)
