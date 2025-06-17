@@ -6,10 +6,10 @@ cfg.walkSpeed = 80
 cfg.runSpeed = 180
 
 cfg.defaultWeapons = {
-    'weapon_physgun',
-    'gmod_tool',
-    'gmod_camera',
-    'localrp_hands',
+    weapon_physgun = true,
+    gmod_tool = true,
+    gmod_camera = true,
+    localrp_hands = true,
 }
 
 cfg.giveAmmo = {
@@ -17,13 +17,6 @@ cfg.giveAmmo = {
     ammo_large = 120,
     ammo_shot = 40,
     ammo_small = 150,
-}
-
-cfg.dropBlacklist = {
-    weapon_physgun = true,
-    gmod_tool = true,
-    gmod_camera = true,
-    localrp_hands = true,
 }
 
 cfg.useAnimCooldown = 1

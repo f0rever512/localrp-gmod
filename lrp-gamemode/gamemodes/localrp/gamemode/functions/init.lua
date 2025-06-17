@@ -1,7 +1,7 @@
 util.AddNetworkString('lrp-gamemode.notify')
 util.AddNetworkString('lrp-gamemode.anim')
 
-local dropBlacklist = lrp_cfg.dropBlacklist
+local defWeps = lrp_cfg.defaultWeapons
 
 local ply = FindMetaTable('Player')
 
@@ -10,7 +10,7 @@ function ply:DropWeaponAnim()
 
     if not IsValid(self) or not IsValid(wep) then return end
 
-    if IsValid(wep) and dropBlacklist[wep:GetClass()] or self:InVehicle() then
+    if IsValid(wep) and defWeps[wep:GetClass()] or self:InVehicle() then
         self:NotifySound(self:InVehicle() and 'В автомобиле нельзя выбросить оружие' or 'Это оружие нельзя выбросить', 3, NOTIFY_ERROR)
 
         return

@@ -37,7 +37,7 @@ function GM:PlayerLoadout(ply)
 		ply:GiveAmmo(amount, ammoName, true)
 	end
 
-    for _, wep in pairs(cfg.defaultWeapons) do
+    for wep, _ in pairs(cfg.defaultWeapons) do
 		ply:Give(wep)
 	end
 
