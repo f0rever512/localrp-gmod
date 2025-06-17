@@ -16,13 +16,13 @@ function ply:NotifySound(text, duration, type, sound)
 end
 
 function ply:PlayAnimation(animID)
-    self:AnimRestartGesture(GESTURE_SLOT_CUSTOM, animID, true)
-    
-    net.Start('lrp-gamemode.anim')
-    net.WriteUInt(animID, 12)
     if SERVER then
-        net.Send(self)
+        timer.Simple(0, function()
+            self:DoAnimationEvent(animID)
+        end)
     else
+        net.Start('lrp-gamemode.anim')
+        net.WriteUInt(animID, 12)
         net.SendToServer()
     end
 end

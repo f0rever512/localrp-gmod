@@ -8,12 +8,6 @@ net.Receive('lrp-gamemode.notify', function()
     surface.PlaySound(sound)
 end)
 
-net.Receive('lrp-gamemode.anim', function()
-    local animID = net.ReadUInt(12)
-
-    ply:AnimRestartGesture(GESTURE_SLOT_CUSTOM, animID, true)
-end)
-
 lrp = lrp or {}
 
 function lrp.lang(key, ...)

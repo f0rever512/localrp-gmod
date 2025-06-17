@@ -26,7 +26,9 @@ concommand.Add('lrp_dropweapon', function(ply, cmd, args) ply:DropWeaponAnim() e
 net.Receive('lrp-gamemode.anim', function(_, ply)
     local animID = net.ReadUInt(12)
 
-    ply:AnimRestartGesture(GESTURE_SLOT_CUSTOM, animID, true)
+    timer.Simple(0, function()
+        ply:DoAnimationEvent(animID)
+    end)
 end)
 
 -- enums
