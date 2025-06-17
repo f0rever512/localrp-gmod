@@ -21,6 +21,6 @@ hook.Add('PlayerCanHearPlayersVoice', 'lrp-gamemode.voiceDist', function(listene
     return listener:GetPos():DistToSqr(talker:GetPos()) <= 160000 and talker:Alive(), true
 end)
 
-hook.Add('PlayerCanSeePlayersChat', 'lrp-gamemode.chatDist', function(text, teamOnly, listener, speaker)
-    return listener:GetPos():DistToSqr(speaker:GetPos()) <= 160000 and talker:Alive()
+hook.Add('PlayerCanSeePlayersChat', 'lrp-gamemode.chatDist', function(text, teamOnly, listener, talker)
+    return listener:GetPos():DistToSqr(talker:GetPos()) <= 160000 and talker:Alive()
 end)
