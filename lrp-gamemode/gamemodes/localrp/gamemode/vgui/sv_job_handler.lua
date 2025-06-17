@@ -12,7 +12,6 @@ end)
 net.Receive('lrp-jobs.addJob', function()
     local jobID = net.ReadUInt(6)
     local newJob = net.ReadTable()
-    PrintTable(newJob)
 
     jobs[jobID] = {
         name = newJob.name,

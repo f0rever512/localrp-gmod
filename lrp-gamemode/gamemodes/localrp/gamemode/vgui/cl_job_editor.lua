@@ -40,7 +40,7 @@ local function openJobEditor()
     if IsValid(jobEditor) then jobEditor:Remove() end
 
     local frame = vgui.Create('DFrame')
-    frame:SetTitle('Редактор классов')
+    frame:SetTitle(lrp.lang('lrp_gm.class_editor.title'))
     frame:SetSize(ScrW() * 0.4, ScrH() * 0.525)
     frame:SetSizable(true)
     frame:SetMinWidth(frame:GetWide())
@@ -57,9 +57,9 @@ local function openJobEditor()
     jobList:Dock(FILL)
     jobList:SetMultiSelect(false)
     jobList:AddColumn('ID'):SetWidth(48)
-    jobList:AddColumn('Название'):SetWidth(160)
-    jobList:AddColumn('Модели')
-    jobList:AddColumn('Оружие')
+    jobList:AddColumn(lrp.lang('lrp_gm.class_editor.name')):SetWidth(160)
+    jobList:AddColumn(lrp.lang('lrp_gm.class_editor.models'))
+    jobList:AddColumn(lrp.lang('lrp_gm.class_editor.weapons'))
 
     local function updateListView()
         jobList:Clear()
@@ -67,7 +67,7 @@ local function openJobEditor()
         for id, job in SortedPairs(jobs) do
             jobList:AddLine(
                 id,
-                job.name or 'Новый класс',
+                job.name or lrp.lang('lrp_gm.class_editor.new_class'),
                 job.models and #job.models or 0,
                 job.weapons and #job.weapons or 0
             )
@@ -85,7 +85,7 @@ local function openJobEditor()
     rightPnl:DockPadding(0, 8, 0, 0)
 
     local selectHint = vgui.Create('DLabel', rightPnl)
-    selectHint:SetText('<– Выберите класс')
+    selectHint:SetText(lrp.lang('lrp_gm.class_editor.choose'))
     selectHint:SetFont('lrp-mainMenu.medium-font')
     selectHint:Dock(FILL)
     selectHint:SetContentAlignment(5)
@@ -100,40 +100,40 @@ local function openJobEditor()
 
         local job = jobs[jobID] or {}
 
-        local nameRow = createRow(editPnl, 'Название:')
+        local nameRow = createRow(editPnl, lrp.lang('lrp_gm.class_editor.name') .. ':')
         local nameEntry = vgui.Create('DTextEntry', nameRow)
         nameEntry:Dock(FILL)
-        nameEntry:SetText(job.name or 'Новый класс')
+        nameEntry:SetText(job.name or lrp.lang('lrp_gm.class_editor.new_class'))
 
-        local iconRow = createRow(editPnl, 'Иконка:', 96)
+        local iconRow = createRow(editPnl, lrp.lang('lrp_gm.class_editor.icon'), 96)
         local setIcon = vgui.Create('DIconBrowser', iconRow)
         setIcon:Dock(FILL)
         setIcon:SelectIcon(job.icon or 'icon16/status_offline.png')
 
-        local colorRow = createRow(editPnl, 'Цвет:', 128)
+        local colorRow = createRow(editPnl, lrp.lang('lrp_gm.class_editor.color'), 128)
         local setColor = vgui.Create('DColorMixer', colorRow)
         setColor:Dock(FILL)
         setColor:SetPalette(true)
         setColor:SetAlphaBar(false)
         setColor:SetColor(job.color or Color(255, 255, 255))
 
-        local modelRow = createRow(editPnl, 'Модели:', 72)
+        local modelRow = createRow(editPnl, lrp.lang('lrp_gm.class_editor.models') .. ':', 72)
         local mdlEntry = vgui.Create('DTextEntry', modelRow)
         mdlEntry:Dock(FILL)
         mdlEntry:SetMultiline(true)
         mdlEntry:SetText(job.models and table.concat(job.models, '\n') or '')
 
-        local wepRow = createRow(editPnl, 'Оружие:', 72)
+        local wepRow = createRow(editPnl, lrp.lang('lrp_gm.class_editor.weapons') .. ':', 72)
         local wepEntry = vgui.Create('DTextEntry', wepRow)
         wepEntry:Dock(FILL)
         wepEntry:SetMultiline(true)
         wepEntry:SetText(job.weapons and table.concat(job.weapons, '\n') or '')
 
-        local additionsRow = createRow(editPnl, 'Дополнения:', 44)
+        local additionsRow = createRow(editPnl, lrp.lang('lrp_gm.class_editor.adds'), 44)
 
         local ar = vgui.Create('DNumSlider', additionsRow)
         ar:Dock(FILL)
-        ar:SetText('Броня:')
+        ar:SetText(lrp.lang('lrp_gm.class_editor.armor'))
         ar:SetMin(0)
         ar:SetMax(100)
         ar:SetDecimals(0)
@@ -142,12 +142,12 @@ local function openJobEditor()
 
         local gov = vgui.Create('DCheckBoxLabel', additionsRow)
         gov:Dock(BOTTOM)
-        gov:SetText('Государственный класс (рация, кнопка паники)')
+        gov:SetText(lrp.lang('lrp_gm.class_editor.gov'))
         gov:SetChecked(job.gov or false)
 
         if not IsValid(saveBtn) then
             saveBtn = vgui.Create('DButton', rightPnl)
-            saveBtn:SetText('Сохранить')
+            saveBtn:SetText(lrp.lang('lrp_gm.shared.save'))
             saveBtn:Dock(BOTTOM)
             saveBtn:DockMargin(8, 8, 8, 8)
             saveBtn:SetTall(32)
@@ -196,7 +196,7 @@ local function openJobEditor()
         addJob()
         
     end
-    
+
     function jobList:OnRowSelected(_, line)
         local id = line:GetColumnText(1)
         editJob(tonumber(id))
@@ -207,8 +207,8 @@ local function openJobEditor()
         if id == 1 then return end
         
         local menu = DermaMenu()
-
-        menu:AddOption('Удалить', function()
+        
+        menu:AddOption(lrp.lang('lrp_gm.shared.remove'), function()
 
             self:RemoveLine(lineID)
             jobs[id] = nil
@@ -232,7 +232,7 @@ local function openJobEditor()
     local addBtn = vgui.Create('DButton', leftPnl)
     addBtn:Dock(BOTTOM)
     addBtn:DockMargin(8, 8, 8, 8)
-    addBtn:SetText('Добавить новый класс')
+    addBtn:SetText(lrp.lang('lrp_gm.class_editor.add_new_class'))
     addBtn:SetTall(32)
     addBtn:SetIcon('icon16/add.png')
     function addBtn:DoClick()

@@ -18,6 +18,8 @@ hook.Add('AddToolMenuTabs', 'lrp-gamemode.toolMenuTab', function()
         pnl:CheckBox(lrp.lang('lrp_gm.options.drowning'), 'sv_lrp_drowning')
 
         pnl:CheckBox(lrp.lang('lrp_gm.options.noclip'), 'sbox_noclip')
+
+        pnl:Button(lrp.lang('lrp_gm.options.class_editor'), 'lrp_class_editor')
     end)
 
 end)

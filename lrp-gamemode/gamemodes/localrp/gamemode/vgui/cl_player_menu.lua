@@ -186,8 +186,8 @@ local function playerMenu()
     createLabel(infoPanel, lrp.lang('lrp_gm.main_menu.nickname'), 'lrp-mainMenu.medium-font', color_white, TOP, {0, 12, 0, 0}, {16, 0})
     createLabel(infoPanel, ply:GetName(), 'lrp-mainMenu.medium-font', color_white, TOP, {0, 12, 0, 0}, {32, 0})
 
-    createLabel(infoPanel, lrp.lang('lrp_gm.main_menu.health_armor'), 'lrp-mainMenu.medium-font', color_white, TOP, {0, 36, 0, 0}, {16, 0})
-    createLabel(infoPanel, ply:Health() .. ' здоровья / ' .. ply:Armor() .. ' брони', 'lrp-mainMenu.medium-font', color_white, TOP, {0, 12, 0, 0}, {32, 0})
+    createLabel(infoPanel, lrp.lang('lrp_gm.main_menu.indicators'), 'lrp-mainMenu.medium-font', color_white, TOP, {0, 36, 0, 0}, {16, 0})
+    local hpAr = createLabel(infoPanel, lrp.lang('lrp_gm.main_menu.hp_ar', ply:Health(), ply:Armor()), 'lrp-mainMenu.medium-font', color_white, TOP, {0, 12, 0, 0}, {32, 0})
 
     createLabel(infoPanel, lrp.lang('lrp_gm.main_menu.class'), 'lrp-mainMenu.medium-font', color_white, TOP, {0, 36, 0, 0}, {16, 0})
     local jobComboB = vgui.Create('DComboBox', infoPanel)
@@ -199,9 +199,9 @@ local function playerMenu()
     local function updateJobs()
         jobComboB:Clear()
 
-    for _, job in SortedPairs(jobs) do
-        jobComboB:AddChoice(job.name, nil, false, job.icon)
-    end
+        for _, job in SortedPairs(jobs) do
+            jobComboB:AddChoice(job.name, nil, false, job.icon)
+        end
 
         jobComboB:SetValue(jobs[playerData.job].name)
     end
@@ -381,6 +381,8 @@ local function playerMenu()
 
 		self.openTime = CurTime()
 		self:SetVisible(true)
+
+        hpAr:SetText(lrp.lang('lrp_gm.main_menu.hp_ar', ply:Health(), ply:Armor()))
 
         -- if lastCursorPos[1] and lastCursorPos[2] then
         --     gui.SetMousePos(lastCursorPos[1], lastCursorPos[2])
