@@ -29,6 +29,13 @@ surface.CreateFont( 'lrp-mainMenu.icons', {
 	weight = 400,
 } )
 
+surface.CreateFont( 'lrp-mainMenu.iconLarge', {
+	font = 'FontAwesome',
+	extended = true,
+	size = 16,
+	weight = 400,
+} )
+
 surface.CreateFont('lrp-postDraw.font', {
     font = 'Calibri',
     size = 60,

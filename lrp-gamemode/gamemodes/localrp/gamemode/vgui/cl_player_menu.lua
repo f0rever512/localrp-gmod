@@ -132,16 +132,10 @@ local function playerMenu()
         local posX, posY = w / 4, h / 4
         local sizeX, sizeY = w / 2, h / 2
 
-        draw.RoundedBox(
-            8, posX, posY + 1, sizeX, sizeY,
-            self.Depressed and clr.defbtn or Color(clr.defbtn.r * 0.75, clr.defbtn.g * 0.75, clr.defbtn.b * 0.75, 255)
-        )
-        
-        if not self.Depressed then
-            draw.RoundedBox(8, posX, posY, sizeX, sizeY, clr.defbtn)
-        end
+        draw.RoundedBox(8, posX, posY + 1, sizeX, sizeY, Color(20, 210, 180))
 
-        draw.SimpleText(utf8.char(0xf00d), 'lrp-mainMenu.icons', sizeX, sizeY - (self.Depressed and 0 or 1), Color(0,0,0, 150), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(utf8.char(0xf00d), 'lrp-mainMenu.iconLarge', sizeX, sizeY,
+        Color(0, 0, 0, (self.Hovered or self.Depressed) and 180 or 140), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
     createLabel(top, lrp.lang('lrp_gm.main_menu.title'), 'lrp-mainMenu.large-font', color_white, FILL, nil, {12, 0})
