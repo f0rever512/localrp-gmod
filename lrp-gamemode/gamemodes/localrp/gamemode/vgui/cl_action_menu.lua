@@ -1,23 +1,38 @@
+local function addOption(parent, text, icon, func)
+    local option = parent:AddOption(text, func)
+
+    option:SetIcon(icon)
+    return option
+end
+
+local function addSubMenu(parent, text, icon)
+    local subMenu, subMenuIcon = parent:AddSubMenu(text)
+
+    subMenuIcon:SetIcon(icon)
+    return subMenu
+end
+
 local nextRagdoll = 0
 
 local function actionMenu()
+
     local ply = LocalPlayer()
-    local wep = ply:GetActiveWeapon()
+
     if not ply:Alive() then return end
+
+    local wep = ply:GetActiveWeapon()
 
     local menu = vgui.Create('DMenu')
     menu:MakePopup()
-    menu:SetPos(-180, ScrH() * .425)
-    menu:MoveTo(10, ScrH() * .425, 0.2, 0)
     menu:SetAlpha(0)
-    menu:AlphaTo(255, 0.3, 0)
-    input.SetCursorPos(250, ScrH() * .5)
+    menu:AlphaTo(255, 0.25, 0)
 
-    local gunSub, gun = menu:AddSubMenu("Оружие:")
-    gun:SetIcon('icon16/gun.png')
-    gunSub:AddOption('Выбросить оружие', function()
+    input.SetCursorPos(256, ScrH() * 0.5)
+
+    local gunSub = addSubMenu(menu, 'Оружие:', 'icon16/gun.png')
+    addOption(gunSub, 'Выбросить оружие', 'icon16/arrow_right.png', function()
         RunConsoleCommand('lrp_dropweapon')
-    end):SetIcon('icon16/arrow_right.png')
+    end)
     
     if IsValid(wep) and (wep:GetMaxClip1() > -1 or wep:GetMaxClip2() > -1) then
         gunSub:AddOption('Проверить магазин', function()
@@ -47,8 +62,10 @@ local function actionMenu()
         end):SetIcon('icon16/shield.png')
     end
 
-    local plyJob = ply:GetJob()
-    if plyJob.panicButton then
+    local jobs = lrp.getJobTable()
+    local plyJob = jobs[ply:Team()]
+    
+    if plyJob.gov then
         menu:AddOption('Нажать кнопку паники', function()
             ply:ConCommand('panicbutton')
         end):SetIcon('icon16/exclamation.png')
@@ -159,13 +176,27 @@ local function actionMenu()
             surface.PlaySound("buttons/lightswitch2.wav")
         end):SetIcon('icon16/accept.png')
     end
+
+    timer.Simple(0.01, function()
+        if not IsValid(menu) then return end
+
+        local y = ( ScrH() - menu:GetTall() ) * 0.5
+        menu:SetPos(0, y)
+        menu:MoveTo(8, y, 0.2, 0, 1)
+    end)
+
 end
 
-hook.Add('OnContextMenuOpen', 'lrp-actionMenu', function()
-    local pl = LocalPlayer()
-    local wep = pl:GetActiveWeapon()
-    if not pl:Alive() then return false end
-    if wep.LRPGuns and wep:GetReady() then return false end
+hook.Add('OnContextMenuOpen', 'lrp-actionMenu.open', function()
+
+    local ply = LocalPlayer()
+
+    if not ply:Alive() then return false end
+
+    local wep = ply:GetActiveWeapon()
+
+    if wep.Base == 'localrp_gun_base' and wep:GetReady() then return false end
 
     actionMenu()
+
 end)
