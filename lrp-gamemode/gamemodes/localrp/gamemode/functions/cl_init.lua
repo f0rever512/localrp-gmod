@@ -20,3 +20,19 @@ function lrp.lang(key, ...)
         return text
     end
 end
+
+local jobs = {}
+
+function lrp.getJobTable()
+    return jobs
+end
+
+net.Receive('lrp-jobs.sendTable', function()
+    jobs = net.ReadTable()
+
+    for id, job in pairs(jobs) do
+        team.SetUp(id, job.name, job.color)
+    end
+
+    hook.Run('lrp-jobs.init', jobs)
+end)

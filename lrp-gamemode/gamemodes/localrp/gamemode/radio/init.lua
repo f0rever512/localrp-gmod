@@ -11,8 +11,8 @@ net.Receive('lrp-radio.toggle', function(_, ply)
 end)
 
 hook.Add('PlayerCanHearPlayersVoice', 'lrp-gamemode.voiceDist', function(listener, talker)
-    local listenIsGov = listener:GetJob().gov
-    local talkIsGov = talker:GetJob().gov
+    local listenIsGov = listener:GetJobTable().gov
+    local talkIsGov = talker:GetJobTable().gov
 
     if listener:GetInfoNum('cl_lrp_radio', 0) == 1 and talker:GetNW2Bool('UsingRadio') and listenIsGov and talkIsGov then
         return true, false

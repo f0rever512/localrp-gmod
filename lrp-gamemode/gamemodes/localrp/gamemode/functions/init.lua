@@ -1,6 +1,8 @@
 util.AddNetworkString('lrp-gamemode.notify')
 util.AddNetworkString('lrp-gamemode.anim')
 
+local jobs = lrp_jobs
+
 local defWeps = lrp_cfg.defaultWeapons
 
 local ply = FindMetaTable('Player')
@@ -30,6 +32,14 @@ net.Receive('lrp-gamemode.anim', function(_, ply)
         ply:DoAnimationEvent(animID)
     end)
 end)
+
+function ply:GetJobTable()
+    if self:Team() == 0 or self:Team() > #jobs then
+		return jobs[1]
+	else
+		return jobs[self:Team()]
+	end
+end
 
 -- enums
 NOTIFY_GENERIC	= 0

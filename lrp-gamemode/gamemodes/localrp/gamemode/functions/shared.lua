@@ -1,4 +1,3 @@
-local jobs = lrp_jobs
 local ply = FindMetaTable('Player')
 
 function ply:NotifySound(text, duration, type, sound)
@@ -25,12 +24,4 @@ function ply:PlayAnimation(animID)
         net.WriteUInt(animID, 12)
         net.SendToServer()
     end
-end
-
-function ply:GetJob()
-    if self:Team() == 0 or self:Team() > #jobs then
-		return jobs[1]
-	else
-		return jobs[self:Team()]
-	end
 end

@@ -21,7 +21,7 @@ end
 function GM:PlayerSpawn(ply)
     ply:SetTeam(ply:GetNW2Int('JobID'))
     
-    local plyJob = ply:GetJob()
+    local plyJob = ply:GetJobTable()
     
     ply:SetHealth(100)
     ply:SetArmor(plyJob.ar or 0)
@@ -41,7 +41,7 @@ function GM:PlayerLoadout(ply)
 		ply:Give(wep)
 	end
 
-    local plyJob = ply:GetJob()
+    local plyJob = ply:GetJobTable()
 
     for _, wep in pairs(plyJob.weapons) do
 		ply:Give(wep)
@@ -49,7 +49,7 @@ function GM:PlayerLoadout(ply)
 end
 
 function GM:PlayerSetModel(ply)
-    local plyJob = ply:GetJob()
+    local plyJob = ply:GetJobTable()
 
     ply:SetModel( plyJob.models[ ply:GetNW2Int('PlayerModel') == 0 and 1 or ply:GetNW2Int('PlayerModel') ] )
     ply:SetSkin(ply:GetNW2Int('PlayerSkin'))

@@ -1,4 +1,4 @@
-lrp_jobs = lrp_jobs or {
+local defaultJobs = {
 
     [1] = {
         name = 'Гражданин',
@@ -106,7 +106,6 @@ lrp_jobs = lrp_jobs or {
 
         ar = 15,
         gov = true,
-        panicButton = true,
     },
 
     [4] = {
@@ -133,7 +132,6 @@ lrp_jobs = lrp_jobs or {
 
         ar = 10,
         gov = true,
-        panicButton = true,
     },
 
     [5] = {
@@ -152,7 +150,6 @@ lrp_jobs = lrp_jobs or {
 
         ar = 50,
         gov = true,
-        panicButton = true,
     },
 
     [6] = {
@@ -178,3 +175,42 @@ lrp_jobs = lrp_jobs or {
     },
 
 }
+
+util.AddNetworkString('lrp-jobs.requestData')
+util.AddNetworkString('lrp-jobs.sendTable')
+
+lrp_jobs = file.Exists('lrp_classes.txt', 'DATA') and
+util.JSONToTable( file.Read('lrp_classes.txt', 'DATA') )
+or defaultJobs
+
+function GM:CreateTeams()
+    for id, job in pairs(lrp_jobs) do
+        team.SetUp(id, job.name, job.color)
+    end
+end
+
+-- send jobs after InitPostEntity()
+net.Receive('lrp-jobs.requestData', function(_, ply)
+
+    net.Start('lrp-jobs.sendTable')
+    net.WriteTable(lrp_jobs)
+    net.Send(ply)
+
+end)
+
+concommand.Add('lrp_class_reset', function(ply)
+
+    if IsValid(ply) and not ply:IsSuperAdmin() then return end
+
+    lrp_jobs = table.Copy(defaultJobs)
+    file.Write('lrp_classes.txt', util.TableToJSON(lrp_jobs, true))
+
+    net.Start('lrp-jobs.sendTable')
+    net.WriteTable(lrp_jobs)
+    net.Broadcast()
+
+    net.Start('lrp-jobs.updateUI')
+    net.WriteTable(lrp_jobs)
+    net.Broadcast()
+
+end)

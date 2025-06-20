@@ -6,10 +6,10 @@ cfg.walkSpeed = 80
 cfg.runSpeed = 180
 
 cfg.defaultWeapons = {
+    localrp_hands = true,
     weapon_physgun = true,
     gmod_tool = true,
     gmod_camera = true,
-    localrp_hands = true,
 }
 
 cfg.giveAmmo = {

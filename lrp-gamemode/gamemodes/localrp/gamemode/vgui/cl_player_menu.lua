@@ -1,4 +1,4 @@
-local jobs = lrp_jobs
+local jobs = {}
 local cfg = lrp_cfg
 
 local respawnDelay = 10
@@ -131,7 +131,7 @@ local function playerMenu()
     function close:Paint(w, h)
         local posX, posY = w / 4, h / 4
         local sizeX, sizeY = w / 2, h / 2
-
+    
         draw.RoundedBox(8, posX, posY + 1, sizeX, sizeY, Color(20, 210, 180))
 
         draw.SimpleText(utf8.char(0xf00d), 'lrp-mainMenu.iconLarge', sizeX, sizeY,
@@ -428,11 +428,6 @@ local function playerMenu()
 		end
     end)
 
-    net.Receive('lrp-jobs.updateUI', function()
-        -- updateJobs()
-        playerMenu()
-    end)
-
     function blur:OnKeyCodeReleased(key)
 		if input.LookupKeyBinding(key) == 'gm_showhelp' then
 			blur:Hide()
@@ -446,10 +441,19 @@ function GM:InitPostEntity()
     net.WriteBool(true) -- send data only for initialization
     net.SendToServer()
 
-    timer.Simple(1, function() -- wait for lrp-gamemode.sendData
-        playerMenu()
-    end)
+    net.Start('lrp-jobs.requestData')
+    net.SendToServer()
 end
+
+hook.Add('lrp-jobs.init', 'lrp-jobs.init.mainMenu', function(tbl)
+    jobs = tbl
+    playerMenu()
+end)
+
+net.Receive('lrp-jobs.updateUI', function()
+    jobs = net.ReadTable()
+    playerMenu()
+end)
 
 cvars.AddChangeCallback('gmod_language', function()
     playerMenu()

@@ -1,4 +1,4 @@
-local jobs = lrp_jobs
+local lrp = lrp
 
 local function createRow(parent, text, height)
     local row = vgui.Create('DPanel', parent)
@@ -17,23 +17,19 @@ local function createRow(parent, text, height)
     return row
 end
 
-local function createLabel(parent, text, dock, margin, inset)
-    local label = vgui.Create('DLabel', parent)
-    label:SetText(text)
-    label:Dock(dock)
-
-    if margin then label:DockMargin(unpack(margin)) end
-    if inset then label:SetTextInset(unpack(inset)) end
-    
-    return label
+local function updateTeams(table)
+    for id, job in pairs(table) do
+        team.SetUp(id, job.name, job.color)
+    end
 end
 
 local jobEditor
 local saveBtn
+local jobs = {}
 
 local function openJobEditor()
     local ply = LocalPlayer()
-    if not ply:IsSuperAdmin() then return end
+    if IsValid(ply) and not ply:IsSuperAdmin() then return end
 
     local scale = ScrW() >= 1600 and 1 or 0.7
 
@@ -155,6 +151,7 @@ local function openJobEditor()
         end
 
         local function addJob()
+
             local name = nameEntry:GetValue()
             local icon = setIcon:GetSelectedIcon()
             local color = setColor:GetColor()
@@ -181,9 +178,8 @@ local function openJobEditor()
             net.WriteTable(jobs[jobID])
             net.SendToServer()
 
-            for jobID, job in pairs(jobs) do
-                team.SetUp(jobID, job.name, job.color)
-            end
+            updateTeams(jobs)
+
         end
 
         function saveBtn:DoClick()
@@ -220,9 +216,9 @@ local function openJobEditor()
             net.Start('lrp-jobs.updateUI')
             net.SendToServer()
 
-            for jobID, job in pairs(jobs) do
-                team.SetUp(jobID, job.name, job.color)
-            end
+            updateTeams(jobs)
+
+            jobList:SelectItem(jobList:GetLine(lineID-1))
 
         end):SetIcon('icon16/delete.png')
         
@@ -247,3 +243,7 @@ local function openJobEditor()
 end
 
 concommand.Add('lrp_class_editor', openJobEditor)
+
+hook.Add('lrp-jobs.init', 'lrp-jobs.init.editor', function(tbl)
+    jobs = tbl
+end)
