@@ -213,4 +213,14 @@ concommand.Add('lrp_class_reset', function(ply)
     net.WriteTable(lrp_jobs)
     net.Broadcast()
 
+    for _, target in pairs(player.GetAll()) do
+        -- if player has a deleted job
+        if target:GetNW2Int('JobID') > 6 then
+            target:SetNW2Int('JobID', 1)
+            target:Spawn()
+            
+            target:NotifySound('Your class has been deleted', 4, NOTIFY_GENERIC)
+        end
+    end
+
 end)

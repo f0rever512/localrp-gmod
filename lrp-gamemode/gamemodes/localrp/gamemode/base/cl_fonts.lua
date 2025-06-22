@@ -1,9 +1,9 @@
-surface.CreateFont( 'lrp.menu-small', {
+surface.CreateFont( 'lrp.jobEditor.small-font', {
     font = 'Calibri',
-    size = 15,
+    size = 20,
     weight = 300,
     antialias = true,
-    extended = true
+    extended = true,
 } )
 
 surface.CreateFont( 'lrp-mainMenu.medium-font', {

@@ -62,6 +62,7 @@ local blurMat = Material('pp/blurscreen')
 local corner = 8
 
 local function playerMenu()
+
     local ply = LocalPlayer()
     if not IsValid(ply) then return end
 
@@ -433,6 +434,20 @@ local function playerMenu()
 			blur:Hide()
 		end
 	end
+
+    net.Receive('lrp-jobs.updateUI', function()
+
+        jobs = net.ReadTable()
+
+        if playerData.job > #jobs then
+            playerData.job = 1
+            file.Write('lrp_player_data.txt', util.TableToJSON(playerData))
+        end
+
+        updateJobs()
+        
+    end)
+
 end
 
 function GM:InitPostEntity()
@@ -447,11 +462,6 @@ end
 
 hook.Add('lrp-jobs.init', 'lrp-jobs.init.mainMenu', function(tbl)
     jobs = tbl
-    playerMenu()
-end)
-
-net.Receive('lrp-jobs.updateUI', function()
-    jobs = net.ReadTable()
     playerMenu()
 end)
 

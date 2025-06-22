@@ -4,8 +4,21 @@ local net = net
 local IsValid = IsValid
 
 util.AddNetworkString('lrp-jobs.addJob')
+util.AddNetworkString('lrp-jobs.addDefJob')
 util.AddNetworkString('lrp-jobs.removeJob')
 util.AddNetworkString('lrp-jobs.updateUI')
+util.AddNetworkString('lrp-jobs.listView.addJob')
+util.AddNetworkString('lrp-jobs.listView.removeJob')
+
+local defJob = {
+    name = 'New class',
+    icon = 'icon16/status_offline.png',
+    color = Color(255, 255, 255),
+    models = {'models/player/Group01/male_01.mdl'},
+    weapons = {''},
+    ar = 0,
+    gov = false,
+}
 
 local function updateTeams(table)
     for id, job in pairs(table) do
@@ -17,11 +30,11 @@ local function saveData()
     file.Write('lrp_classes.txt', util.TableToJSON(lrp_jobs, true))
 end
 
-net.Receive('lrp-jobs.updateUI', function()
+local function updateMainMenu(jobs)
     net.Start('lrp-jobs.updateUI')
-    net.WriteTable(lrp_jobs)
+    net.WriteTable(jobs)
     net.Broadcast()
-end)
+end
 
 net.Receive('lrp-jobs.addJob', function(_, ply)
     if not IsValid(ply) or not ply:IsSuperAdmin() then return end
@@ -32,10 +45,32 @@ net.Receive('lrp-jobs.addJob', function(_, ply)
     lrp_jobs[jobID] = newJob
     saveData()
 
+    updateMainMenu(lrp_jobs)
     updateTeams(lrp_jobs)
 end)
 
+net.Receive('lrp-jobs.addDefJob', function(_, ply)
+
+    if not IsValid(ply) or not ply:IsSuperAdmin() then return end
+
+    local newID = 1
+    while lrp_jobs[newID] do newID = newID + 1 end
+
+    lrp_jobs[newID] = defJob
+    saveData()
+
+    net.Start('lrp-jobs.listView.addJob')
+    net.WriteUInt(newID, 6)
+    net.WriteTable(lrp_jobs[newID])
+    net.Broadcast()
+
+    updateMainMenu(lrp_jobs)
+    updateTeams(lrp_jobs)
+
+end)
+
 net.Receive('lrp-jobs.removeJob', function(_, ply)
+
     if not IsValid(ply) or not ply:IsSuperAdmin() then return end
 
     local jobID = net.ReadUInt(6)
@@ -53,5 +88,11 @@ net.Receive('lrp-jobs.removeJob', function(_, ply)
         end
     end
 
+    net.Start('lrp-jobs.listView.removeJob')
+    net.WriteUInt(jobID, 6)
+    net.Broadcast()
+
+    updateMainMenu(lrp_jobs)
     updateTeams(lrp_jobs)
+    
 end)

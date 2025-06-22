@@ -1,4 +1,5 @@
 local lrp = lrp
+local defWeapons = lrp_cfg.defaultWeapons
 
 local function createRow(parent, text, height)
     local row = vgui.Create('DPanel', parent)
@@ -10,7 +11,7 @@ local function createRow(parent, text, height)
     local label = vgui.Create('DLabel', row)
     label:SetText(text)
     label:Dock(LEFT)
-    label:SetWide(96)
+    label:SetWide(80)
     label:DockMargin(4, 0, 4, 0)
     label:SetContentAlignment(4)
 
@@ -37,7 +38,7 @@ local function openJobEditor()
 
     local frame = vgui.Create('DFrame')
     frame:SetTitle(lrp.lang('lrp_gm.class_editor.title'))
-    frame:SetSize(ScrW() * 0.4, ScrH() * 0.525)
+    frame:SetSize(ScrW() * 0.405, ScrH() * 0.7)
     frame:SetSizable(true)
     frame:SetMinWidth(frame:GetWide())
     frame:SetMinHeight(frame:GetTall())
@@ -68,9 +69,6 @@ local function openJobEditor()
                 job.weapons and #job.weapons or 0
             )
         end
-
-        net.Start('lrp-jobs.updateUI')
-        net.SendToServer()
     end
 
     updateListView()
@@ -113,17 +111,97 @@ local function openJobEditor()
         setColor:SetAlphaBar(false)
         setColor:SetColor(job.color or Color(255, 255, 255))
 
-        local modelRow = createRow(editPnl, lrp.lang('lrp_gm.class_editor.models') .. ':', 72)
-        local mdlEntry = vgui.Create('DTextEntry', modelRow)
-        mdlEntry:Dock(FILL)
-        mdlEntry:SetMultiline(true)
-        mdlEntry:SetText(job.models and table.concat(job.models, '\n') or '')
+        local mdlRow = createRow(editPnl, lrp.lang('lrp_gm.class_editor.models') .. ':', 192)
+        local mdlScroll = vgui.Create('DScrollPanel', mdlRow)
+        mdlScroll:Dock(FILL)
 
-        local wepRow = createRow(editPnl, lrp.lang('lrp_gm.class_editor.weapons') .. ':', 72)
-        local wepEntry = vgui.Create('DTextEntry', wepRow)
-        wepEntry:Dock(FILL)
-        wepEntry:SetMultiline(true)
-        wepEntry:SetText(job.weapons and table.concat(job.weapons, '\n') or '')
+        local mdlLayout = vgui.Create('DIconLayout', mdlScroll)
+        mdlLayout:Dock(FILL)
+
+        local selectedModels = {}
+        if job.models then
+            for _, mdl in pairs(job.models) do
+                selectedModels[mdl] = true
+            end
+        end
+
+        for name, mdl in SortedPairs( player_manager.AllValidModels() ) do
+            local icon = vgui.Create('SpawnIcon', mdlLayout)
+            icon:SetModel(mdl)
+            icon:SetSize(64, 64)
+            icon:SetTooltip(name)
+
+            function icon:PaintOver(w, h)
+                if selectedModels[mdl] then
+                    surface.SetDrawColor(20, 180, 110)
+                    surface.DrawOutlinedRect(0, 0, w-2, h-2, 2)
+                end
+            end
+
+            function icon:DoClick()
+                selectedModels[mdl] = not selectedModels[mdl] and true or nil
+            end
+
+            function icon:OpenMenu()
+                local menu = DermaMenu()
+                
+                menu:AddOption('#spawnmenu.menu.copy', function() SetClipboardText(mdl) end):SetIcon('icon16/page_copy.png')
+                menu:Open()
+            end
+        end
+
+        local wepRow = createRow(editPnl, lrp.lang('lrp_gm.class_editor.weapons') .. ':', 136)
+        local wepScroll = vgui.Create('DScrollPanel', wepRow)
+        wepScroll:Dock(FILL)
+
+        local selectedWeapons = {}
+        if job.weapons then
+            for _, wep in pairs(job.weapons) do
+                if wep ~= '' then
+                    selectedWeapons[wep] = true
+                end
+            end
+        end
+
+        local wepList = weapons.GetList()
+        for _, wep in pairs(wepList) do
+            if not wep.Spawnable then continue end
+            
+            local class = wep.ClassName
+
+            if defWeapons[class] then continue end
+
+            local btn = vgui.Create('DButton', wepScroll)
+            btn:Dock(TOP)
+            btn:DockMargin(0, 1, 0, 1)
+            btn:SetTall(32)
+            btn:SetText('')
+
+            local defButton = vgui.GetControlTable('DButton').Paint
+            function btn:Paint(w, h)
+                if selectedWeapons[class] then
+                    draw.RoundedBox(8, 0, 0, w, h, Color(10, 135, 80))
+                else
+                    defButton(self, w, h)
+                end
+            end
+
+            local icon = vgui.Create('DImage', btn)
+            icon:Dock(LEFT)
+            icon:DockMargin(4, 4, 8, 4)
+            icon:SetWide(24)
+            icon:SetImage(wep.IconOverride or 'entities/' .. class .. '.png', 'icon16/bricks.png')
+
+            local name = vgui.Create('DLabel', btn)
+            name:Dock(FILL)
+            name:SetText(wep.PrintName or class)
+            name:SetFont('lrp.jobEditor.small-font')
+            name:SizeToContents()
+
+            function btn:DoClick()
+                selectedWeapons[class] = not selectedWeapons[class] and true or nil
+            end
+        end
 
         local additionsRow = createRow(editPnl, lrp.lang('lrp_gm.class_editor.adds'), 44)
 
@@ -155,19 +233,35 @@ local function openJobEditor()
             local name = nameEntry:GetValue()
             local icon = setIcon:GetSelectedIcon()
             local color = setColor:GetColor()
-            local mdlStr = mdlEntry:GetValue() == '' and 'models/player/Group01/male_01.mdl' or mdlEntry:GetValue()
-            local wepStr = wepEntry:GetValue()
-
             local jobAR = ar:GetValue()
             local jobGov = gov:GetChecked()
+
+            local jobModels = {}
+            for id in pairs(selectedModels) do table.insert(jobModels, id) end
+
+            if #jobModels == 0 then
+                jobModels = {'models/player/Group01/male_01.mdl'}
+            end
+            
+            -- remove default model
+            if #jobModels > 1 then
+                for i=1, #jobModels do
+                    if jobModels[i] == 'models/player/Group01/male_01.mdl' then
+                        table.remove(jobModels, i)
+                    end
+                end
+            end
+            
+            local jobWeapons = {}
+            for id in pairs(selectedWeapons) do table.insert(jobWeapons, id) end
 
             -- update on client / to send to server
             jobs[jobID] = {
                 name = name,
                 icon = icon,
                 color = color,
-                models = string.Explode('\n', mdlStr),
-                weapons = string.Explode('\n', wepStr),
+                models = jobModels,
+                weapons = jobWeapons,
                 ar = math.modf(jobAR),
                 gov = jobGov,
             }
@@ -188,8 +282,6 @@ local function openJobEditor()
             updateListView()
             jobList:SelectItem(jobList:GetLine(jobID))
         end
-
-        addJob()
         
     end
 
@@ -198,7 +290,7 @@ local function openJobEditor()
         editJob(tonumber(id))
     end
 
-    function jobList:OnRowRightClick(lineID, line)
+    function jobList:OnRowRightClick(_, line)
         local id = tonumber(line:GetColumnText(1))
         if id == 1 then return end
         
@@ -206,19 +298,9 @@ local function openJobEditor()
         
         menu:AddOption(lrp.lang('lrp_gm.shared.remove'), function()
 
-            self:RemoveLine(lineID)
-            jobs[id] = nil
-
             net.Start('lrp-jobs.removeJob')
             net.WriteUInt(id, 6)
             net.SendToServer()
-
-            net.Start('lrp-jobs.updateUI')
-            net.SendToServer()
-
-            updateTeams(jobs)
-
-            jobList:SelectItem(jobList:GetLine(lineID-1))
 
         end):SetIcon('icon16/delete.png')
         
@@ -232,14 +314,38 @@ local function openJobEditor()
     addBtn:SetTall(32)
     addBtn:SetIcon('icon16/add.png')
     function addBtn:DoClick()
-        local newID = 1
-        while jobs[newID] do newID = newID + 1 end
+        net.Start('lrp-jobs.addDefJob')
+        net.SendToServer()
+    end
 
-        jobs[newID] = {}
+    net.Receive('lrp-jobs.listView.addJob', function()
+
+        if not IsValid(jobEditor) then return end
+
+        local jobID = net.ReadUInt(6)
+        local newJob = net.ReadTable()
+
+        jobs[jobID] = newJob
 
         updateListView()
-        jobList:SelectItem(jobList:GetLine(newID))
-    end
+        jobList:SelectItem(jobList:GetLine(jobID))
+        updateTeams(jobs)
+
+    end)
+
+    net.Receive('lrp-jobs.listView.removeJob', function()
+
+        if not IsValid(jobEditor) then return end
+
+        local jobID = net.ReadUInt(6)
+
+        jobs[jobID] = nil
+        jobList:RemoveLine(jobID)
+
+        jobList:SelectItem(jobList:GetLine(jobID-1))
+        updateTeams(jobs)
+
+    end)
 end
 
 concommand.Add('lrp_class_editor', openJobEditor)
