@@ -66,9 +66,9 @@ local function actionMenu()
     local plyJob = jobs[ply:Team()]
     
     if plyJob.gov then
-        menu:AddOption('Нажать кнопку паники', function()
-            ply:ConCommand('panicbutton')
-        end):SetIcon('icon16/exclamation.png')
+        addOption(menu, 'Активировать кнопку паники', 'icon16/exclamation.png', function()
+            RunConsoleCommand('lrp_panic_button')
+        end)
     end
 
     if ply:GetRagdoll() then
@@ -151,6 +151,12 @@ local function actionMenu()
         notification.AddLegacy('Время в ОС: ' .. os.date('%X'), NOTIFY_GENERIC, 5)
         surface.PlaySound("buttons/lightswitch2.wav")
     end):SetIcon('icon16/time.png')
+
+    addOption(nonrpSub, 'Очистить все кнопки паники', 'icon16/bin.png', function()
+        RunConsoleCommand('lrp_panic_button_clear')
+    end)
+
+    nonrpSub:AddSpacer()
 
     nonrpSub:AddOption('Сборка LocalRP', function()
         gui.OpenURL('https://steamcommunity.com/sharedfiles/filedetails/?id=2837278729')

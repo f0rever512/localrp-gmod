@@ -52,3 +52,11 @@ surface.CreateFont('lrp-deathfont', {
     shadow = false,
     extended = true,
 })
+
+surface.CreateFont('lrp-panicBtn.font', {
+    font = 'Calibri',
+    size = 24,
+    weight = 400,
+    antialias = true,
+    extended = true
+})
