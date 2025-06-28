@@ -66,7 +66,7 @@ local function playerMenu()
     local ply = LocalPlayer()
     if not IsValid(ply) then return end
 
-    if playerData.job > #jobs then
+    if not jobs[playerData.job] then
         playerData.job = 1
         file.Write('lrp_player_data.txt', util.TableToJSON(playerData))
     end
@@ -210,11 +210,19 @@ local function playerMenu()
     local modelComboB = vgui.Create('DComboBox', empty)
     modelComboB:Dock(FILL)
     modelComboB:DockMargin(0, 0, 16, 0)
-    modelComboB:SetValue(jobs[playerData.job].models[playerData.model])
     modelComboB:SetIcon('icon16/bricks.png')
-    for _, model in pairs(jobs[playerData.job].models) do
-        modelComboB:AddChoice(model, nil, false)
-	end
+
+    local function updateModels()
+        modelComboB:Clear()
+
+        for _, model in pairs(jobs[playerData.job].models) do
+            modelComboB:AddChoice(model, nil, false)
+        end
+
+        modelComboB:SetValue(jobs[playerData.job].models[playerData.model])
+    end
+
+    updateModels()
 
     createLabel(infoPanel, lrp.lang('lrp_gm.main_menu.skin'), 'lrp-mainMenu.medium-font', color_white, TOP, {0, 36, 0, 0}, {16, 0})
     local skinSlider = vgui.Create('DNumSlider', infoPanel)
@@ -439,12 +447,13 @@ local function playerMenu()
 
         jobs = net.ReadTable()
 
-        if playerData.job > #jobs then
+        if not jobs[playerData.job] then
             playerData.job = 1
             file.Write('lrp_player_data.txt', util.TableToJSON(playerData))
         end
 
         updateJobs()
+        updateModels()
         
     end)
 

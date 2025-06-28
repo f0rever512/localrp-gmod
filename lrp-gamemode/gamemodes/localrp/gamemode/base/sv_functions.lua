@@ -1,4 +1,5 @@
 function GM:AllowPlayerPickup(ply, ent) return false end
+function GM:ShowTeam(ply) end
 
 function GM:PlayerDeathSound(ply)
     local gender = string.find(ply:GetModel(), 'female') and 'female01' or 'male01'
