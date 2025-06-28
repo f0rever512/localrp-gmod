@@ -18,21 +18,19 @@ wModel:SetSkin(1)
 wModel:SetNoDraw(true)
 
 function SWEP:DrawWorldModel()
+
     local ply = self:GetOwner()
+    local attID = ply:LookupAttachment('anim_attachment_lh')
 
-    if IsValid(ply) then
-        local attID = ply:LookupAttachment('anim_attachment_lh')
-        if not attID then return end
+    if not IsValid(ply) or attID <= 0 then return end
 
-        wModel:SetParent(ply, attID)
-        wModel:SetLocalPos(radioPos)
-        wModel:SetLocalAngles(radioAng)
+    wModel:SetParent(ply, attID)
+    wModel:SetLocalPos(radioPos)
+    wModel:SetLocalAngles(radioAng)
 
-        wModel:SetupBones()
-        wModel:DrawModel()
-    else
-        self:DrawModel()
-    end
+    wModel:SetupBones()
+    wModel:DrawModel()
+    
 end
 
 function SWEP:PrimaryAttack()
@@ -45,7 +43,10 @@ function SWEP:PrimaryAttack()
 
     local msg = radioActive and lrp.lang('lrp_gm.radio_on') or lrp.lang('lrp_gm.radio_off')
     local notifyType = radioActive and NOTIFY_GENERIC or NOTIFY_ERROR
-    local sound = radioActive and 'npc/combine_soldier/vo/on2.wav' or 'npc/combine_soldier/vo/on1.wav'
     
-    self:GetOwner():NotifySound(msg, 2, notifyType, sound)
+    self:GetOwner():NotifySound(msg, 2, notifyType, '')
+
+    net.Start('lrp-radio.toggleSound')
+    net.WriteBool(radioActive)
+    net.SendToServer()
 end

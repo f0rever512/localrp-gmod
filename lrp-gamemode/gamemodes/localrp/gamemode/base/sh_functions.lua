@@ -1,5 +1,3 @@
-function GM:GrabEarAnimation(ply) end
-
 function GM:PlayerNoClip(ply, desiredState)
     if not IsValid(ply) or not ply:Alive() or ply:InVehicle() then return false end
 
