@@ -1,3 +1,5 @@
+local cfg = lrp_cfg
+
 function GM:AllowPlayerPickup(ply, ent) return false end
 function GM:ShowTeam(ply) end
 
@@ -12,8 +14,6 @@ end
 function GM:PlayerCanPickupWeapon( ply, wep )
     return not ply:HasWeapon(wep:GetClass())
 end
-
-local cfg = lrp_cfg
 
 local whiteList = cfg.sboxMenuWhiteList
 
@@ -49,3 +49,22 @@ hook.Add('PlayerUse', 'lrp-gamemode.useAnim', function(ply, ent)
     ply.NextUseAnim = CurTime() + animCooldown
     ply:PlayAnimation(ACT_GMOD_GESTURE_MELEE_SHOVE_1HAND)
 end)
+
+-- gov job hear only gov job, citizen (not gov) hear only citizen 
+function GM:PlayerCanHearPlayersVoice( listener, talker )
+    
+    local listenIsGov = listener:GetJobTable().gov
+    local talkIsGov = talker:GetJobTable().gov
+
+    if (listenIsGov and talkIsGov and listener:GetInfoNum('cl_lrp_radio', 0) == 1 and talker:GetNW2Bool('UsingRadio'))
+    or (not listenIsGov and not talkIsGov and listener:GetInfoNum('cl_lrp_radio', 0) == 1 and talker:GetNW2Bool('UsingRadio')) then
+        return true, false
+    end
+
+    return listener:GetPos():DistToSqr(talker:GetPos()) <= 160000 and talker:Alive(), true
+
+end
+
+function GM:PlayerCanSeePlayersChat( text, teamOnly, listener, talker )
+    return listener:GetPos():DistToSqr(talker:GetPos()) <= 160000 and talker:Alive()
+end

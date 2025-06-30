@@ -1,5 +1,5 @@
 CreateClientConVar('cl_lrp_radio', '0', true, true, 'Enable / Disable walkie-talkie', 0, 1)
-CreateClientConVar('cl_lrp_radio_key', KEY_H, true, false, 'Key to toggle walkie-talkie')
+CreateClientConVar('cl_lrp_radio_key', KEY_G, true, false, 'Key to toggle walkie-talkie')
 
 local usingRadio = false
 local lastButtonDown, lastButtonUp = 0, 0
@@ -75,7 +75,7 @@ end)
 
 hook.Add('PlayerButtonDown', 'lrp-radio.key', function(ply, key)
 
-	local bind = GetConVar('cl_lrp_radio_key'):GetInt() or KEY_H
+	local bind = GetConVar('cl_lrp_radio_key'):GetInt() or KEY_G
     local wep = ply:GetActiveWeapon()
 
 	if bind == key then
@@ -95,7 +95,7 @@ end)
 
 hook.Add('PlayerButtonUp', 'lrp-radio.key', function(ply, key)
 
-	local bind = GetConVar('cl_lrp_radio_key'):GetInt() or KEY_H
+	local bind = GetConVar('cl_lrp_radio_key'):GetInt() or KEY_G
 
 	if bind == key and usingRadio and CurTime() - lastButtonUp > radioCooldown then
         usingRadio = false
