@@ -1,4 +1,4 @@
-local lrp = lrp
+local lrp = localrp
 local surface = surface
 local LocalPlayer = LocalPlayer
 local CurTime = CurTime

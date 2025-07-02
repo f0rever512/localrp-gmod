@@ -36,7 +36,7 @@ function GM:PlayerSay( ply, text )
         if not ply:Alive() then return false end
 
         if isPlayer then
-            msg = {chatColor.ic, ply:Nick(), ply:IsMale() and ' сказал: ' or ' сказала: ', chatColor.main, text}
+            msg = {chatColor.ic, ply:Nick(), ply:IsMale() and 'lrp_gm.chat.say_male' or 'lrp_gm.chat.say_female', chatColor.main, text}
         else
             msg = {chatColor.ooc, 'Console: ', chatColor.main, text}
         end

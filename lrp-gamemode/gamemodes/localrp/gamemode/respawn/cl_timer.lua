@@ -1,3 +1,5 @@
+local lrp = localrp
+
 local posX, posY = ScrW() / 2, ScrH() - 30
 
 local function displayRespawnTimer(respTime)

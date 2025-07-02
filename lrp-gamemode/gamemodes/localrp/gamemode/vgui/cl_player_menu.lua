@@ -1,5 +1,7 @@
-local jobs = {}
+local lrp = localrp
 local cfg = lrp_cfg
+
+local jobs = {}
 
 local respawnDelay = 10
 local nextRespawn = 0

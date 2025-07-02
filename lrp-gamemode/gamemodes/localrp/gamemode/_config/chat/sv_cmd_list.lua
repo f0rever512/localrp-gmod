@@ -50,7 +50,11 @@ cfg.chatCmds = cfg.chatCmds or {
         func = function(ply)
             local roll = math.random(1, 100)
             local color = roll >= 50 and Color(100, 255, 150) or Color(255, 100, 100)
-            local msg = {chatColor.ic, ply:Nick(), ply:IsMale() and ' получил шанс: ' or ' получила шанс: ', color, tostring(roll)}
+            local msg = {
+                chatColor.ic, ply:Nick(),
+                ply:IsMale() and 'lrp_gm.chat.roll_male' or 'lrp_gm.chat.roll_female',
+                color, tostring(roll)
+            }
             
             sendMessage(ply, msg, 400)
         end,
@@ -62,7 +66,7 @@ cfg.chatCmds = cfg.chatCmds or {
             local spaces = select(2, msg:gsub(' ', ''))
             if #msg == spaces then return end
 
-            local fullMsg = {chatColor.ic, msg .. ' ', '(Глобальный IT от ', ply:Nick(), ')'}
+            local fullMsg = {chatColor.ic, msg .. ' ', 'lrp_gm.chat.global_it', ply:Nick(), ')'}
             sendMessage(ply, fullMsg)
         end,
     },
@@ -73,7 +77,12 @@ cfg.chatCmds = cfg.chatCmds or {
             local spaces = select(2, msg:gsub(' ', ''))
             if #msg == spaces then return end
 
-            local fullMsg = {chatColor.ic, ply:Nick(), ply:IsMale() and ' прошептал: ' or ' прошептала: ', chatColor.main, msg}
+            local fullMsg = {
+                chatColor.ic, ply:Nick(),
+                ply:IsMale() and 'lrp_gm.chat.whisper_male' or 'lrp_gm.chat.whisper_female',
+                chatColor.main, msg
+            }
+
             sendMessage(ply, fullMsg, 60)
         end,
     },
@@ -84,7 +93,12 @@ cfg.chatCmds = cfg.chatCmds or {
             local spaces = select(2, msg:gsub(' ', ''))
             if #msg == spaces then return end
 
-            local fullMsg = {chatColor.ic, ply:Nick(), ply:IsMale() and ' крикнул: ' or ' крикнула: ', chatColor.main, msg, '!'}
+            local fullMsg = {
+                chatColor.ic, ply:Nick(),
+                ply:IsMale() and 'lrp_gm.chat.yell_male' or 'lrp_gm.chat.yell_female',
+                chatColor.main, msg, '!'
+            }
+
             sendMessage(ply, fullMsg, 800)
         end,
     },
@@ -121,7 +135,11 @@ cfg.chatCmds = cfg.chatCmds or {
 
             local dist = 400
 
-            local fullMsg = {chatColor.ic, ply:Nick(), ply:IsMale() and ' сказал в рацию: ' or ' сказала в рацию: ', chatColor.main, msg}
+            local fullMsg = {
+                chatColor.ic, ply:Nick(),
+                ply:IsMale() and 'lrp_gm.chat.radio_male' or 'lrp_gm.chat.radio_female',
+                chatColor.main, msg
+            }
 
             local speakerIsGov = ply:GetJobTable().gov
             local plyPos = ply:GetPos()

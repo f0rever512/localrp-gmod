@@ -1,3 +1,4 @@
+local lrp = localrp
 local cfg = lrp_cfg
 
 function GM:HUDDrawTargetID() end

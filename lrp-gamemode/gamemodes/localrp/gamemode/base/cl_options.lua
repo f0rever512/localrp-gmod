@@ -1,3 +1,5 @@
+local lrp = localrp
+
 hook.Add('AddToolMenuTabs', 'lrp-gamemode.toolMenuTab', function()
 
     spawnmenu.AddToolTab('LocalRP', 'LocalRP', 'icon16/brick.png')

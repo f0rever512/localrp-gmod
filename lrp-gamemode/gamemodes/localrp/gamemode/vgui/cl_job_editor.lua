@@ -1,4 +1,4 @@
-local lrp = lrp
+local lrp = localrp
 local defWeapons = lrp_cfg.defaultWeapons
 
 local function createRow(parent, text, height)

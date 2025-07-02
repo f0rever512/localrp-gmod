@@ -1,5 +1,6 @@
 CreateClientConVar('cl_lrp_push_hint', '1', true, false, 'Enable display push hint at crosshair')
 
+local lrp = localrp
 local cfg = lrp_cfg
 
 local dist = cfg.pushDist

@@ -1,5 +1,7 @@
 include('shared.lua')
 
+local lrp = localrp
+
 SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = false
 

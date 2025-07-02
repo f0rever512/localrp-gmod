@@ -1,3 +1,5 @@
+local lrp = localrp
+
 local function addOption(parent, text, icon, func)
     local option = parent:AddOption(text, func)
 

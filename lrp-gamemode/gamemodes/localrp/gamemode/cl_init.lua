@@ -1,5 +1,7 @@
 include('shared.lua')
 
+localrp = localrp or {}
+
 local files, catalogs, folders
 
 local function loadFiles(folder)
