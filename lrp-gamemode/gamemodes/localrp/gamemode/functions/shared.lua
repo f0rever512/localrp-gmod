@@ -25,3 +25,8 @@ function ply:PlayAnimation(animID)
         net.SendToServer()
     end
 end
+
+function ply:IsMale()
+    local mdl = self:GetModel()
+    return not mdl:find('female')
+end

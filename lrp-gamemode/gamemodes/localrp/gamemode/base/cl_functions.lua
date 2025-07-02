@@ -1,6 +1,9 @@
+local cfg = lrp_cfg
+
 function GM:HUDDrawTargetID() end
 function GM:DrawDeathNotice(x, y) end
 function GM:ShowTeam() end
+function GM:OnPlayerChat() end
 
 function GM:HUDAmmoPickedUp(itemName, amount)
     local ply = LocalPlayer()
@@ -24,7 +27,7 @@ hook.Add('DrawPhysgunBeam', 'lrp-gamemode.physgunColor', function(ply, wep, enab
     ply:SetWeaponColor(enabled and color or Vector(0, 0, 0))
 end)
 
-local whiteList = lrp_cfg.sboxMenuWhiteList
+local whiteList = cfg.sboxMenuWhiteList
 
 local function sboxMenuBlock()
     local ply = LocalPlayer()

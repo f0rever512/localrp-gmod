@@ -1,30 +1,59 @@
-util.AddNetworkString("ChatCommands") -- В будущем будем инициализировать где-то в другом месте, например: sv(sh)_nets.lua
+local cfg = lrp_cfg
 
-registeredCmds = registeredCmds or {}
-local commands = registeredCmds
+local commands = cfg.chatCmds
+local chatColor = cfg.chatColor
 
-function sendMessageCustom(pl, ...)
-    local args = {...}
-    net.Start("ChatCommands")
-    net.WriteTable(args)
-    net.Send(pl)
-end
+local msg
 
-local function processChat(pl, str)
-    local args = string.Split(str, " ")
-    local commandname = string.lower(args[1]:sub(2))
-    if not commands[commandname] then return false end
+function GM:PlayerSay( ply, text )
 
-    table.remove(args, 1)
-    commands[commandname].cb(pl, args)
-    return true
-end
+    local isPlayer = IsValid(ply)
 
-hook.Add("PlayerSay", "customChatCommandsRun", function(pl, str, team)
-    if string.StartWith(str, "/") then
-        local found = processChat(pl, str)
-        if found then
-            return ""
+    if text:StartsWith('/') and isPlayer then
+        local args = string.Split(text, ' ')
+        local cmdName = string.lower(args[1]:sub(2))
+
+        local cmdTable = commands[cmdName]
+        
+        if not cmdTable then
+            local availableCmds = {}
+
+            for str, _ in pairs(commands) do
+                table.insert(availableCmds, str)
+            end
+
+            ply:NotifySound('Available commands: ' .. table.concat(availableCmds, '; '), 6, NOTIFY_ERROR)
+
+            return false
+        end
+
+        if not ply:Alive() and not cmdTable.allowDead then return false end
+
+        table.remove(args, 1)
+        -- run function
+        cmdTable.func(ply, args)
+    else
+        if not ply:Alive() then return false end
+
+        if isPlayer then
+            msg = {chatColor.ic, ply:Nick(), ply:IsMale() and ' сказал: ' or ' сказала: ', chatColor.main, text}
+        else
+            msg = {chatColor.ooc, 'Console: ', chatColor.main, text}
+        end
+
+        local dist = cfg.chatDist
+
+        local plyPos = ply:GetPos()
+
+        for _, target in pairs(player.GetAll()) do
+            if isPlayer and target:GetPos():DistToSqr(plyPos) > dist * dist then continue end
+
+            net.Start('lrp-chat.sendMsg')
+            net.WriteTable(msg)
+            net.Send(target)
         end
     end
-end)
+
+    return ''
+
+end

@@ -65,6 +65,4 @@ function GM:PlayerCanHearPlayersVoice( listener, talker )
 
 end
 
-function GM:PlayerCanSeePlayersChat( text, teamOnly, listener, talker )
-    return listener:GetPos():DistToSqr(talker:GetPos()) <= 160000 and talker:Alive()
-end
+function GM:PlayerCanSeePlayersChat() end
