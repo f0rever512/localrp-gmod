@@ -39,6 +39,12 @@ function ply:GetJobTable()
 	end
 end
 
+function ply:IsGov()
+    local isGov = self:GetJobTable().gov
+
+    return isGov
+end
+
 -- enums
 NOTIFY_GENERIC	= 0
 NOTIFY_ERROR    = 1

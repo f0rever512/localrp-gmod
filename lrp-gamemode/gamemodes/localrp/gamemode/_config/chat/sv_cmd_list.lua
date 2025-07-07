@@ -141,15 +141,14 @@ cfg.chatCmds = cfg.chatCmds or {
                 chatColor.main, msg
             }
 
-            local speakerIsGov = ply:GetJobTable().gov
             local plyPos = ply:GetPos()
 
             for _, target in pairs(player.GetAll()) do
                 local inRadius = target:GetPos():DistToSqr(plyPos) <= dist * dist
-                local targetIsGov = target:GetJobTable().gov
 
-                if (inRadius and ply:GetInfoNum('cl_lrp_radio', 0) == 1) or (speakerIsGov and targetIsGov
-                and ply:GetInfoNum('cl_lrp_radio', 0) == 1 and target:GetInfoNum('cl_lrp_radio', 0) == 1) then
+                if (inRadius and ply:GetRadioActive())
+                or ( (ply:GetRadioActive() and target:GetRadioActive())
+                and (ply:IsGov() and target:IsGov()) or (not ply:IsGov() and not target:IsGov()) ) then
                     target:EmitSound('npc/combine_soldier/vo/on2.wav', 55)
                     net.Start('lrp-chat.sendMsg')
                     net.WriteTable(fullMsg)

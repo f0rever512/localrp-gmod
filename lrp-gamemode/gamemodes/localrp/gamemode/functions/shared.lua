@@ -30,3 +30,7 @@ function ply:IsMale()
     local mdl = self:GetModel()
     return not mdl:find('female')
 end
+
+function ply:GetRadioActive()
+    return self:HasWeapon('lrp_radio') and self:GetInfoNum('cl_lrp_radio', 0) == 1
+end

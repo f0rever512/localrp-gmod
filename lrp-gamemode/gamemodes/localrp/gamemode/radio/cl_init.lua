@@ -65,7 +65,7 @@ hook.Add('Think', 'lrp-radio.logic', function()
     local ply = LocalPlayer()
     local wep = ply:GetActiveWeapon()
 
-    if usingRadio and (not IsValid(ply) or not ply:Alive()
+    if usingRadio and (not IsValid(ply) or not ply:Alive() or not ply:GetRadioActive()
     or (IsValid(wep) and wep.Base == 'localrp_gun_base' and (wep:GetReady() or wep:GetReloading()))) then
         usingRadio = false
         radioToggle(usingRadio)
