@@ -3,6 +3,16 @@ local cfg = lrp_cfg
 function GM:AllowPlayerPickup(ply, ent) return false end
 function GM:ShowTeam(ply) end
 
+function GM:PlayerNoClip(ply, desiredState)
+    if not IsValid(ply) or not ply:Alive() or ply:InVehicle() then return false end
+
+    if not desiredState or ply:IsAdmin() then
+        return true
+    end
+
+    return GetConVar('sbox_noclip'):GetBool()
+end
+
 function GM:PlayerDeathSound(ply)
     local gender = string.find(ply:GetModel(), 'female') and 'female01' or 'male01'
 

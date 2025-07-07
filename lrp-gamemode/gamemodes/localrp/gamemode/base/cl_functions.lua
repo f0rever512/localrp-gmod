@@ -5,6 +5,7 @@ function GM:HUDDrawTargetID() end
 function GM:DrawDeathNotice(x, y) end
 function GM:ShowTeam() end
 function GM:OnPlayerChat() end
+function GM:PlayerNoClip() end
 
 function GM:HUDAmmoPickedUp(itemName, amount)
     local ply = LocalPlayer()

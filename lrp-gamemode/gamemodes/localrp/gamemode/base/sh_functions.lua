@@ -1,13 +1,3 @@
-function GM:PlayerNoClip(ply, desiredState)
-    if not IsValid(ply) or not ply:Alive() or ply:InVehicle() then return false end
-
-    if not desiredState or ply:IsAdmin() then
-        return true
-    end
-
-    return GetConVar('sbox_noclip'):GetBool()
-end
-
 function GM:StartCommand(ply, cmd)
     if not ply:Alive() then return end
 
