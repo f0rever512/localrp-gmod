@@ -30,3 +30,13 @@ cfg.useAnimWhitelist = {
 
 cfg.pushForce = 300
 cfg.pushCooldown = 3
+
+cfg.defaultJob = {
+    name = 'New class',
+    icon = 'icon16/status_offline.png',
+    color = Color(255, 255, 255),
+    models = {'models/player/Group01/male_01.mdl'},
+    weapons = {''},
+    ar = 0,
+    gov = false,
+}

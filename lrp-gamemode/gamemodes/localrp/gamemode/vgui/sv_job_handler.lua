@@ -2,6 +2,7 @@ local util = util
 local pairs = pairs
 local net = net
 local IsValid = IsValid
+local cfg = lrp_cfg
 
 util.AddNetworkString('lrp-jobs.addJob')
 util.AddNetworkString('lrp-jobs.addDefJob')
@@ -9,16 +10,6 @@ util.AddNetworkString('lrp-jobs.removeJob')
 util.AddNetworkString('lrp-jobs.updateUI')
 util.AddNetworkString('lrp-jobs.listView.addJob')
 util.AddNetworkString('lrp-jobs.listView.removeJob')
-
-local defJob = {
-    name = 'New class',
-    icon = 'icon16/status_offline.png',
-    color = Color(255, 255, 255),
-    models = {'models/player/Group01/male_01.mdl'},
-    weapons = {''},
-    ar = 0,
-    gov = false,
-}
 
 local function updateTeams(table)
     for id, job in pairs(table) do
@@ -56,7 +47,7 @@ net.Receive('lrp-jobs.addDefJob', function(_, ply)
     local newID = 1
     while lrp_jobs[newID] do newID = newID + 1 end
 
-    lrp_jobs[newID] = defJob
+    lrp_jobs[newID] = cfg.defaultJob
     saveData()
 
     net.Start('lrp-jobs.listView.addJob')
