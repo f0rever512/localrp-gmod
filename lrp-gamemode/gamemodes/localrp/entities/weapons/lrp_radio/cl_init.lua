@@ -22,9 +22,14 @@ wModel:SetNoDraw(true)
 function SWEP:DrawWorldModel()
 
     local ply = self:GetOwner()
-    local attID = ply:LookupAttachment('anim_attachment_lh')
+    
+    if not IsValid(ply) then
+        self:DrawModel()
+        return
+    end
 
-    if not IsValid(ply) or attID <= 0 then return end
+    local attID = ply:LookupAttachment('anim_attachment_lh')
+    if attID <= 0 then return end
 
     wModel:SetParent(ply, attID)
     wModel:SetLocalPos(radioPos)
