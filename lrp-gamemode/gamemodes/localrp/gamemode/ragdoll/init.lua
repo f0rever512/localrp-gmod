@@ -127,5 +127,8 @@ function meta:SetRagdoll(bool)
     
         SafeRemoveEntity(self.playerRagdoll)
         self:InvisiblePlayerModel(false)
+        
+        self:SetLocalVelocity(Vector(0, 0, 0))
+        self:SetAbsVelocity(Vector(0, 0, 0))
     end
 end
