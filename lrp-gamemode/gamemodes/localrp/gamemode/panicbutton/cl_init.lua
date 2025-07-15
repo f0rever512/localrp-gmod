@@ -1,81 +1,97 @@
-surface.CreateFont("lrp-panicbutton", {
-    font = 'Calibri',
-    size = 24,
-    weight = 300,
-    antialias = true,
-    extended = true
-})
+local lrp = localrp
+local surface = surface
+local LocalPlayer = LocalPlayer
+local CurTime = CurTime
+local table = table
+local net = net
 
-local Panics = {}
-local SeenPanics = {}
+local panicTexts = {}
 local icon = Material('icon16/exclamation.png')
 
-local function drawPanicButton(name, pos)
-    local data2D = pos:ToScreen()
-    surface.SetDrawColor(color_white)
-    surface.SetMaterial(icon)
-    surface.DrawTexturedRect(data2D.x - 20, data2D.y - 6, 16, 16)
-    draw.SimpleTextOutlined(name, 'lrp-panicbutton', data2D.x, data2D.y, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, 1, color_black)
-end
+hook.Add('HUDPaint', 'lrp-panicButton.paint', function()
 
-local nextOccurance = 0
+    local ply = LocalPlayer()
+    local plyPos = ply:GetPos()
 
-concommand.Add("panicbutton", function()
-    local pl = LocalPlayer()
-    local plJob = pl:GetJob()
-    if plJob.panicButton then
-        local delay = 10
-        local timeLeft = nextOccurance - CurTime()
-        if timeLeft < 0 then
-            if pl:Alive() then
+    for i = #panicTexts, 1, -1 do
+        
+        local data = panicTexts[i]
+        local pos = data.pos
+
+        if (data.time and data.time < CurTime()) or plyPos:DistToSqr(pos) < 400*400 then
+            table.remove(panicTexts, i)
+
+            continue
+        end
+
+        local name = data.owner
+        local scrPos = pos:ToScreen()
+
+        surface.SetDrawColor(color_white)
+        surface.SetMaterial(icon)
+        surface.DrawTexturedRect(scrPos.x - 8, scrPos.y, 16, 16)
+
+        draw.SimpleTextOutlined(
+            name, 'lrp-panicBtn.font',
+            scrPos.x + 12, scrPos.y + 6,
+            color_white, TEXT_ALIGN_LEFT,
+            TEXT_ALIGN_CENTER, 1, color_black
+        )
+
+    end
+
+end)
+
+local nextPanic = 0
+local delay = 10
+
+local function activatePanicBtn()
+
+    local ply = LocalPlayer()
+    local jobs = lrp.getJobTable()
+    local plyJob = jobs[ply:Team()]
+
+    if plyJob.gov then
+        if nextPanic <= CurTime() then
+            if ply:Alive() then
                 RunConsoleCommand('say', '/me нажимает кнопку паники')
                 timer.Simple(0.5, function()
-                    net.Start("PanicButtonConnect")
+                    net.Start('lrp-panicButton')
                     net.SendToServer()
                 end)
             else
-                notification.AddLegacy('Нельзя нажать кнопку паники, будучи мертвым', NOTIFY_GENERIC, 4)
-                surface.PlaySound('buttons/lightswitch2.wav')
+                ply:NotifySound('Кнопку паники нельзя нажать, будучи мертвым', 4, NOTIFY_ERROR)
             end
-            nextOccurance = CurTime() + delay
+
+            nextPanic = CurTime() + delay
         else
-            notification.AddLegacy('Кнопку паники нельзя нажимать еще ' .. math.Round(timeLeft) .. ' с.', NOTIFY_GENERIC, 4)
-            surface.PlaySound('buttons/lightswitch2.wav')
+            ply:NotifySound('Кнопку паники нельзя нажимать еще ' .. math.ceil(nextPanic - CurTime()) .. ' с.', 4, NOTIFY_ERROR)
         end
     else
-        notification.AddLegacy('Только полицейские могут нажимать кнопку паники', NOTIFY_GENERIC, 4)
-        surface.PlaySound("buttons/lightswitch2.wav")
+        ply:NotifySound('Ваша профессия не может использовать кнопку паники', 4, NOTIFY_ERROR)
     end
-end)
 
-net.Receive("PanicButtonConnect", function()
-    local pl = LocalPlayer()
-    local plJob = pl:GetJob()
-    if not plJob.panicButton then return end
+end
+
+concommand.Add('lrp_panic_button', activatePanicBtn)
+
+net.Receive('lrp-panicButton', function()
+
+    local ply = LocalPlayer()
+    local jobs = lrp.getJobTable()
+    local plyJob = jobs[ply:Team()]
+
+    if not plyJob.gov then return end
 
     local button = net.ReadTable()
-    table.insert(Panics, button)
+    table.insert(panicTexts, button)
 
-    local sound = CreateSound(pl, "npc/attack_helicopter/aheli_damaged_alarm1.wav")
-    chat.AddText(Color(230, 30, 30), button[1] .. " запрашивает помощь, нажимая кнопку паники")
-    sound:Play()
-    timer.Simple(2, function()
-        sound:Stop()
-    end)
+    surface.PlaySound('npc/attack_helicopter/aheli_damaged_alarm1.wav')
+
+    chat.AddText(Color(230, 40, 0), button.owner .. ' запрашивает помощь, активируя кнопку паники')
+
 end)
 
-hook.Add("HUDPaint", "PanicButtonPaint", function()
-    local pl = LocalPlayer()
-    local plPos = pl:GetPos()
-    
-    for _, panic in ipairs(Panics) do
-        local pos = panic[2]
-
-        if SeenPanics[pos] then return end
-
-        drawPanicButton(panic[1], pos)
-
-        if plPos:DistToSqr(pos) >= 400*400 then return end
-        SeenPanics[pos] = true
-    end
+concommand.Add('lrp_panic_button_clear', function()
+    panicTexts = {}
 end)

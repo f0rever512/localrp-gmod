@@ -1,0 +1,5 @@
+VertexLitGeneric
+{
+$baseTexture "models/handfield_radio/handfield_radio"
+$Selfillum 1
+}

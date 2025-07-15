@@ -2,98 +2,35 @@ AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('shared.lua')
 include('shared.lua')
 
-local function processFiles(folder, isServer) -- by nsfw (https://steamcommunity.com/id/NsfwS)
-    local files, folders = file.Find(folder .. "/*", "LUA")
-    local filesToAddCS, filesToInclude = {}, {}
-    local processedFiles = processedFiles or {}
+-- localization files
+resource.AddSingleFile('resource/localization/en/lrp_gamemode.properties')
+resource.AddSingleFile('resource/localization/ru/lrp_gamemode.properties')
 
-    local function shouldAddCS(f)
-        return string.StartWith(f, "cl_") or string.StartWith(f, "sh")
-    end
+local files, catalogs, folders
 
-    local function shouldInclude(f)
-        return string.StartWith(f, "sv_") or string.StartWith(f, "sh") or string.StartWith(f, "init")
-    end
+local function loadFiles(folder)
+    local files, catalogs = file.Find(folder .. '/*', 'LUA')
 
-    for _, f in ipairs(files) do
-        local fullPath = folder .. "/" .. f
+    for _, fileName in ipairs(files) do
+        local fullPath = folder .. '/' .. fileName
 
-        if not processedFiles[fullPath] then
-            processedFiles[fullPath] = true
+        if string.StartWith(fileName, 'cl_') or string.StartWith(fileName, 'sh') then
+            AddCSLuaFile(fullPath)
+        end
 
-            if shouldAddCS(f) then
-                table.insert(filesToAddCS, fullPath)
-            end
-
-            if isServer and shouldInclude(f) then
-                table.insert(filesToInclude, fullPath)
-            end
+        if string.StartWith(fileName, 'sv_') or string.StartWith(fileName, 'sh') or string.StartWith(fileName, 'init') then
+            include(fullPath)
         end
     end
 
-    for _, f in ipairs(folders) do
-        processFiles(folder .. "/" .. f, isServer)
-    end
-
-    for _, fullPath in ipairs(filesToAddCS) do
-        AddCSLuaFile(fullPath)
-    end
-
-    for _, fullPath in ipairs(filesToInclude) do
-        include(fullPath)
+    for _, subFolder in ipairs(catalogs) do
+        loadFiles(folder .. '/' .. subFolder)
     end
 end
 
-local folders = {
-    'anims',
-    'commands',
-    'core',
-    'damage',
-    'dropweapon',
-    'jobs',
-    'other',
-    'panicbutton',
-    'pushing',
-    'ragdoll',
-    'respawn',
-    'vgui',
-}
+local directory = GM.FolderName .. '/gamemode/'
+local _, folders = file.Find(directory .. '*', 'LUA')
 
-for _, name in pairs(folders) do
-	processFiles('localrp/gamemode/' .. name, SERVER)
-end
-
-util.AddNetworkString('lrp-loadData')
-util.AddNetworkString('lrp-sendData')
-
-function GM:PlayerInitialSpawn(ply)
-	ply:SetCanWalk(false)
-	ply:SetCanZoom(false)
-end
-
-local giveammo = {
-    {'ammo_air', 150},
-    {'ammo_large', 120},
-    {'ammo_shot', 40},
-    {'ammo_small', 150}
-}
-
-function GM:PlayerSpawn(ply)
-    if not ply:IsBot() then
-        net.Start('lrp-loadData')
-        net.Send(ply)
-        net.Receive('lrp-sendData', function(len, ply)
-            local playerData = net.ReadTable()
-            ply:SetJob(playerData.job)
-        end)
-    else
-        ply:SetJob(1)
-    end
-	ply:SetupHands()
-
-	for _, ammo in pairs(giveammo) do
-		ply:GiveAmmo( ammo[2], ammo[1] )
-	end
-
-	return true
+for _, folderName in SortedPairs(folders) do
+    loadFiles(directory .. folderName)
 end

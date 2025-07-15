@@ -1,35 +1,28 @@
 include('shared.lua')
 
-local function includeFiles(directory)
-    local files, subdirectories = file.Find(directory .. "/*", "LUA")
+localrp = localrp or {}
+
+local files, catalogs, folders
+
+local function loadFiles(folder)
+    local files, catalogs = file.Find(folder .. '/*', 'LUA')
 
     for _, fileName in ipairs(files) do
-        local fullPath = directory .. "/" .. fileName
-        if string.StartWith(fileName, "cl_") or string.StartWith(fileName, "sh") then
+        local fullPath = folder .. '/' .. fileName
+        
+        if string.StartWith(fileName, 'cl_') or string.StartWith(fileName, 'sh') then
             include(fullPath)
         end
     end
 
-    for _, subdirectory in ipairs(subdirectories) do
-        includeFiles(directory .. "/" .. subdirectory)
+    for _, subFolder in ipairs(catalogs) do
+        loadFiles(folder .. '/' .. subFolder)
     end
 end
 
-local foldersToInclude = {
-    'anims',
-    'commands',
-    'core',
-    'damage',
-    'dropweapon',
-    'jobs',
-    'other',
-    'panicbutton',
-    'pushing',
-    'ragdoll',
-    'respawn',
-    'vgui',
-}
+local directory = GM.FolderName .. '/gamemode/'
+local _, folders = file.Find(directory .. '*', 'LUA')
 
-for _, folder in ipairs(foldersToInclude) do
-    includeFiles('localrp/gamemode/' .. folder)
+for _, folderName in SortedPairs(folders) do
+    loadFiles(directory .. folderName)
 end

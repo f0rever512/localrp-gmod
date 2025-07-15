@@ -4,7 +4,7 @@ local TIMER_DESTROY_MSG = 'lrp-respawn.timerDestroy' -- Временно
 util.AddNetworkString(RESP_MSG) -- В будущем будем инициализировать где-то в другом месте, например: sv(sh)_nets.lua
 util.AddNetworkString(TIMER_DESTROY_MSG) -- В будущем будем инициализировать где-то в другом месте, например: sv(sh)_nets.lua
 
-local respawnTimeCVar = CreateConVar('lrp_respawntime', 5, FCVAR_ARCHIVE, 'Set respawn time')
+local respawnTimeCVar = CreateConVar('sv_lrp_respawn_time', 5, FCVAR_ARCHIVE, 'Set respawn time')
 
 local function getRespawnTime()
     return respawnTimeCVar:GetInt()

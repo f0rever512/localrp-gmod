@@ -45,7 +45,9 @@ local function PlayerSetPosNoBlock( ply, pos, filter )
 	return true
 end
 
-function playerMeta:InvisiblePlayerModel(bool)
+local meta = FindMetaTable('Player')
+
+function meta:InvisiblePlayerModel(bool)
 	self:SetNoDraw(bool)
 	self:DrawShadow(not bool)
 	self:SetCollisionGroup(bool and COLLISION_GROUP_IN_VEHICLE or COLLISION_GROUP_PLAYER)
@@ -59,7 +61,7 @@ function playerMeta:InvisiblePlayerModel(bool)
 	end
 end
 
-function playerMeta:SetRagdoll(bool)
+function meta:SetRagdoll(bool)
     if bool then
         local plyphys = self:GetPhysicsObject()
         local plyvel = Vector(0,0,0)
@@ -125,5 +127,8 @@ function playerMeta:SetRagdoll(bool)
     
         SafeRemoveEntity(self.playerRagdoll)
         self:InvisiblePlayerModel(false)
+        
+        self:SetLocalVelocity(Vector(0, 0, 0))
+        self:SetAbsVelocity(Vector(0, 0, 0))
     end
 end

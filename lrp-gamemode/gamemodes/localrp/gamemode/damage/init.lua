@@ -1,5 +1,5 @@
-local legBreakCvar = CreateConVar('lrp_legbreak', 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Enable/disable breaking leg')
-local drowningCvar = CreateConVar('lrp_drowning', 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Enable/disable drowning')
+local legBreakCvar = CreateConVar('sv_lrp_breaking_leg', 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Enable/disable breaking leg')
+local drowningCvar = CreateConVar('sv_lrp_drowning', 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_NOTIFY, FCVAR_ARCHIVE}, 'Enable / disable water drowning damage')
 
 util.AddNetworkString('breakleg')
 util.AddNetworkString('notifydmg')
