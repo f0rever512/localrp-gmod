@@ -1,6 +1,8 @@
 include('shared.lua')
 include('sh_leans.lua')
 
+local outQuad = math.ease.OutQuad
+
 SWEP.PrintName = 'LocalRP Gun'
 SWEP.Author = 'Octothorp Team | forever512'
 SWEP.Instructions = 'ПКМ + ЛКМ - Выстрелить\nСКМ - Сменить прицеливание\nALT - Проверить магазин\nЙ / У - Наклониться'
@@ -137,6 +139,35 @@ function SWEP:DrawWorldModel()
 	-- local pos, dir = self:GetShootPosAndDir()
 	-- render.DrawLine(pos, pos + dir * 20, color_white, true)
 	-- render.DrawWireframeSphere(pos, 1, 5, 5, color_white, true)
+
+end
+
+function SWEP:Think()
+
+	self.visualRecoil = Lerp(FrameTime() * 10, self.visualRecoil or 0, 0)
+
+    self:FingerAnimation()
+
+end
+
+function SWEP:FingerAnimation()
+
+    local ply = self:GetOwner()
+    if not IsValid(ply) then return end
+
+    local finger = ply:LookupBone('ValveBiped.Bip01_R_Finger11')
+    if not finger then return end
+
+    if self.FingerAnimStep == 0 then return end
+	
+	if self.Primary.Automatic and ply:KeyDown(IN_ATTACK) then
+		self.FingerAnimStep = 1
+	else
+    	self.FingerAnimStep = math.Approach(self.FingerAnimStep, 0, FrameTime() / 0.2)
+	end
+    
+    local ease = outQuad(self.FingerAnimStep)
+    ply:ManipulateBoneAngles(finger, Angle(0, ease * -30, 0), false)
 
 end
 

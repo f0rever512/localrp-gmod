@@ -49,6 +49,8 @@ function SWEP:Initialize()
     self:SetReady(false)
     self:SetReloading(false)
     self.aimProgress = 0
+
+    self.FingerAnimStep = 0
 end
 
 function SWEP:Deploy()
@@ -169,9 +171,6 @@ function SWEP:GunReloading()
 end
 
 function SWEP:Think()
-    if CLIENT then
-        self.visualRecoil = Lerp(FrameTime() * 10, self.visualRecoil or 0, 0)
-    end
 
     local ply = self:GetOwner()
 	if ply:KeyReleased( IN_ATTACK2 ) or self:GetReloading() then
@@ -193,11 +192,14 @@ function SWEP:Think()
             self:SetReady(false)
         end
     end
+
 end
 
 function SWEP:PrimaryAttack()
     if self:GetReloading() then return end
     if not self:GetReady() and self:CanPrimaryAttack() or not self:CanFire() then return end
+
+    self.FingerAnimStep = 1
 
     local ply = self:GetOwner()
     if IsValid(self) and IsValid(ply) and ply:Alive() then
