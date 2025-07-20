@@ -57,39 +57,6 @@ local function renderScope(wep)
 	isRenderingScope = false
 end
 
--- local function inOutQuad(t, b, c, d)
---     t = t / d * 2
---     if t < 1 then return c / 2 * math.pow(t, 2) + b end
---     return -c / 2 * ((t - 1) * (t - 3) - 1) + b
--- end
-
--- function SWEP:CalcView(ply, pos, ang, fov)
-
--- 	if not self.AimPos then return end
-
--- 	local animIn = handview and self:GetHoldType() == self.ActiveHoldType and self:GetNetVar('Ready')
--- 	local aimProgress = math.Approach(self.aimProgress or 0, animIn and 1 or 0, FrameTime() * (animIn and 1 or 3))
--- 	self.aimProgress = aimProgress
--- 	if aimProgress <= 0 then return end
-
--- 	local attID = ply:LookupAttachment('anim_attachment_rh')
--- 	if not attID then return end
-
--- 	if animIn then
--- 		aimProgress = math.Clamp(aimProgress - 0.4, 0, 1) / 0.6
--- 	end
--- 	local easedProgress = inOutQuad(aimProgress, 0, 1, 1)
--- 	local view = hook.Run("CalcView", LocalPlayer(), ply, pos, ang, fov)
--- 	local att = ply:GetAttachment(attID)
--- 	local tgtPos, tgtAng = LocalToWorld(self.AimPos, self.AimAng, att.Pos, att.Ang)
--- 	view.origin = LerpVector(easedProgress, view.origin, tgtPos)
--- 	view.angles = LerpAngle(easedProgress, view.angles, tgtAng) -- + dbgView.lookOff
--- 	view.znear = 1.5
-
--- 	return view
-
--- end
-
 function SWEP:DrawWorldModel()
 
 	self:DrawModel()
@@ -190,20 +157,6 @@ hook.Add('PreDrawEffects', 'octoweapons', function()
 	end
 end)
 
--- hook.Add('dbg-view.chTraceOverride', 'octoweapons', function()
--- 	local wep = LocalPlayer():GetActiveWeapon()
--- 	if not IsValid(wep) or not wep.IsOctoWeapon then return end
-
--- 	local pos, dir = wep:GetShootPosAndDir()
--- 	return util.TraceLine({
--- 		start = pos,
--- 		endpos = pos + dir * 2000,
--- 		filter = function(ent)
--- 			return ent ~= ply and ent:GetRenderMode() ~= RENDERMODE_TRANSALPHA
--- 		end
--- 	})
--- end)
-
 hook.Add('RenderScene', 'octoweapons', function(pos, ang, fov)
 	local view = hook.Run("CalcView", LocalPlayer(), pos, ang, fov)
 	if not view then return end
@@ -240,5 +193,35 @@ net.Receive('lrp-muzzleFlash', function()
 		dlight.size = 200
 		dlight.dietime = CurTime() + 0.2
 		dlight.nomodel = true
+	end
+end)
+
+hook.Add('lrp-view.chTraceOverride', 'lrp-guns', function()
+	local wep = LocalPlayer():GetActiveWeapon()
+	if not IsValid(wep) or wep.Base ~= 'localrp_gun_base' or not wep:GetReady() then return end
+
+	local pos, dir = wep:GetShootPos()
+	return util.TraceLine({
+		start = pos,
+		endpos = pos + dir * 1600,
+		filter = function(ent)
+			return ent ~= ply and ent:GetRenderMode() ~= RENDERMODE_TRANSALPHA
+		end
+	})
+end)
+
+hook.Add('lrp-view.chShouldDraw', 'lrp-guns', function(tr)
+	local ply = LocalPlayer()
+	local wep = ply:GetActiveWeapon()
+	if not IsValid(wep) or wep.Base ~= 'localrp_gun_base' then return end
+
+	local tr = util.TraceLine({
+        start = ply:GetShootPos(),
+        endpos = wep:GetShootPos(),
+        filter = ply
+    })
+
+	if wep.aimProgress <= 0.5 and wep:GetReady() and not tr.Hit then
+		return true
 	end
 end)

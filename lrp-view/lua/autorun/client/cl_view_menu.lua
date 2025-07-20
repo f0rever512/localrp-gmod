@@ -1,21 +1,24 @@
-hook.Add("AddToolMenuTabs", "LRPView", function()
-	spawnmenu.AddToolTab('LocalRP', '#LocalRP', 'icon16/brick.png')
-	spawnmenu.AddToolMenuOption("LocalRP", "Client Options", "LocalRP View", "View", "", "", function(pnl)
-		pnl:ClearControls()
-	
-		pnl:AddControl("Label", {Text = "Настройки вида от первого лица"})
-		pnl:AddControl("CheckBox", {Label = "Вид от первого лица", Command = "lrp_view"})
+hook.Add('AddToolMenuTabs', 'lrp-view.toolMenuTab', function()
 
-		pnl:AddControl("CheckBox", {Label = "Блокировка вида", Command = "lrp_view_lock"})
+    spawnmenu.AddToolTab('LocalRP', 'LocalRP', 'icon16/brick.png')
 
-		pnl:AddControl("slider", {
-			label = "Максимальная блокировка (смотря вниз)",
-			command = "lrp_view_lock_max",
-			min = 75,
-			max = 90
+    spawnmenu.AddToolMenuOption('LocalRP', 'Client Options', 'cl_lrp_view', 'View', nil, nil, function(pnl)
+        pnl:Help(language.GetPhrase('lrp_view.options.label')) -- Настройки вида от первого лица
+
+        pnl:CheckBox(language.GetPhrase('lrp_view.options.toggle'), 'lrp_view') -- Вид от первого лица
+
+        pnl:CheckBox(language.GetPhrase('lrp_view.options.lock_toggle'), 'cl_lrp_view_lock') -- Блокировка вида
+
+		pnl:NumSlider(language.GetPhrase('lrp_view.options.lock_max'), 'cl_lrp_view_max_lock', 75, 90, 0) -- Максимальная блокировка (смотря вниз)
+
+		pnl:CheckBox(language.GetPhrase('lrp_view.options.crosshair'), 'cl_cl_lrp_view_crosshair') -- Прицел
+
+		pnl:AddControl('Color', {
+			label = language.GetPhrase('lrp_view.options.crosshair_color'), -- Цвет прицела
+			red = 'cl_lrp_view_crosshair_color_r',
+			green = 'cl_lrp_view_crosshair_color_g', 
+			blue = 'cl_lrp_view_crosshair_color_b'
 		})
-		
-		pnl:AddControl("CheckBox", {Label = "Прицел", Command = "lrp_view_crosshair"})
-		pnl:AddControl("Color", {Label = "Цвет прицела", Red = "lrp_view_crosshair_color_r", Green = "lrp_view_crosshair_color_g", Blue = "lrp_view_crosshair_color_b", ShowAlpha = false, ShowHSV = true, ShowRGB = true, NumberMultiplier = "1"})
-	end)
+    end)
+
 end)
