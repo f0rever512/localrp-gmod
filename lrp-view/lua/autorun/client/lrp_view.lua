@@ -13,6 +13,7 @@ CreateClientConVar('cl_lrp_view_crosshair_color_g', 255, true)
 CreateClientConVar('cl_lrp_view_crosshair_color_b', 255, true)
 CreateClientConVar('cl_lrp_view_lock', 1)
 local maxViewLock = CreateClientConVar('cl_lrp_view_max_lock', 80)
+local viewModVar = CreateClientConVar('cl_lrp_view_mod', 0) -- set 0 for disable view mod
 
 local blackList = {
     weapon_physgun = true,
@@ -36,6 +37,18 @@ local hl2wep = {
     weapon_stunstick = true
 }
 
+local viewMods = {
+    {
+        name = 'BodyCam Mod',
+
+        att = 'forward',
+        offset = Vector(5, 0, -5),
+        angles = Angle(0, 0, 0),
+        fov = 20,
+        znear = 1,
+    },
+}
+
 local function hideHead(doHide)
 
 	local ply = LocalPlayer()
@@ -54,18 +67,20 @@ local visualRecoil
 local usingSight = true
 
 local function calcView(ply, pos, ang, fov)
-    
-    local eyeAtt = ply:GetAttachment(ply:LookupAttachment('eyes'))
 
-    if not IsValid(ply) or ply:GetViewEntity() ~= ply or not eyeAtt then return end
+    local modIndex = viewModVar:GetInt()
+    local attName = viewMods[modIndex] and viewMods[modIndex].att or 'eyes'
+    local viewAtt = ply:GetAttachment(ply:LookupAttachment(attName))
+
+    if not IsValid(ply) or ply:GetViewEntity() ~= ply or not viewAtt then return end
 
     local wep = ply:GetActiveWeapon()
 
     if ply:Alive() then
-        pos, ang = eyeAtt.Pos, ang
+        pos, ang = viewAtt.Pos, ang
 
         -- for lrp guns
-        if IsValid(wep) and wep.Base == 'localrp_gun_base' then
+        if IsValid(wep) and wep.Base == 'localrp_gun_base' and modIndex == 0 then
             local animIn = usingSight and wep:GetHoldType() == wep.Sight and wep:GetReady()
             local aimProgress = math.Approach(wep.aimProgress or 0, animIn and 1 or 0, FrameTime() * (animIn and 1.5 or 2.5))
             wep.aimProgress = aimProgress
@@ -102,7 +117,25 @@ local function calcView(ply, pos, ang, fov)
         drawviewer = true,
     }
 
-    return view 
+    if viewMods[modIndex] and modIndex > 0 and view then
+        local mod = viewMods[modIndex]
+
+        if mod.offset then
+            local worldPos = LocalToWorld(mod.offset, Angle(), viewAtt.Pos, viewAtt.Ang)
+            view.origin = worldPos
+        end
+
+        if mod.angles then
+            local _, worldAng = LocalToWorld(Vector(), mod.angles, viewAtt.Pos, viewAtt.Ang)
+            worldAng.r = 0
+            view.angles = worldAng
+        end
+
+        if mod.fov then view.fov = view.fov + mod.fov end
+        if mod.znear then view.znear = mod.znear end
+    end
+
+    return view
 
 end
 
@@ -113,7 +146,7 @@ local function renderCrosshair()
 
     local ply = LocalPlayer()
 
-    if ply:InVehicle() or not ply:Alive() then return end
+    if ply:InVehicle() or not ply:Alive() or not crosshairIsOn:GetBool() or ply:GetViewEntity() ~= ply then return end
 
     if hook.Run('octolib.delay.chShouldDraw') then return end
 
@@ -208,13 +241,13 @@ local function blackScreen()
 
 	if ply:GetViewEntity() == ply and ply:Alive() and ply:GetMoveType() ~= MOVETYPE_NOCLIP then
         local wep = ply:GetActiveWeapon()
-        local useSight = IsValid(wep) and wep.Base == 'localrp_gun_base' and wep.aimProgress >= 0.5
+        local inSight = IsValid(wep) and wep.Base == 'localrp_gun_base' and wep.aimProgress >= 0.5
         
 		local hullTrace = util.TraceHull({
 			maxs = Vector(5, 5, 3),
 			mins = Vector(-5, -5, -3),
-			start = useSight and handAtt.Pos or eyeAtt.Pos,
-			endpos = useSight and handAtt.Pos or eyeAtt.Pos
+			start = inSight and handAtt.Pos or eyeAtt.Pos,
+			endpos = inSight and handAtt.Pos or eyeAtt.Pos
 		})
 
         if hullTrace.Hit and hullTrace.Entity:GetClass() ~= 'player' and hullTrace.Entity:GetClass() ~= 'gmod_sent_vehicle_fphysics_base' then
@@ -226,7 +259,7 @@ end
 
 local function useSightKey(ply, key)
 	if not IsFirstTimePredicted() then return end
-	if ply:InVehicle() then return end
+	if ply:InVehicle() or viewModVar:GetInt() ~= 0 then return end
 	
 	local wep = ply:GetActiveWeapon()
 	if not IsValid(wep) or wep.Base ~= 'localrp_gun_base' then return end
@@ -277,14 +310,6 @@ hook.Add('lrp-view.override', 'lrp-view.disable', function()
     
 	if (IsValid(wep) and blackList[wep:GetClass()] and not ply:InVehicle()) or not GetConVar('lrp_view'):GetBool() then
 		return true
-	end
-end)
-
-hook.Add('lrp-view.chShouldDraw', 'lrp-view.chDisable', function()
-    local ply = LocalPlayer()
-    
-	if not crosshairIsOn:GetBool() or ply:GetViewEntity() ~= ply then
-		return false
 	end
 end)
 
