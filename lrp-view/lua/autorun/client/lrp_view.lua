@@ -37,6 +37,8 @@ local hl2wep = {
     weapon_stunstick = true
 }
 
+local shaderWarn = false
+
 local viewMods = {
     {
         name = 'BodyCam Mod',
@@ -44,8 +46,44 @@ local viewMods = {
         att = 'forward',
         offset = Vector(5, 0, -5),
         angles = Angle(0, 0, 0),
-        fov = 20,
+        fov = 30,
         znear = 1,
+
+        shaderFunc = function()
+            if not render.DrawMercFisheye then
+                if not shaderWarn then
+                    local frame = vgui.Create('DFrame')
+                    frame:SetTitle('Предупреждение: LocalRP - View')
+                    frame:SetSize(400, 160)
+                    frame:Center()
+                    frame:MakePopup()
+
+                    local label = vgui.Create('DLabel', frame)
+                    label:SetText('Для эффекта BodyCam требуется аддон "Simple Custom Shaders"\n\nВы можете установить по ссылке ниже:')
+                    label:SizeToContents()
+                    label:Dock(FILL)
+                    label:DockMargin(8, 4, 8, 4)
+
+                    local linkBtn = vgui.Create('DButton', frame)
+                    linkBtn:SetText('Открыть "Simple Custom Shaders" в браузере')
+                    linkBtn:Dock(BOTTOM)
+                    linkBtn:DockMargin(4, 4, 4, 4)
+                    linkBtn:SetTall(32)
+                    linkBtn:SetIcon('icon16/link.png')
+                    function linkBtn:DoClick()
+                        gui.OpenURL('https://steamcommunity.com/sharedfiles/filedetails/?id=3440271589')
+                    end
+
+                    shaderWarn = true
+                end
+
+                return
+            end
+
+            -- shaders from https://steamcommunity.com/sharedfiles/filedetails/?id=3440271589
+            render.DrawMercFisheye(0.2)
+            render.DrawMercVignette(1.1, 0.5)
+        end,
     },
 }
 
@@ -117,7 +155,7 @@ local function calcView(ply, pos, ang, fov)
         drawviewer = true,
     }
 
-    if viewMods[modIndex] and modIndex > 0 and view then
+    if viewMods[modIndex] and modIndex > 0 and view and ply:Alive() then
         local mod = viewMods[modIndex]
 
         if mod.offset then
@@ -194,6 +232,19 @@ local function renderCrosshair()
 	end
 	cam.IgnoreZ(false)
 	cam.End3D2D()
+
+end
+
+local function applyShaders()
+
+    local ply = LocalPlayer()
+    if not IsValid(ply) or ply:GetViewEntity() ~= ply then return end
+
+    local modIndex = viewModVar:GetInt()
+    if modIndex == 0 then return end
+
+    local mod = viewMods[modIndex]
+    if mod and mod.shaderFunc then mod.shaderFunc() end
 
 end
 
@@ -282,6 +333,7 @@ local function enableView()
 
     hook.Add('CalcView', 'lrp-view', calcView)
     hook.Add('PostDrawTranslucentRenderables', 'lrp-view', renderCrosshair)
+    hook.Add('RenderScreenspaceEffects', 'lrp-view', applyShaders)
     hook.Add('CreateMove', 'lrp-view', lockViewAngle)
     hook.Add('HUDShouldDraw', 'lrp-view', hideDefCrosshair)
     hook.Add('PostDrawHUD', 'lrp-view', blackScreen)
@@ -295,6 +347,7 @@ local function disableView()
 
     hook.Remove('CalcView', 'lrp-view')
     hook.Remove('PostDrawTranslucentRenderables', 'lrp-view')
+    hook.Remove('RenderScreenspaceEffects', 'lrp-view')
     hook.Remove('CreateMove', 'lrp-view')
     hook.Remove('HUDShouldDraw', 'lrp-view')
     hook.Remove('PostDrawHUD', 'lrp-view')
