@@ -1,3 +1,5 @@
+lrpView = lrpView or {}
+
 local hook = hook
 local util = util
 local cam = cam
@@ -39,7 +41,7 @@ local hl2wep = {
 
 local shaderWarn = false
 
-local viewMods = {
+lrpView.mods = {
     {
         name = 'BodyCam Mod',
 
@@ -53,19 +55,19 @@ local viewMods = {
             if not render.DrawMercFisheye then
                 if not shaderWarn then
                     local frame = vgui.Create('DFrame')
-                    frame:SetTitle('Предупреждение: LocalRP - View')
+                    frame:SetTitle(language.GetPhrase('lrp_view.ui.shader_warn.title'))
                     frame:SetSize(400, 160)
                     frame:Center()
                     frame:MakePopup()
 
                     local label = vgui.Create('DLabel', frame)
-                    label:SetText('Для эффекта BodyCam требуется аддон "Simple Custom Shaders"\n\nВы можете установить по ссылке ниже:')
+                    label:SetText(language.GetPhrase('lrp_view.ui.shader_warn.text'))
                     label:SizeToContents()
                     label:Dock(FILL)
                     label:DockMargin(8, 4, 8, 4)
 
                     local linkBtn = vgui.Create('DButton', frame)
-                    linkBtn:SetText('Открыть "Simple Custom Shaders" в браузере')
+                    linkBtn:SetText(language.GetPhrase('lrp_view.ui.shader_warn.link'))
                     linkBtn:Dock(BOTTOM)
                     linkBtn:DockMargin(4, 4, 4, 4)
                     linkBtn:SetTall(32)
@@ -107,7 +109,7 @@ local usingSight = true
 local function calcView(ply, pos, ang, fov)
 
     local modIndex = viewModVar:GetInt()
-    local attName = viewMods[modIndex] and viewMods[modIndex].att or 'eyes'
+    local attName = lrpView.mods[modIndex] and lrpView.mods[modIndex].att or 'eyes'
     local viewAtt = ply:GetAttachment(ply:LookupAttachment(attName))
 
     if not IsValid(ply) or ply:GetViewEntity() ~= ply or not viewAtt then return end
@@ -155,8 +157,8 @@ local function calcView(ply, pos, ang, fov)
         drawviewer = true,
     }
 
-    if viewMods[modIndex] and modIndex > 0 and view and ply:Alive() then
-        local mod = viewMods[modIndex]
+    if lrpView.mods[modIndex] and modIndex > 0 and view and ply:Alive() then
+        local mod = lrpView.mods[modIndex]
 
         if mod.offset then
             local worldPos = LocalToWorld(mod.offset, Angle(), viewAtt.Pos, viewAtt.Ang)
@@ -243,7 +245,7 @@ local function applyShaders()
     local modIndex = viewModVar:GetInt()
     if modIndex == 0 then return end
 
-    local mod = viewMods[modIndex]
+    local mod = lrpView.mods[modIndex]
     if mod and mod.shaderFunc then mod.shaderFunc() end
 
 end
