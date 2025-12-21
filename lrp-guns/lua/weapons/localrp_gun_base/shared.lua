@@ -46,81 +46,59 @@ function SWEP:SetupDataTables()
 end
 
 function SWEP:Initialize()
+
+    self:SetHoldType(self.Passive)
     self:SetReady(false)
     self:SetReloading(false)
     self.aimProgress = 0
 
     self.FingerAnimStep = 0
+    
 end
 
 function SWEP:Deploy()
+
     self:SetReady(false)
     self:SetReloading(false)
     self.visualRecoil = 0
+
     return true
-end
 
-function SWEP:OnDrop()
-	self:Deploy()
-end
-
-function SWEP:OnRemove()
-    if self:GetReloading() then
-        timer.Remove("clipinsound" .. self:GetOwner():SteamID())
-        timer.Remove("slidesound" .. self:GetOwner():SteamID())
-        timer.Remove("reload_act2" .. self:GetOwner():SteamID())
-    end
-    self:Deploy()
-end
-
-function SWEP:Holster()
-    local ply = self:GetOwner()
-
-    timer.Remove("clipinsound" .. ply:SteamID())
-    timer.Remove("slidesound" .. ply:SteamID())
-    timer.Remove("reload_act2" .. ply:SteamID())
-    self:SetReady(false)
-    self:SetReloading(false)
-    self.aimProgress = 0
-    self.visualRecoil = 0
-    ply:SetNW2Int("TFALean", 0)
-	ply:ManipulateBoneAngles(ply:LookupBone('ValveBiped.Bip01_R_Hand'), Angle(0, 0, 0))
-    return true
 end
 
 function SWEP:CanFire()
+
     local ply = self:GetOwner()
-    if CurTime() < self:GetNextPrimaryFire() or ply:WaterLevel() == 3 then
-        self:EmitSound('Weapon_AR2.Empty')
-        self:SetNextPrimaryFire(CurTime() + 2)
+
+    if CurTime() < self:GetNextPrimaryFire() or ply:WaterLevel() == 3 or not self:GetReady() then
         return false
     end
 
-    local e = {}
-    e.start = ply:GetShootPos()
-    e.endpos = self:GetShootPos()
-    e.filter = ply
-    return not util.TraceLine(e).Hit
+    local tr = {}
+    tr.start = ply:GetShootPos()
+    tr.endpos = self:GetShootPos()
+    tr.filter = ply
+    return not util.TraceLine(tr).Hit
+
 end
 
 function SWEP:GetShootPos()
+
     local ply = self:GetOwner()
-	local att = ply:GetAttachment(ply:LookupAttachment('anim_attachment_rh'))
-    if att then
+	local handAtt = ply:GetAttachment(ply:LookupAttachment('anim_attachment_rh'))
+
+    if handAtt then
         local mPos, mAng = self.MuzzlePos, self.MuzzleAng
         if not mPos then
-            if barrelAngles[self.Sight] then
-                mPos, mAng = unpack(barrelAngles[self.Sight])
-            else
-                mPos, mAng = unpack(barrelAngles._default)
-            end
+            mPos, mAng = unpack(barrelAngles[self.Sight] and barrelAngles[self.Sight] or barrelAngles._default)
         end
 
-        local pos, ang = LocalToWorld(mPos, mAng, att.Pos, att.Ang)
-        return pos, ang:Forward()
+        local pos, ang = LocalToWorld(mPos, mAng, handAtt.Pos, handAtt.Ang)
+        return pos, ang:Forward(), ang
     else
-        return ply:GetShootPos(), ply:EyeAngles():Forward()
+        return ply:GetShootPos(), ply:EyeAngles():Forward(), ply:EyeAngles()
     end
+
 end
 
 function SWEP:GetShootAng()
@@ -135,50 +113,14 @@ function SWEP:GetShootAng()
 	return mAng
 end
 
-function SWEP:GunReloading()
-    local ply = self:GetOwner()
-    if self:Ammo1() == 0 and ply:KeyPressed(IN_RELOAD) then return end
-
-    if self:Clip1() < self.Primary.ClipSize and ply:KeyPressed(IN_RELOAD) and not self:GetReloading() then
-        ply:SetAmmo(self:Ammo1() + self:Clip1(), self.Primary.Ammo)
-        self:SetClip1(0)
-        self:SetReady(false)
-        self:EmitSound(self.ClipoutSound, 60, 100)
-
-        timer.Create('reload_act' .. ply:SteamID(), 0.1, 1, function()
-            if not IsValid(self) then return end
-            timer.Create("clipinsound" .. ply:SteamID(), self.ReloadTime - 1.25, 1, function()
-                self:EmitSound(self.ClipinSound, 60, 100)
-            end)
-            timer.Create("slidesound" .. ply:SteamID(), self.ReloadTime - 0.75, 1, function()
-                self:EmitSound(self.SlideSound, 60, 100)
-            end )
-
-            self:SetReady(false)
-            self:SetReloading(true)
-            self:SetHoldType(self.Sight)
-            ply:SetAnimation(PLAYER_RELOAD)
-
-            timer.Create('reload_act2' .. ply:SteamID(), self.ReloadTime, 1, function()
-                if IsValid(self) and IsValid(ply) and ply:Alive() then
-                    self:SetClip1((self:Ammo1() < self.Primary.ClipSize) and self:Ammo1() or self.Primary.ClipSize)
-                    ply:SetAmmo(self:Ammo1() - self.Primary.ClipSize, self.Primary.Ammo)
-                    self:SetReloading(false)
-                end
-            end)
-        end)
-    end
-end
-
 function SWEP:Think()
 
     local ply = self:GetOwner()
 	if ply:KeyReleased( IN_ATTACK2 ) or self:GetReloading() then
-		ply:SetNW2Int("TFALean", 0)
+		ply:SetNW2Int('TFALean', 0)
 	end
 
     if IsValid(self) and IsValid(ply) and ply:Alive() then
-        self:GunReloading()
 
         if self:GetReloading() then return end
 
@@ -191,6 +133,7 @@ function SWEP:Think()
         if self:GetReady() and ply:KeyReleased(IN_ATTACK2) then
             self:SetReady(false)
         end
+        
     end
 
 end

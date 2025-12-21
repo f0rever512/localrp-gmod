@@ -11,6 +11,25 @@ SWEP.SlotPos = 1
 SWEP.DrawAmmo = true
 SWEP.DrawCrosshair = false
 
+function SWEP:Holster()
+
+    local ply = self:GetOwner()
+
+    self:SetReady(false)
+    self:SetReloading(false)
+    self.aimProgress = 0
+    ply:SetNW2Int('TFALean', 0)
+	ply:ManipulateBoneAngles(ply:LookupBone('ValveBiped.Bip01_R_Hand'), Angle(0, 0, 0))
+
+    return true
+    
+end
+
+function SWEP:OnRemove()
+    self:SetReady(false)
+    self:SetReloading(false)
+end
+
 CreateClientConVar('cl_lrp_sight_resolution', 512, true)
 local sightMaterials = {}
 local maskPoly, sightResolution, sightRT, sightMaterial
@@ -103,10 +122,6 @@ function SWEP:DrawWorldModel()
 		cam.End3D2D()
 	end
 
-	-- local pos, dir = self:GetShootPosAndDir()
-	-- render.DrawLine(pos, pos + dir * 20, color_white, true)
-	-- render.DrawWireframeSphere(pos, 1, 5, 5, color_white, true)
-
 end
 
 function SWEP:Think()
@@ -157,9 +172,20 @@ hook.Add('PreDrawEffects', 'octoweapons', function()
 	end
 end)
 
-hook.Add('RenderScene', 'octoweapons', function(pos, ang, fov)
-	local view = hook.Run("CalcView", LocalPlayer(), pos, ang, fov)
+hook.Add('RenderScene', 'lrp-guns', function(pos, ang, fov)
+
+	local ply = LocalPlayer()
+    local wep = ply:GetActiveWeapon()
+	
+    if not (IsValid(wep) and wep.Base == 'localrp_gun_base' and wep.aimProgress and wep.aimProgress > 0) then
+        return
+    end
+
+	local view = hook.Run('CalcView', ply, pos, ang, fov)
 	if not view then return end
+
+	-- local view = lrpView.calcWeaponView(LocalPlayer(), pos, ang, fov)
+	-- if not view then return end
 
 	render.Clear(0, 0, 0, 255, true, true, true)
 	render.RenderView({
@@ -176,6 +202,7 @@ hook.Add('RenderScene', 'octoweapons', function(pos, ang, fov)
 	})
 
 	return true
+
 end)
 
 net.Receive('lrp-muzzleFlash', function()
