@@ -30,6 +30,8 @@ function SWEP:OnRemove()
     self:SetReloading(false)
 end
 
+function SWEP:Reload() end
+
 CreateClientConVar('cl_lrp_sight_resolution', 512, true)
 local sightMaterials = {}
 local maskPoly, sightResolution, sightRT, sightMaterial
@@ -184,9 +186,6 @@ hook.Add('RenderScene', 'lrp-guns', function(pos, ang, fov)
 	local view = hook.Run('CalcView', ply, pos, ang, fov)
 	if not view then return end
 
-	-- local view = lrpView.calcWeaponView(LocalPlayer(), pos, ang, fov)
-	-- if not view then return end
-
 	render.Clear(0, 0, 0, 255, true, true, true)
 	render.RenderView({
 		x				= 0,
@@ -203,24 +202,6 @@ hook.Add('RenderScene', 'lrp-guns', function(pos, ang, fov)
 
 	return true
 
-end)
-
-net.Receive('lrp-muzzleFlash', function()
-	local wep = net.ReadEntity()
-	if not IsValid(wep) then return end
-
-	local dlight = DynamicLight(wep:EntIndex())
-	if dlight then
-		dlight.pos = wep:GetShootPos()
-		dlight.r = 255
-		dlight.g = 145
-		dlight.b = 10
-		dlight.brightness = 1
-		dlight.decay = 5000
-		dlight.size = 200
-		dlight.dietime = CurTime() + 0.2
-		dlight.nomodel = true
-	end
 end)
 
 hook.Add('lrp-view.chTraceOverride', 'lrp-guns', function()
@@ -251,4 +232,35 @@ hook.Add('lrp-view.chShouldDraw', 'lrp-guns', function(tr)
 	if wep.aimProgress <= 0.5 and wep:GetReady() and not tr.Hit then
 		return true
 	end
+end)
+
+net.Receive('lrp-guns.muzzleFlash', function()
+
+	local wep = net.ReadEntity()
+	local wepPos = net.ReadVector()
+
+	if not IsValid(wep) then return end
+	if wep == LocalPlayer():GetActiveWeapon() and wep.SightPos
+		and wep.aimProgress and wep.aimProgress > 0 then return end
+
+	local dlight = DynamicLight(wep:EntIndex())
+	if dlight then
+		dlight.pos = wepPos
+		dlight.r = 255
+		dlight.g = 145
+		dlight.b = 10
+		dlight.brightness = 1
+		dlight.decay = 5000
+		dlight.size = 200
+		dlight.dietime = CurTime() + 0.2
+		dlight.nomodel = true
+	end
+
+	local ef = EffectData()
+	ef:SetEntity(wep)
+	ef:SetAttachment(wep:LookupAttachment('muzzle'))
+	ef:SetFlags(1)
+
+	util.Effect('MuzzleFlash', ef)
+
 end)

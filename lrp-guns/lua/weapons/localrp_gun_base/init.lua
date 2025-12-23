@@ -6,14 +6,7 @@ include('sh_leans.lua')
 
 SWEP.WorldModel = ''
 
-util.AddNetworkString('lrp-muzzleFlash')
-
-function SWEP:MuzzleFlashCustom()
-	if self.Silent then return end
-    net.Start('lrp-muzzleFlash')
-        net.WriteEntity(self)
-    net.SendPVS(self:GetShootPos())
-end
+util.AddNetworkString('lrp-guns.muzzleFlash')
 
 function SWEP:Equip() self:SetReady(false) end
 
@@ -80,4 +73,15 @@ function SWEP:OnDrop(ply)
 
     self:SetReady(false)
     self:SetReloading(false)
+end
+
+function SWEP:PlayMuzzleFlash()
+	if self.Silent then return end
+
+    local wepPos = self:GetShootPos()
+
+    net.Start('lrp-guns.muzzleFlash')
+        net.WriteEntity(self)
+        net.WriteVector(wepPos)
+    net.SendPVS(wepPos)
 end

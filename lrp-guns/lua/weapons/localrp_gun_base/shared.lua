@@ -154,7 +154,8 @@ function SWEP:PrimaryAttack()
             return
         end
 
-        self:MuzzleFlashCustom()
+        if SERVER then self:PlayMuzzleFlash() end
+
         self:EmitSound(self.Primary.Sound, self.Silent and 75 or 80)
         self:ShotBullet(self.Primary.Damage, self.Primary.NumShots, self.Primary.Spread)
         self:TakePrimaryAmmo(1)
@@ -178,16 +179,6 @@ function SWEP:PrimaryAttack()
 end
 
 function SWEP:SecondaryAttack() return end
-function SWEP:Reload() end
-
-function SWEP:MuzzleFlashCustom()
-	if self.Silent or (self.SightPos and handview) then return end
-
-	local effectData = EffectData()
-	effectData:SetEntity(self)
-	effectData:SetFlags(1)
-	util.Effect('MuzzleFlash', effectData)
-end
 
 function SWEP:BoneRecoil()
     local ply = self:GetOwner()
