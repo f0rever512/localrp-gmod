@@ -115,6 +115,19 @@ end
 
 function SWEP:Think()
 
+    if CLIENT then
+        self.visualRecoil = Lerp(FrameTime() * 10, self.visualRecoil or 0, 0)
+
+        self:FingerAnimation()
+    end
+
+    if SERVER then
+        for _, v in pairs(player.GetAll()) do
+            -- unpredicted lean which gets synched with our predicted lean status
+            v.TFALean = Lerp(FrameTime() * 5, v.TFALean or 0, v:GetNW2Int('TFALean'))
+        end
+    end
+
     local ply = self:GetOwner()
 	if ply:KeyReleased( IN_ATTACK2 ) or self:GetReloading() then
 		ply:SetNW2Int('TFALean', 0)

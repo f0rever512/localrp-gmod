@@ -126,13 +126,13 @@ function SWEP:DrawWorldModel()
 
 end
 
-function SWEP:Think()
+-- function SWEP:Think()
 
-	self.visualRecoil = Lerp(FrameTime() * 10, self.visualRecoil or 0, 0)
+-- 	self.visualRecoil = Lerp(FrameTime() * 10, self.visualRecoil or 0, 0)
 
-    self:FingerAnimation()
+--     self:FingerAnimation()
 
-end
+-- end
 
 function SWEP:FingerAnimation()
 

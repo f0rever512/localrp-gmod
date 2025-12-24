@@ -8,6 +8,15 @@ SWEP.WorldModel = ''
 
 util.AddNetworkString('lrp-guns.muzzleFlash')
 
+-- function SWEP:Think()
+
+--     for _, v in pairs(player.GetAll()) do
+--         -- unpredicted lean which gets synched with our predicted lean status
+--         v.TFALean = Lerp(FrameTime() * 5, v.TFALean or 0, v:GetNW2Int('TFALean'))
+--     end
+
+-- end
+
 function SWEP:Equip() self:SetReady(false) end
 
 function SWEP:Reload()
