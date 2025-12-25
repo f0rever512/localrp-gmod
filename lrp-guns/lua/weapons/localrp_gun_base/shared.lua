@@ -76,13 +76,13 @@ function SWEP:CanFire()
 
     local tr = {}
     tr.start = ply:GetShootPos()
-    tr.endpos = self:GetShootPos()
+    tr.endpos = self:GetMuzzleInfo()
     tr.filter = ply
     return not util.TraceLine(tr).Hit
 
 end
 
-function SWEP:GetShootPos()
+function SWEP:GetMuzzleInfo()
 
     local ply = self:GetOwner()
 	local handAtt = ply:GetAttachment(ply:LookupAttachment('anim_attachment_rh'))
@@ -101,16 +101,18 @@ function SWEP:GetShootPos()
 
 end
 
-function SWEP:GetShootAng()
-    local mPos, mAng = self.MuzzlePos, self.MuzzleAng
-    if not mPos then
-        if barrelAngles[self.Sight] then
-            pos, mAng = unpack(barrelAngles[self.Sight])
-        else
-            pos, mAng = unpack(barrelAngles._default)
-        end
+function SWEP:GetShootPos() return self:GetMuzzleInfo() end
+
+function SWEP:GetMuzzleAng()
+
+    local mAng = self.MuzzleAng
+
+    if not self.MuzzlePos then
+        _, mAng = unpack(barrelAngles[self.Sight] and barrelAngles[self.Sight] or barrelAngles._default)
     end
+
 	return mAng
+    
 end
 
 function SWEP:Think()
@@ -264,7 +266,7 @@ function SWEP:ShotBullet(dmg, numbul, cone)
     cone = cone or 0.01
 
     local bullet = {}
-    local pos, dir = self:GetShootPos()
+    local pos, dir = self:GetMuzzleInfo()
     bullet.Num = numbul or 1
     bullet.Src = pos -- self:GetOwner():GetShootPos()
     bullet.Dir = dir -- self.Owner:GetEyeTraceNoCursor().Normal --self.Owner:GetAimVector()

@@ -58,7 +58,7 @@ cvars.AddChangeCallback('cl_lrp_sight_resolution', updateSettings, 'octoweapons'
 local isRenderingScope = false
 local function renderScope(wep)
 	isRenderingScope = true
-	local pos, dir, ang = wep:GetShootPos()
+	local pos, dir, ang = wep:GetMuzzleInfo()
 	render.PushRenderTarget(sightRT)
 	if util.TraceLine({
 		start = pos - dir * 15,
@@ -208,7 +208,7 @@ hook.Add('lrp-view.chTraceOverride', 'lrp-guns', function()
 	local wep = LocalPlayer():GetActiveWeapon()
 	if not IsValid(wep) or wep.Base ~= 'localrp_gun_base' or not wep:GetReady() then return end
 
-	local pos, dir = wep:GetShootPos()
+	local pos, dir = wep:GetMuzzleInfo()
 	return util.TraceLine({
 		start = pos,
 		endpos = pos + dir * 1600,
@@ -225,7 +225,7 @@ hook.Add('lrp-view.chShouldDraw', 'lrp-guns', function(tr)
 
 	local tr = util.TraceLine({
         start = ply:GetShootPos(),
-        endpos = wep:GetShootPos(),
+        endpos = wep:GetMuzzleInfo(),
         filter = ply
     })
 
@@ -240,8 +240,6 @@ net.Receive('lrp-guns.muzzleFlash', function()
 	local wepPos = net.ReadVector()
 
 	if not IsValid(wep) then return end
-	if wep == LocalPlayer():GetActiveWeapon() and wep.SightPos
-		and wep.aimProgress and wep.aimProgress > 0 then return end
 
 	local dlight = DynamicLight(wep:EntIndex())
 	if dlight then
@@ -256,11 +254,15 @@ net.Receive('lrp-guns.muzzleFlash', function()
 		dlight.nomodel = true
 	end
 
-	local ef = EffectData()
-	ef:SetEntity(wep)
-	ef:SetAttachment(wep:LookupAttachment('muzzle'))
-	ef:SetFlags(1)
+	if not ( wep == LocalPlayer():GetActiveWeapon() and wep.SightPos
+		and wep.aimProgress and wep.aimProgress > 0 ) then
 
-	util.Effect('MuzzleFlash', ef)
+		local ef = EffectData()
+		ef:SetEntity(wep)
+		ef:SetAttachment(wep:LookupAttachment('muzzle'))
+		ef:SetFlags(1)
+
+		util.Effect('MuzzleFlash', ef)
+	end
 
 end)

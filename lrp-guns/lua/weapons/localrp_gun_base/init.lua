@@ -87,7 +87,7 @@ end
 function SWEP:PlayMuzzleFlash()
 	if self.Silent then return end
 
-    local wepPos = self:GetShootPos()
+    local wepPos = self:GetMuzzleInfo()
 
     net.Start('lrp-guns.muzzleFlash')
         net.WriteEntity(self)

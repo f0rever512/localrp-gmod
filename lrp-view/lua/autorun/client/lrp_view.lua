@@ -121,6 +121,7 @@ local function calcView(ply, pos, ang, fov)
 
         -- for lrp guns
         if IsValid(wep) and wep.Base == 'localrp_gun_base' and modIndex == 0 then
+
             local animIn = usingSight and wep:GetHoldType() == wep.Sight and wep:GetReady()
             local aimProgress = math.Approach(wep.aimProgress or 0, animIn and 1 or 0, FrameTime() * (animIn and 1.5 or 2.5))
             wep.aimProgress = aimProgress
@@ -134,12 +135,16 @@ local function calcView(ply, pos, ang, fov)
             local easedProgress = inOutQuad(aimProgress)
             
             local aimPos = Vector(wep.AimPos.x, wep.AimPos.y, wep.AimPos.z + wep.AimPos.z * visualRecoil / 5)
-            local aimAng = Angle(wep:GetShootAng().p - (not wep.SightPos and (wep:GetShootAng().p * visualRecoil * 2.5) or 0), wep:GetShootAng().y, wep:GetShootAng().r)
+            
+            local muzzleAng = wep:GetMuzzleAng()
+            local aimAng = Angle(muzzleAng.p - (not wep.SightPos and (muzzleAng.p * visualRecoil * 2.5) or 0), muzzleAng.y, muzzleAng.r)
+
             wep.smoothHandAng = LerpAngle(0.5, wep.smoothHandAng or handAtt.Ang, handAtt.Ang)
             local worldVector, worldAngle = LocalToWorld(aimPos, aimAng, handAtt.Pos, wep.smoothHandAng)
 
             pos = LerpVector(easedProgress, pos, worldVector)
             ang = LerpAngle(easedProgress, ang, worldAngle)
+            
         end
     else
         local ragdoll = ply:GetRagdollEntity()
