@@ -1,5 +1,4 @@
 local addammo = {
-    'ammo_air',
     'ammo_large',
     'ammo_shot',
     'ammo_small',
