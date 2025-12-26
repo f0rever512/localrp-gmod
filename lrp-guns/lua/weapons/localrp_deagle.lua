@@ -8,7 +8,7 @@ SWEP.SlotPos = 1
 SWEP.WorldModel = 'models/weapons/w_pist_deagle.mdl'
 
 SWEP.Primary.Sound = Sound( 'weapons/deagle/deagle-1.wav' )
-SWEP.Primary.Damage = 35
+SWEP.Primary.Damage = 34
 SWEP.Primary.RPM = 300
 SWEP.Primary.ClipSize = 7
 SWEP.Primary.DefaultClip = 0
