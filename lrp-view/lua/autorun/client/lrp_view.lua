@@ -84,7 +84,7 @@ lrpView.mods = {
 
             -- shaders from https://steamcommunity.com/sharedfiles/filedetails/?id=3440271589
             render.DrawMercFisheye(0.2)
-            render.DrawMercVignette(1.1, 0.5)
+            render.DrawMercVignette(0.9, 0.5)
         end,
     },
 }
