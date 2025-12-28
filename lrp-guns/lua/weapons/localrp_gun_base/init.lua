@@ -27,9 +27,12 @@ function SWEP:Reload()
 
     local ply = self:GetOwner()
 
+    self.cachedRunSpeed = ply:GetRunSpeed()
+
 	self:SetReady(false)
     self:SetReloading(true)
     self:SetHoldType(self.Sight)
+    ply:SetRunSpeed(self.cachedRunSpeed * 0.8)
 
     timer.Simple(0, function()
         self:EmitSound(self.ClipoutSound, 60, 100)
@@ -46,12 +49,19 @@ function SWEP:Reload()
 
     timer.Create('lrp-guns.timer.reloadEnd' .. ply:SteamID(), self.ReloadTime, 1, function()
         self:SetReloading(false)
+        ply:SetRunSpeed(self.cachedRunSpeed)
+
+        if not self:GetReady() and ply:KeyDown(IN_ATTACK2) then
+            self:SetReady(true)
+        end
     end)
 
 end
 
 local function disableSounds(ply)
     if not IsValid(ply) then return end
+
+    ply:SetRunSpeed(ply:GetActiveWeapon().cachedRunSpeed or ply:GetRunSpeed())
 
     timer.Remove('lrp-guns.timer.clipInSound' .. ply:SteamID())
     timer.Remove('lrp-guns.timer.slideSound' .. ply:SteamID())

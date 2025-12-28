@@ -161,7 +161,6 @@ function SWEP:PrimaryAttack()
 
     local ply = self:GetOwner()
     if IsValid(self) and IsValid(ply) and ply:Alive() then
-        self:SetNextPrimaryFire(CurTime() + 1.5 / (self.Primary.RPM / 70))
 
         if self:Clip1() <= 0 then
             self:EmitSound('Weapon_AR2.Empty')
@@ -169,11 +168,14 @@ function SWEP:PrimaryAttack()
             return
         end
 
+        self:EmitSound(self.Primary.Sound, self.Silent and 75 or 80)
+        self:SetNextPrimaryFire(CurTime() + 1.5 / (self.Primary.RPM / 70))
+        self:TakePrimaryAmmo(1)
+        self:ShotBullet(self.Primary.Damage, self.Primary.NumShots, self.Primary.Spread)
+        self:BoneRecoil()
+
         if SERVER then self:PlayMuzzleFlash() end
 
-        self:EmitSound(self.Primary.Sound, self.Silent and 75 or 80)
-        self:ShotBullet(self.Primary.Damage, self.Primary.NumShots, self.Primary.Spread)
-        self:TakePrimaryAmmo(1)
         if CLIENT then
             self.visualRecoil = (self.visualRecoil or 0) + self.HandRecoil / (self.Sight == 'revolver' and 1 or 5)
         end
@@ -188,8 +190,7 @@ function SWEP:PrimaryAttack()
         else
         	ply:ViewPunch(recoilAngle)
         end
-        
-        self:BoneRecoil()
+
     end
 end
 
@@ -259,31 +260,22 @@ function SWEP:FireAnimationEvent( pos, ang, event, options )
 	if event == 5003 then return true end
 end
 
-function SWEP:ShotBullet(dmg, numbul, cone)
-    if not IsValid(self:GetOwner()) then return end
+function SWEP:ShotBullet(dmg, numShots, spread)
 
-    numbul = numbul or 1
-    cone = cone or 0.01
+    local ply = self:GetOwner()
+    if not IsValid(ply) then return end
+
+    local pos, dir = self:GetMuzzleInfo()
 
     local bullet = {}
-    local pos, dir = self:GetMuzzleInfo()
-    bullet.Num = numbul or 1
-    bullet.Src = pos -- self:GetOwner():GetShootPos()
-    bullet.Dir = dir -- self.Owner:GetEyeTraceNoCursor().Normal --self.Owner:GetAimVector()
-    bullet.Spread = Vector(cone, cone, 0)
+    bullet.Num = numShots
+    bullet.Src = pos
+    bullet.Dir = dir
+    bullet.Spread = Vector(spread, spread, 0)
     bullet.Tracer = 4
-    bullet.Force = 5
+    bullet.Force = dmg * 0.15
     bullet.Damage = dmg
 
-    self:GetOwner():FireBullets(bullet)
-    self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
-    -- self:GetOwner():SetAnimation(PLAYER_ATTACK1)
+    ply:FireBullets(bullet)
+
 end
-
-hook.Add('SetupMove', 'lrp-guns.setupmove', function(ply, mv)
-    local wep = ply:GetActiveWeapon()
-
-    if IsValid(wep) and wep.Base == 'localrp_gun_base' and wep:GetReloading() then
-        mv:SetMaxClientSpeed(mv:GetMaxClientSpeed() / 1.2)
-    end
-end)
