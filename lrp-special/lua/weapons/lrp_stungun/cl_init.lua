@@ -311,3 +311,45 @@ hook.Add('CreateMove', 'lrp-stungun.createmove', function(cmd)
 		cmd:RemoveKey(IN_USE)
 	end
 end)
+
+hook.Add('lrp-view.chTraceOverride', 'lrp-stungun', function()
+	local wep = LocalPlayer():GetActiveWeapon()
+	if not IsValid(wep) or wep:GetClass() ~= 'lrp_stungun' or not wep:GetReady() then return end
+
+	local pos, dir = wep:GetMuzzleInfo()
+	return util.TraceLine({
+		start = pos,
+		endpos = pos + dir * 1600,
+		filter = function(ent)
+			return ent ~= ply and ent:GetRenderMode() ~= RENDERMODE_TRANSALPHA
+		end
+	})
+end)
+
+hook.Add('lrp-view.chShouldDraw', 'lrp-stungun', function()
+	local ply = LocalPlayer()
+	local wep = ply:GetActiveWeapon()
+	if not IsValid(wep) or wep:GetClass() ~= 'lrp_stungun' then return end
+
+	local tr = util.TraceLine({
+		start = ply:GetShootPos(),
+		endpos = wep:GetMuzzleInfo(),
+        filter = ply
+    })
+
+	if wep:GetReady() and not tr.Hit then
+		return true
+	end
+end)
+
+hook.Add('lrp-view.chShouldDraw', 'lrp-stungun.ragView', function()
+	if IsValid(LocalPlayer():GetNWEntity('tazerviewrag')) then
+		return false
+	end
+end)
+
+hook.Add('lrp-view.override', 'lrp-stungun', function()
+	if IsValid(LocalPlayer():GetNWEntity('tazerviewrag')) then
+		return true
+	end
+end)
