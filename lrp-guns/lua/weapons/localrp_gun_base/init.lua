@@ -8,14 +8,33 @@ SWEP.WorldModel = ''
 
 util.AddNetworkString('lrp-guns.muzzleFlash')
 
--- function SWEP:Think()
+function SWEP:Think()
 
---     for _, v in pairs(player.GetAll()) do
---         -- unpredicted lean which gets synched with our predicted lean status
---         v.TFALean = Lerp(FrameTime() * 5, v.TFALean or 0, v:GetNW2Int('TFALean'))
---     end
+	for _, v in pairs(player.GetAll()) do
+		-- unpredicted lean which gets synched with our predicted lean status
+		v.TFALean = Lerp(FrameTime() * 5, v.TFALean or 0, v:GetNW2Int('TFALean'))
+	end
 
--- end
+	local ply = self:GetOwner()
+
+	if IsValid(self) and IsValid(ply) then
+
+		if self:GetReloading() then return end
+
+		if not self:GetReady() and ply:KeyDown(IN_ATTACK2) then
+			self:SetReady(true)
+			self:SetHoldType(self.Sight)
+		end
+
+		if self:GetReady() and ply:KeyReleased(IN_ATTACK2) then
+			self:SetReady(false)
+			self:SetHoldType(self.Passive)
+			ply:SetNW2Int('TFALean', 0)
+		end
+
+	end
+
+end
 
 function SWEP:Equip() self:SetReady(false) end
 
@@ -32,6 +51,7 @@ function SWEP:Reload()
 	self:SetReady(false)
     self:SetReloading(true)
     self:SetHoldType(self.Sight)
+	ply:SetNW2Int('TFALean', 0)
     ply:SetRunSpeed(self.cachedRunSpeed * 0.8)
 
     timer.Simple(0, function()
@@ -42,17 +62,19 @@ function SWEP:Reload()
     timer.Create('lrp-guns.timer.clipInSound' .. ply:SteamID(), self.ReloadTime - 1.25, 1, function()
         self:EmitSound(self.ClipinSound, 60, 100)
     end)
-    
+
     timer.Create('lrp-guns.timer.slideSound' .. ply:SteamID(), self.ReloadTime - 0.75, 1, function()
         self:EmitSound(self.SlideSound, 60, 100)
     end)
 
     timer.Create('lrp-guns.timer.reloadEnd' .. ply:SteamID(), self.ReloadTime, 1, function()
         self:SetReloading(false)
+		self:SetHoldType(self.Passive)
         ply:SetRunSpeed(self.cachedRunSpeed)
 
         if not self:GetReady() and ply:KeyDown(IN_ATTACK2) then
             self:SetReady(true)
+			self:SetHoldType(self.Sight)
         end
     end)
 
@@ -76,7 +98,7 @@ function SWEP:Holster()
     ply:SetNW2Int('TFALean', 0)
 
     return true
-    
+
 end
 
 function SWEP:OnRemove()

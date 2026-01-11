@@ -53,12 +53,13 @@ function SWEP:Initialize()
     self.aimProgress = 0
 
     self.FingerAnimStep = 0
-    
+
 end
 
 function SWEP:Deploy()
 
     self:SetReady(false)
+	self:SetHoldType(self.Passive)
     self:SetReloading(false)
     self.visualRecoil = 0
 
@@ -101,8 +102,6 @@ function SWEP:GetMuzzleInfo()
 
 end
 
-function SWEP:GetShootPos() return self:GetMuzzleInfo() end
-
 function SWEP:GetMuzzleAng()
 
     local mAng = self.MuzzleAng
@@ -112,44 +111,6 @@ function SWEP:GetMuzzleAng()
     end
 
 	return mAng
-    
-end
-
-function SWEP:Think()
-
-    if CLIENT then
-        self.visualRecoil = Lerp(FrameTime() * 10, self.visualRecoil or 0, 0)
-
-        self:FingerAnimation()
-    end
-
-    if SERVER then
-        for _, v in pairs(player.GetAll()) do
-            -- unpredicted lean which gets synched with our predicted lean status
-            v.TFALean = Lerp(FrameTime() * 5, v.TFALean or 0, v:GetNW2Int('TFALean'))
-        end
-    end
-
-    local ply = self:GetOwner()
-	if ply:KeyReleased( IN_ATTACK2 ) or self:GetReloading() then
-		ply:SetNW2Int('TFALean', 0)
-	end
-
-    if IsValid(self) and IsValid(ply) and ply:Alive() then
-
-        if self:GetReloading() then return end
-
-		self:SetHoldType(self:GetReady() and self.Sight or self.Passive)
-
-        if not self:GetReady() and ply:KeyDown(IN_ATTACK2) then
-            self:SetReady(true)
-        end
-
-        if self:GetReady() and ply:KeyReleased(IN_ATTACK2) then
-            self:SetReady(false)
-        end
-        
-    end
 
 end
 
@@ -236,7 +197,7 @@ function SWEP:StartRecoilRestore(ply, bone)
     timer.Create('recoilRestore_' .. ply:SteamID(), 0.01, 0, function()
         if not IsValid(ply) then return end
         local curAngle = ply:GetManipulateBoneAngles(bone) or Angle(0, 0, 0)
-        
+
         local stepP = recoilRestoreSpeed * math.abs(curAngle.p) * FrameTime()
         local stepY = recoilRestoreSpeed * math.abs(curAngle.y) * FrameTime()
         local stepR = recoilRestoreSpeed * math.abs(curAngle.r) * FrameTime()
@@ -244,7 +205,7 @@ function SWEP:StartRecoilRestore(ply, bone)
         curAngle.p = math.Approach(curAngle.p, 0, stepP)
         curAngle.y = math.Approach(curAngle.y, 0, stepY)
         curAngle.r = math.Approach(curAngle.r, 0, stepR)
-        
+
         ply:ManipulateBoneAngles(bone, curAngle)
 
         if curAngle.p == 0 and curAngle.y == 0 and curAngle.r == 0 then

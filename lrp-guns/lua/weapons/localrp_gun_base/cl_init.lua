@@ -22,7 +22,7 @@ function SWEP:Holster()
 	ply:ManipulateBoneAngles(ply:LookupBone('ValveBiped.Bip01_R_Hand'), Angle(0, 0, 0))
 
     return true
-    
+
 end
 
 function SWEP:OnRemove()
@@ -126,13 +126,13 @@ function SWEP:DrawWorldModel()
 
 end
 
--- function SWEP:Think()
+function SWEP:Think()
 
--- 	self.visualRecoil = Lerp(FrameTime() * 10, self.visualRecoil or 0, 0)
+	self.visualRecoil = Lerp(FrameTime() * 10, self.visualRecoil or 0, 0)
 
---     self:FingerAnimation()
+	self:FingerAnimation()
 
--- end
+end
 
 function SWEP:FingerAnimation()
 
@@ -143,13 +143,13 @@ function SWEP:FingerAnimation()
     if not finger then return end
 
     if self.FingerAnimStep == 0 then return end
-	
+
 	if self.Primary.Automatic and ply:KeyDown(IN_ATTACK) then
 		self.FingerAnimStep = 1
 	else
-    	self.FingerAnimStep = math.Approach(self.FingerAnimStep, 0, FrameTime() / 0.2)
+    	self.FingerAnimStep = math.Approach(self.FingerAnimStep, 0, FrameTime() * 5)
 	end
-    
+
     local ease = outQuad(self.FingerAnimStep)
     ply:ManipulateBoneAngles(finger, Angle(0, ease * -30, 0), false)
 
@@ -178,7 +178,7 @@ hook.Add('RenderScene', 'lrp-guns', function(pos, ang, fov)
 
 	local ply = LocalPlayer()
     local wep = ply:GetActiveWeapon()
-	
+
     if not (IsValid(wep) and wep.Base == 'localrp_gun_base' and wep.aimProgress and wep.aimProgress > 0) then
         return
     end
