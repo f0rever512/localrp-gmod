@@ -112,7 +112,7 @@ end)
 
 hook.Add("PlayerButtonUp", 'lrp-guns.leanbtnup', function(ply, button)
 	if button ~= KEY_Q and button ~= KEY_E then return end
-	
+
 	local wep = ply:GetActiveWeapon()
 	if not IsValid(wep) or wep.Base ~= 'localrp_gun_base' then return end
 
@@ -249,7 +249,7 @@ local isLeaningView = false
 
 hook.Add("CalcView", "TFALeanCalcView", function(ply, pos, angles, fov, ...)
 	if isLeaningView or GetViewEntity() ~= ply or not ply:Alive() or ply:InVehicle() then return end
-	
+
 	isLeaningView = true
 	local preTable = hook.Run("CalcView", ply, pos, angles, fov) or {}
 	isLeaningView = false

@@ -10,28 +10,19 @@ util.AddNetworkString('lrp-guns.muzzleFlash')
 
 function SWEP:Think()
 
-	for _, v in pairs(player.GetAll()) do
-		-- unpredicted lean which gets synched with our predicted lean status
-		v.TFALean = Lerp(FrameTime() * 5, v.TFALean or 0, v:GetNW2Int('TFALean'))
-	end
+	if self:GetReloading() then return end
 
 	local ply = self:GetOwner()
 
-	if IsValid(self) and IsValid(ply) then
+	if not self:GetReady() and ply:KeyDown(IN_ATTACK2) then
+		self:SetReady(true)
+		self:SetHoldType(self.Sight)
+	end
 
-		if self:GetReloading() then return end
-
-		if not self:GetReady() and ply:KeyDown(IN_ATTACK2) then
-			self:SetReady(true)
-			self:SetHoldType(self.Sight)
-		end
-
-		if self:GetReady() and ply:KeyReleased(IN_ATTACK2) then
-			self:SetReady(false)
-			self:SetHoldType(self.Passive)
-			ply:SetNW2Int('TFALean', 0)
-		end
-
+	if self:GetReady() and ply:KeyReleased(IN_ATTACK2) then
+		self:SetReady(false)
+		self:SetHoldType(self.Passive)
+		ply:SetNW2Int('TFALean', 0)
 	end
 
 end
@@ -84,6 +75,7 @@ local function disableSounds(ply)
     if not IsValid(ply) then return end
 
     ply:SetRunSpeed(ply:GetActiveWeapon().cachedRunSpeed or ply:GetRunSpeed())
+	ply:SetNW2Int('TFALean', 0)
 
     timer.Remove('lrp-guns.timer.clipInSound' .. ply:SteamID())
     timer.Remove('lrp-guns.timer.slideSound' .. ply:SteamID())
@@ -95,7 +87,6 @@ function SWEP:Holster()
     local ply = self:GetOwner()
 
     disableSounds(ply)
-    ply:SetNW2Int('TFALean', 0)
 
     return true
 
@@ -126,3 +117,8 @@ function SWEP:PlayMuzzleFlash()
         net.WriteVector(wepPos)
     net.SendPVS(wepPos)
 end
+
+hook.Add('Move', 'lrp-guns.leanThink', function(ply)
+	-- unpredicted lean which gets synched with our predicted lean status
+	ply.TFALean = Lerp(FrameTime() * 5, ply.TFALean or 0, ply:GetNW2Int('TFALean'))
+end)
