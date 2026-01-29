@@ -1,10 +1,16 @@
-if SERVER then AddCSLuaFile() end
+if SERVER then
+
+	AddCSLuaFile()
+
+else
+
+	ENT.PrintName		= language.GetPhrase('lrp_guns.ammo.large')
+	ENT.Category		= 'LocalRP - Ammo'
+
+end
 
 ENT.Type 				= 'anim'
 ENT.Base 				= 'ent_ammo_base'
-ENT.PrintName 			= 'Крупный калибр'
-
-ENT.Category 			= 'LocalRP - Ammo'
 ENT.Spawnable 			= true
 ENT.AdminOnly 			= false
 

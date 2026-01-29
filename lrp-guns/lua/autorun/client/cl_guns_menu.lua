@@ -3,11 +3,11 @@ hook.Add("AddToolMenuTabs", 'lrp-guns.tab', function()
 	spawnmenu.AddToolTab('LocalRP', '#LocalRP', 'icon16/brick.png')
 	spawnmenu.AddToolMenuOption("LocalRP", "Client Options", 'cl_lrp_guns', 'Guns', "", "", function(pnl)
 		pnl:ClearControls()
-	
-		pnl:AddControl("Label", {Text = 'Клиентские настройки оружия'})
+
+		pnl:AddControl("Label", {text = language.GetPhrase('lrp_guns.options.label_cl')})
 
 		local resolutionList = pnl:AddControl("listbox", {
-			Label = 'Разрешение прицела'
+			label = language.GetPhrase('lrp_guns.options.sight_res'),
 		})
 		resolutionList:SetSortItems(false)
 
