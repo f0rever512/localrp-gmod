@@ -16,31 +16,29 @@ local boxPositions = {
 	['_default'] = {
 		offset = Vector(0, 0, 11.53),
 		angles = Angle(0, 90, 0),
-		size = { w = 350, h = 60 },
 	},
 	-- small
 	['models/Items/BoxSRounds.mdl'] = {
 		offset = Vector(0, 0, 11.53),
 		angles = Angle(0, 90, 0),
-		size = { w = 350, h = 60 },
 	},
 	-- large
 	['models/Items/BoxMRounds.mdl'] = {
 		offset = Vector(0, 0, 13.4),
 		angles = Angle(0, 90, 0),
-		size = { w = 380, h = 90 },
 	},
 	-- shotgun
 	['models/Items/BoxBuckshot.mdl'] = {
-		offset = Vector(0.5, 0.39, 5.8),
+		offset = Vector(0.5, 0.35, 5.8),
 		angles = Angle(0, 90, 0),
-		size = { w = 170, h = 60 },
 	},
 }
 
 local fadeDist = 250
 local maxRenderDist = 250
+
 local boxColor = Color(0, 80, 65)
+local boxMargin = 16
 
 function ENT:Draw()
 
@@ -54,11 +52,13 @@ function ENT:Draw()
 	local boxInfo = boxPositions[self.AmmoModel] and boxPositions[self.AmmoModel] or boxPositions['_default']
 
 	local boxPos, boxAngle = LocalToWorld(boxInfo.offset, boxInfo.angles, entPos, self:GetAngles())
-	local x, y = boxInfo.size.w * -0.5, boxInfo.size.h * -0.5
+
+	local tw, th = surface.GetTextSize(self.PrintName)
+	local tx, ty = -tw*0.5 - boxMargin, -th*0.5 - boxMargin/2
 
 	cam.Start3D2D(boxPos, boxAngle, 0.05)
 
-		draw.RoundedBox(8, x, y, boxInfo.size.w, boxInfo.size.h, ColorAlpha(boxColor, al))
+		draw.RoundedBox(8, tx, ty, tw+boxMargin*2, th+boxMargin, ColorAlpha(boxColor, al))
 		draw.SimpleText(self.PrintName, 'lrp-guns.ammoFont', 0, -2, Color(255, 255, 255, al), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
 	cam.End3D2D()
