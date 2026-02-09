@@ -4,7 +4,7 @@ hook.Add("CalcView", 'lrp-ragdoll.view', function(ply, pos, angles, fov)
 		local bid = rag:LookupBone("ValveBiped.Bip01_Head1")
 		if bid then
 			local pos, ang = rag:GetBonePosition(bid)
-			local pos = pos + ang:Forward() * 3 + ang:Right() * 3			
+			local pos = pos + ang:Forward() * 3 + ang:Right() * 3
 			rag:ManipulateBoneScale(bid, Vector(1, 1, 1))
 			ang:RotateAroundAxis(ang:Up(), -90)
 			ang:RotateAroundAxis(ang:Forward(), -90)
@@ -16,5 +16,17 @@ hook.Add("CalcView", 'lrp-ragdoll.view', function(ply, pos, angles, fov)
 			}
 			return view
 		end
+	end
+end)
+
+hook.Add('lrp-view.chShouldDraw', 'lrp-ragdoll', function()
+	if LocalPlayer():GetRagdoll() then
+		return false
+	end
+end)
+
+hook.Add('lrp-view.override', 'lrp-ragdoll', function()
+	if LocalPlayer():GetRagdoll() then
+		return true
 	end
 end)
