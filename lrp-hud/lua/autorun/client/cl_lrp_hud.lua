@@ -60,7 +60,7 @@ hook.Add('HUDPaint', 'lrpHud.paint', function()
 
 	local wep = ply:GetActiveWeapon()
 	if IsValid(wep) then
-		if not wep.LRPGuns or (wep.LRPGuns and GetConVar("lrp_view"):GetInt() == 0) then
+		if wep.Base ~= 'localrp_gun_base' or (wep.Base == 'localrp_gun_base' and GetConVar("lrp_view"):GetInt() == 0) then
 			local ammo = wep:Clip1() < 0 and 0 or wep:Clip1()
 			local reserve = ply:GetAmmoCount(wep:GetPrimaryAmmoType())
 
@@ -80,7 +80,7 @@ hook.Add('HUDPaint', 'lrpHud.ammoPaint', function()
 	if GetConVar("cl_lrp_hud_type"):GetInt() == 1 or GetConVar("lrp_view"):GetInt() == 0 then return end
 
 	local wep = ply:GetActiveWeapon()
-	if wep.LRPGuns and wep.DrawAmmo then
+	if wep.Base == 'localrp_gun_base' and wep.DrawAmmo then
 		if wep:GetReloading() or ply:KeyDown(IN_WALK) then
 			local sightOffsets = {
 				default = {2, 2, -0.5},

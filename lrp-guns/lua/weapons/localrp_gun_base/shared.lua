@@ -23,7 +23,6 @@ SWEP.HandRecoil = 0.5
 SWEP.VerticalRecoil = 4
 SWEP.HorizontalRecoil = 0.5
 
-SWEP.LRPGuns = true
 SWEP.Silent = false
 SWEP.ReloadTime = 2.2
 

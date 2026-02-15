@@ -27,7 +27,7 @@ hook.Add( "PlayerSwitchFlashlight", "SwitchFlashlight", function( ply, enabled )
     local wep = ply:GetActiveWeapon()
 
     if enabled and ply:HasWeapon('localrp_flashlight') and wep:GetClass() != 'localrp_flashlight' then
-        if !wep.LRPGuns then
+        if wep.Base ~= 'localrp_gun_base' then
             ply:SelectWeapon('localrp_flashlight')
             ply:Flashlight(true)
         end
