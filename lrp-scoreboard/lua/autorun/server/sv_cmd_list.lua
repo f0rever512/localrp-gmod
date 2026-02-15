@@ -134,7 +134,7 @@ lrpAdminCommands = lrpAdminCommands or {
         desc = 'set %d armor',
         action = function(admin, target, amount)
             if target:Alive() then
-                target:SetArmor(math.Clamp(tonumber(amount), 1, target:GetMaxArmor()))
+                target:SetArmor(math.Clamp(tonumber(amount), 0, target:GetMaxArmor()))
             else
                 sendHint(admin, lrpAdminHints.DEAD_PLAYER)
             end
