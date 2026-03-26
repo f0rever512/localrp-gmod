@@ -19,19 +19,6 @@ hook.Add('AddToolMenuTabs', 'lrp-view.toolMenuTab', function()
 			green = 'cl_lrp_view_crosshair_color_g',
 			blue = 'cl_lrp_view_crosshair_color_b'
 		})
-
-		local viewMod = pnl:AddControl('listbox', {label = language.GetPhrase('lrp_view.options.mod_title')})
-		viewMod:SetSortItems(false)
-
-		viewMod:AddOption(language.GetPhrase('lrp_view.options.mod_disabled'), {
-			cl_lrp_view_mod = 0
-		})
-
-		for id, data in pairs(lrpView.mods) do
-			viewMod:AddOption(data.name, {
-				cl_lrp_view_mod = id
-			})
-		end
 	end)
 
 end)
