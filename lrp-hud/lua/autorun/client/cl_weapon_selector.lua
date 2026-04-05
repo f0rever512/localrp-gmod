@@ -46,7 +46,6 @@ local slide = {}
 
 local specialWeaponSlot = {
 	-- weapon_class = { slot, slotPos },
-	weapon_physgun = { 0, 0 },
 
 	weapon_crowbar = { 0, -2 },
     weapon_stunstick = { 0, -2 },
