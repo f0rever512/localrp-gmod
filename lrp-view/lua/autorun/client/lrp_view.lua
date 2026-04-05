@@ -113,7 +113,7 @@ local function calcView(ply, pos, ang, fov)
 end
 
 local crossIcon = Material('materials/lrp_dot.png')
-local chPosOff, chAngOff = Vector(0, 0, 0), Angle(0, -90, 90)
+local chPosOff, chAngOff = Vector(0, 0, 0), Angle(0, 90, 90)
 
 local function renderCrosshair()
 
@@ -148,11 +148,11 @@ local function renderCrosshair()
 	end
 
     local _icon, _alpha, _scale = hook.Run('lrp-view.chOverride', tr)
-    -- local n = tr.Hit and tr.HitNormal or -aim
-	-- if math.abs(n.z) > 0.98 then
-	-- 	n:Add(-aim * 0.01)
-	-- end
-    local chPos, chAng = LocalToWorld(chPosOff, chAngOff, tr.HitPos or endpos, ply:EyeAngles())
+    local n = tr.Hit and tr.HitNormal or -aim
+	if math.abs(n.z) > 0.98 then
+		n:Add(-aim * 0.01)
+	end
+    local chPos, chAng = LocalToWorld(chPosOff, chAngOff, tr.HitPos or endpos, n:Angle())
     cam.Start3D2D(chPos, chAng, math.pow(tr.Fraction, 0.6) * (_scale or 0.25))
 	cam.IgnoreZ(true)
 	if not hook.Run('lrp-view.chPaint', tr, _icon) then
