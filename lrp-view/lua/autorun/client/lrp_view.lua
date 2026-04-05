@@ -251,6 +251,8 @@ local function useSightKey(ply, key)
     end
 end
 
+local viewActive = false
+
 local function enableView()
 
     hook.Add('CalcView', 'lrp-view', calcView)
@@ -261,6 +263,8 @@ local function enableView()
     hook.Add('PlayerButtonDown', 'lrp-view', useSightKey)
 
     hideHead(true)
+
+	viewActive = true
 
 end
 
@@ -274,6 +278,8 @@ local function disableView()
     hook.Remove('PlayerButtonDown', 'lrp-view')
 
     hideHead(false)
+
+	viewActive = false
 
 end
 
@@ -290,9 +296,9 @@ hook.Add('Think', 'lrp-view.override', function()
 
 	local override = hook.Run('lrp-view.override') == true
 
-    if override then
+    if override and viewActive then
 		disableView()
-	elseif not override then
+	elseif not override and not viewActive then
 		enableView()
 	end
 
