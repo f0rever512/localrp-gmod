@@ -27,6 +27,6 @@ SWEP.HorizontalRecoil = 2.3
 SWEP.ReloadTime = 2.3
 
 SWEP.ClipinSound = 'weapons/xm1014/xm1014_insertshell.wav'
-SWEP.SlideSound = 'weapons/m249/m249_coverup.wav'
+SWEP.SlideSound = 'weapons/m3/m3_pump.wav'
 
 SWEP.AimPos = Vector(-5, -0.8, 4.22)

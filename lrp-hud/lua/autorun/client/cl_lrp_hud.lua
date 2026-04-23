@@ -15,7 +15,7 @@ local oldHP, newHP, oldAR, newAR = -1, -1, -1, -1
 
 hook.Add('HUDPaint', 'lrpHud.paint', function()
 	local ply = LocalPlayer()
-	
+
 	if GetConVar("cl_lrp_hud_type"):GetInt() < 2 then return end
 	if not ply:Alive() then return end
 
@@ -57,10 +57,10 @@ hook.Add('HUDPaint', 'lrpHud.paint', function()
 	draw.RoundedBox(10, posX, posY, width, height, Color(0, 185, 150, 200))
 	draw.RoundedBox(10, posX + offset / 2, posY + offset / 2, ply:Health() <= 100 and (math.max( 0, smoothHP ) / maxHP * width - offset) or width - offset, height - offset, Color(200, 0, 0, 230))
 	draw.RoundedBox(10, posX + offset / 2, posY + offset / 2, ply:Armor() <= 100 and (math.max( 0, smoothAR ) / maxAR * width - offset) or width - offset, height - offset, Color(0, 70, 160, 230))
-	
+
 	local wep = ply:GetActiveWeapon()
 	if IsValid(wep) then
-		if not wep.LRPGuns or (wep.LRPGuns and GetConVar("lrp_view"):GetInt() == 0) then
+		if wep.Base ~= 'localrp_gun_base' or (wep.Base == 'localrp_gun_base' and GetConVar("lrp_view"):GetInt() == 0) then
 			local ammo = wep:Clip1() < 0 and 0 or wep:Clip1()
 			local reserve = ply:GetAmmoCount(wep:GetPrimaryAmmoType())
 
@@ -80,7 +80,7 @@ hook.Add('HUDPaint', 'lrpHud.ammoPaint', function()
 	if GetConVar("cl_lrp_hud_type"):GetInt() == 1 or GetConVar("lrp_view"):GetInt() == 0 then return end
 
 	local wep = ply:GetActiveWeapon()
-	if wep.LRPGuns and wep.DrawAmmo then
+	if wep.Base == 'localrp_gun_base' and wep.DrawAmmo then
 		if wep:GetReloading() or ply:KeyDown(IN_WALK) then
 			local sightOffsets = {
 				default = {2, 2, -0.5},
@@ -93,10 +93,10 @@ hook.Add('HUDPaint', 'lrpHud.ammoPaint', function()
 
 			local offset = sightOffsets[wep.Sight] or sightOffsets.default
 			local textPos = (handAtt.Pos + handAtt.Ang:Forward() * offset[1] + handAtt.Ang:Up() * offset[2] + handAtt.Ang:Right() * offset[3]):ToScreen()
-			
+
 			local ammo = wep:Clip1()
 			local reserve = ply:GetAmmoCount(wep:GetPrimaryAmmoType())
-			
+
 			draw.SimpleTextOutlined( ammo, 'lrpHud-font', textPos.x, textPos.y, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP, 1, Color(0, 0, 0, 255) )
 			draw.SimpleTextOutlined( reserve, 'lrpHud-font', textPos.x, textPos.y + 20, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP, 1, Color(0, 0, 0, 255) )
 		end
@@ -124,7 +124,7 @@ hook.Add("HUDPaint", 'lrpHud.voiceIconPaint', function()
 
 	local voiceMat = Material('talkicon/voice.png')
 	local textMat = Material('talkicon/text.png')
-	
+
 	if ply:IsSpeaking() then
 		paintIcon(voiceMat)
 	elseif ply:GetNW2Bool('ti_istyping') then
@@ -139,13 +139,15 @@ hook.Add('HUDShouldDraw', 'HideElements', function(name)
     end
 end)
 
-hook.Add("PlayerStartVoice", "HideVoicePanel", function()
-	if GetConVar('cl_lrp_hud_type'):GetInt() == 1 then return end
-	return true
+hook.Add('PlayerStartVoice', 'lrp-hud.voicePanelToggle', function()
+	if g_VoicePanelList then
+		local val = GetConVar('cl_lrp_hud_type'):GetInt()
+		g_VoicePanelList:SetVisible(val == 1)
+	end
 end)
 
 local e = 0
-hook.Add("PostDrawHUD", "PostEffectsHealth", function() 
+hook.Add("PostDrawHUD", "PostEffectsHealth", function()
 	local ply = LocalPlayer()
 
 	local o

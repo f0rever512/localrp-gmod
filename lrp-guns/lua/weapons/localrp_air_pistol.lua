@@ -1,7 +1,11 @@
 SWEP.Base = 'localrp_gun_base'
 SWEP.Category = 'LocalRP - Guns'
 SWEP.Spawnable = true
-SWEP.PrintName = 'Пневмат. пистолет'
+if CLIENT then
+
+	SWEP.PrintName = language.GetPhrase('lrp_guns.weapons.air_pistol')
+
+end
 SWEP.Slot = 1
 SWEP.SlotPos = 1
 

@@ -8,6 +8,7 @@ local noDelay = {
     localrp_hands = true,
     localrp_flashlight = true,
     lrp_lockpick = true,
+    lrp_radio = true,
     weapon_handcuffed = true,
     weapon_fists = true,
     weapon_simfillerpistol = true,

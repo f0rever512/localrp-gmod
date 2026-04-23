@@ -1,3 +1,24 @@
+local ScrW = ScrW
+local surface = surface
+local table = table
+local IsValid = IsValid
+local LocalPlayer = LocalPlayer
+local pairs = pairs
+local CurTime = CurTime
+local RunConsoleCommand = RunConsoleCommand
+local hook = hook
+local GetConVar = GetConVar
+local string = string
+local tonumber = tonumber
+local RealTime = RealTime
+local ScrH = ScrH
+local Color = Color
+local Lerp = Lerp
+local FrameTime = FrameTime
+local SortedPairs = SortedPairs
+local draw = draw
+local math = math
+
 local scale = ScrW() >= 1600 and 1 or 0.8
 
 surface.CreateFont('lrp-selectorFont', {
@@ -24,25 +45,26 @@ local loadout = {}
 local slide = {}
 
 local specialWeaponSlot = {
-	-- wepClass = { slot, slotPos }
-	weapon_physgun = { 0, 0 },
+	-- weapon_class = { slot, slotPos },
 
 	weapon_crowbar = { 0, -2 },
     weapon_stunstick = { 0, -2 },
 	weapon_physcannon = { 0, -1 },
-    
+
     weapon_pistol = { 1, 0 },
     weapon_357 = { 1, 1 },
-    
+
     weapon_smg1 = { 2, 0 },
     weapon_ar2 = { 2, 1 },
 
     weapon_shotgun = { 3, 0 },
     weapon_crossbow = { 3, 1 },
-    
+
     weapon_frag = { 4, 0 },
 	weapon_rpg = { 4, 1 },
     weapon_slam = { 4, 2 },
+
+	weapon_bugbait = { 5, 0 },
 }
 
 local function findcurrent()
@@ -84,7 +106,7 @@ local function update()
 end
 
 local function SetNewWeapon(ply)
-	if ply:GetActiveWeapon() and loadout[curTab][curSlot] then
+	if IsValid(ply:GetActiveWeapon()) and loadout[curTab][curSlot] then
 		RunConsoleCommand('use', loadout[curTab][curSlot].classname)
 	end
 end
@@ -99,6 +121,8 @@ local FKeyBinds = {
 local soundSwitch = 'ambient/water/rain_drip1.wav'
 local soundSelect = 'ambient/water/rain_drip3.wav'
 
+local maxTabs = 5
+
 hook.Add("PlayerBindPress", 'lrpSelector.bind', function(ply, bind, pressed)
     if GetConVar('cl_lrp_hud_type'):GetInt() == 1 then return end
 
@@ -109,8 +133,9 @@ hook.Add("PlayerBindPress", 'lrpSelector.bind', function(ply, bind, pressed)
 
 	if not pressed or ply:InVehicle() or not ply:Alive() then return end
 
-	bind = bind:lower()
-	if bind:sub(1, 4) == "slot" then
+	bind = string.lower(bind)
+
+	if string.sub(bind, 1, 4) == "slot" then
 		local n = tonumber(bind:sub(5, 5) or 1) or 1
 		if n < 1 or n > 6 then return true end
 
@@ -121,7 +146,7 @@ hook.Add("PlayerBindPress", 'lrpSelector.bind', function(ply, bind, pressed)
 		if not loadout[n] then return true end
 
 		findcurrent()
-		
+
 		if curTab == n and loadout[curTab] and (alpha > 0 or GetConVar("hud_fastswitch"):GetInt() > 0) then
 			curSlot = curSlot + 1
 
@@ -152,14 +177,19 @@ hook.Add("PlayerBindPress", 'lrpSelector.bind', function(ply, bind, pressed)
 
 		curSlot = curSlot + 1
 
-		if curSlot > (loadout[curTab] and #loadout[curTab] or -1) then
-			repeat
+		local tab = loadout[curTab]
+		if not tab or curSlot > #tab then
+			for i = 1, maxTabs + 1 do
 				curTab = curTab + 1
-				if curTab > 5 then
+				if curTab > maxTabs then
 					curTab = 0
 				end
-			until loadout[curTab]
-			curSlot = 1
+
+				if loadout[curTab] then
+					curSlot = 1
+					break
+				end
+			end
 		end
 
 		if GetConVar("hud_fastswitch"):GetInt() > 0 then
@@ -182,13 +212,18 @@ hook.Add("PlayerBindPress", 'lrpSelector.bind', function(ply, bind, pressed)
 		curSlot = curSlot - 1
 
 		if curSlot < 1 then
-			repeat
+			for i = 1, maxTabs + 1 do
 				curTab = curTab - 1
 				if curTab < 0 then
-					curTab = 5
+					curTab = maxTabs
 				end
-			until loadout[curTab]
-			curSlot = #loadout[curTab]
+
+				local tab = loadout[curTab]
+				if tab then
+					curSlot = #tab
+					break
+				end
+			end
 		end
 
 		if GetConVar("hud_fastswitch"):GetInt() > 0 then
@@ -227,7 +262,7 @@ hook.Add('HUDPaint', 'lrpSelector.paint', function()
 		if alpha ~= 0 then
 			alpha = 0
 		end
-		
+
 		return
 	end
 
@@ -301,7 +336,7 @@ hook.Add("OnScreenSizeChanged", 'lrpSelector.onScreenSizeChanged', function()
 	width = ScrW() * 0.09
 	height = ScrH() * 0.03
 	margin = height * 0.2 * scale
-	
+
 	surface.CreateFont('lrp-selectorFont', {
 		font = "Calibri",
 		size = 26 * scale,

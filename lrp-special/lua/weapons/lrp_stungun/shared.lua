@@ -31,6 +31,9 @@ SWEP.Secondary.Ammo = "none"
 SWEP.Uncharging = false
 SWEP.Range = 200
 
+SWEP.MuzzlePos = Vector(6, 0.6, 4)
+SWEP.MuzzleAng = Angle(-2.5, -0.6, 5)
+
 function SWEP:SetupDataTables()
     self:NetworkVar('Bool', 0, 'Ready')
 	self:NetworkVar('Bool', 1, 'Reloading')
@@ -81,20 +84,23 @@ function SWEP:CanFire()
     local t = self.Owner
     local e = {}
     e.start = t:GetShootPos()
-    e.endpos = self:GetShootPos()
+    e.endpos = self:GetMuzzleInfo()
     e.filter = t
     return not util.TraceLine(e).Hit
 end
 
-function SWEP:GetShootPos()
+function SWEP:GetMuzzleInfo()
+
     local ply = self:GetOwner()
-	local att = ply:GetAttachment(ply:LookupAttachment('anim_attachment_rh'))
-    if att then
-        local pos, dir = LocalToWorld(Vector(6, 0.6, 4), Angle(-2.5, -0.6, 5), att.Pos, att.Ang)
-        return pos, dir:Forward()
+	local handAtt = ply:GetAttachment(ply:LookupAttachment('anim_attachment_rh'))
+
+    if handAtt then
+        local pos, ang = LocalToWorld(self.MuzzlePos, self.MuzzleAng, handAtt.Pos, handAtt.Ang)
+        return pos, ang:Forward(), ang
     else
-        return ply:GetShootPos(), (ply.viewAngs or ply:EyeAngles()):Forward()
+        return ply:GetShootPos(), ply:EyeAngles():Forward(), ply:EyeAngles()
     end
+
 end
 
 function SWEP:PrimaryAttack()
@@ -114,10 +120,10 @@ function SWEP:PrimaryAttack()
 
 	-- local tr = util.TraceLine(util.GetPlayerTrace( self.Owner ))
 	self.Owner:LagCompensation(true)
-	local pos, pos2 = self:GetShootPos()
+	local pos, dir = self:GetMuzzleInfo()
 	local tr = util.TraceLine( {
-		start = self:GetShootPos(),
-		endpos = pos + pos2 * self.Range
+		start = self:GetMuzzleInfo(),
+		endpos = pos + dir * self.Range
 	} )
 	self.Owner:LagCompensation(false)
 
@@ -198,10 +204,10 @@ end
 
 function SWEP:DrawHUD()
 	local ply = self.Owner
-	local pos, pos2 = self:GetShootPos()
+	local pos, dir = self:GetMuzzleInfo()
     local e = {}
     e.start = pos
-    e.endpos = pos + pos2 * 200
+    e.endpos = pos + dir * 200
     e.filter = ply
 
 	local pos = util.TraceLine(e).HitPos:ToScreen()

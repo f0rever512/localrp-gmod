@@ -1,6 +1,8 @@
 include('shared.lua')
 include('sh_leans.lua')
 
+local outQuad = math.ease.OutQuad
+
 SWEP.PrintName = 'LocalRP Gun'
 SWEP.Author = 'Octothorp Team | forever512'
 SWEP.Instructions = 'ПКМ + ЛКМ - Выстрелить\nСКМ - Сменить прицеливание\nALT - Проверить магазин\nЙ / У - Наклониться'
@@ -8,6 +10,27 @@ SWEP.Slot = 1
 SWEP.SlotPos = 1
 SWEP.DrawAmmo = true
 SWEP.DrawCrosshair = false
+
+function SWEP:Holster()
+
+    local ply = self:GetOwner()
+
+    self:SetReady(false)
+    self:SetReloading(false)
+    self.aimProgress = 0
+    ply:SetNW2Int('TFALean', 0)
+	ply:ManipulateBoneAngles(ply:LookupBone('ValveBiped.Bip01_R_Hand'), Angle(0, 0, 0))
+
+    return true
+
+end
+
+function SWEP:OnRemove()
+    self:SetReady(false)
+    self:SetReloading(false)
+end
+
+function SWEP:Reload() end
 
 CreateClientConVar('cl_lrp_sight_resolution', 512, true)
 local sightMaterials = {}
@@ -35,7 +58,7 @@ cvars.AddChangeCallback('cl_lrp_sight_resolution', updateSettings, 'octoweapons'
 local isRenderingScope = false
 local function renderScope(wep)
 	isRenderingScope = true
-	local pos, dir, ang = wep:GetShootPos()
+	local pos, dir, ang = wep:GetMuzzleInfo()
 	render.PushRenderTarget(sightRT)
 	if util.TraceLine({
 		start = pos - dir * 15,
@@ -54,39 +77,6 @@ local function renderScope(wep)
 	render.PopRenderTarget()
 	isRenderingScope = false
 end
-
--- local function inOutQuad(t, b, c, d)
---     t = t / d * 2
---     if t < 1 then return c / 2 * math.pow(t, 2) + b end
---     return -c / 2 * ((t - 1) * (t - 3) - 1) + b
--- end
-
--- function SWEP:CalcView(ply, pos, ang, fov)
-
--- 	if not self.AimPos then return end
-
--- 	local animIn = handview and self:GetHoldType() == self.ActiveHoldType and self:GetNetVar('Ready')
--- 	local aimProgress = math.Approach(self.aimProgress or 0, animIn and 1 or 0, FrameTime() * (animIn and 1 or 3))
--- 	self.aimProgress = aimProgress
--- 	if aimProgress <= 0 then return end
-
--- 	local attID = ply:LookupAttachment('anim_attachment_rh')
--- 	if not attID then return end
-
--- 	if animIn then
--- 		aimProgress = math.Clamp(aimProgress - 0.4, 0, 1) / 0.6
--- 	end
--- 	local easedProgress = inOutQuad(aimProgress, 0, 1, 1)
--- 	local view = hook.Run("CalcView", LocalPlayer(), ply, pos, ang, fov)
--- 	local att = ply:GetAttachment(attID)
--- 	local tgtPos, tgtAng = LocalToWorld(self.AimPos, self.AimAng, att.Pos, att.Ang)
--- 	view.origin = LerpVector(easedProgress, view.origin, tgtPos)
--- 	view.angles = LerpAngle(easedProgress, view.angles, tgtAng) -- + dbgView.lookOff
--- 	view.znear = 1.5
-
--- 	return view
-
--- end
 
 function SWEP:DrawWorldModel()
 
@@ -134,9 +124,34 @@ function SWEP:DrawWorldModel()
 		cam.End3D2D()
 	end
 
-	-- local pos, dir = self:GetShootPosAndDir()
-	-- render.DrawLine(pos, pos + dir * 20, color_white, true)
-	-- render.DrawWireframeSphere(pos, 1, 5, 5, color_white, true)
+end
+
+function SWEP:Think()
+
+	self.visualRecoil = Lerp(FrameTime() * 10, self.visualRecoil or 0, 0)
+
+	self:FingerAnimation()
+
+end
+
+function SWEP:FingerAnimation()
+
+    local ply = self:GetOwner()
+    if not IsValid(ply) then return end
+
+    local finger = ply:LookupBone('ValveBiped.Bip01_R_Finger11')
+    if not finger then return end
+
+    if self.FingerAnimStep == 0 then return end
+
+	if self.Primary.Automatic and ply:KeyDown(IN_ATTACK) then
+		self.FingerAnimStep = 1
+	else
+    	self.FingerAnimStep = math.Approach(self.FingerAnimStep, 0, FrameTime() * 5)
+	end
+
+    local ease = outQuad(self.FingerAnimStep)
+    ply:ManipulateBoneAngles(finger, Angle(0, ease * -30, 0), false)
 
 end
 
@@ -159,22 +174,16 @@ hook.Add('PreDrawEffects', 'octoweapons', function()
 	end
 end)
 
--- hook.Add('dbg-view.chTraceOverride', 'octoweapons', function()
--- 	local wep = LocalPlayer():GetActiveWeapon()
--- 	if not IsValid(wep) or not wep.IsOctoWeapon then return end
+hook.Add('RenderScene', 'lrp-guns', function(pos, ang, fov)
 
--- 	local pos, dir = wep:GetShootPosAndDir()
--- 	return util.TraceLine({
--- 		start = pos,
--- 		endpos = pos + dir * 2000,
--- 		filter = function(ent)
--- 			return ent ~= ply and ent:GetRenderMode() ~= RENDERMODE_TRANSALPHA
--- 		end
--- 	})
--- end)
+	local ply = LocalPlayer()
+    local wep = ply:GetActiveWeapon()
 
-hook.Add('RenderScene', 'octoweapons', function(pos, ang, fov)
-	local view = hook.Run("CalcView", LocalPlayer(), pos, ang, fov)
+    if not (IsValid(wep) and wep.Base == 'localrp_gun_base' and wep.aimProgress and wep.aimProgress > 0) then
+        return
+    end
+
+	local view = hook.Run('CalcView', ply, pos, ang, fov)
 	if not view then return end
 
 	render.Clear(0, 0, 0, 255, true, true, true)
@@ -192,15 +201,49 @@ hook.Add('RenderScene', 'octoweapons', function(pos, ang, fov)
 	})
 
 	return true
+
 end)
 
-net.Receive('lrp-muzzleFlash', function()
+hook.Add('lrp-view.chTraceOverride', 'lrp-guns', function()
+	local wep = LocalPlayer():GetActiveWeapon()
+	if not IsValid(wep) or wep.Base ~= 'localrp_gun_base' or not wep:GetReady() then return end
+
+	local pos, dir = wep:GetMuzzleInfo()
+	return util.TraceLine({
+		start = pos,
+		endpos = pos + dir * 1600,
+		filter = function(ent)
+			return ent ~= ply and ent:GetRenderMode() ~= RENDERMODE_TRANSALPHA
+		end
+	})
+end)
+
+hook.Add('lrp-view.chShouldDraw', 'lrp-guns', function(tr)
+	local ply = LocalPlayer()
+	local wep = ply:GetActiveWeapon()
+	if not IsValid(wep) or wep.Base ~= 'localrp_gun_base' then return end
+
+	local tr = util.TraceLine({
+        start = ply:GetShootPos(),
+        endpos = wep:GetMuzzleInfo(),
+        filter = ply
+    })
+
+	if wep.aimProgress <= 0.5 and wep:GetReady() and not tr.Hit then
+		return true
+	end
+end)
+
+net.Receive('lrp-guns.muzzleFlash', function()
+
 	local wep = net.ReadEntity()
+	local wepPos = net.ReadVector()
+
 	if not IsValid(wep) then return end
 
 	local dlight = DynamicLight(wep:EntIndex())
 	if dlight then
-		dlight.pos = wep:GetShootPos()
+		dlight.pos = wepPos
 		dlight.r = 255
 		dlight.g = 145
 		dlight.b = 10
@@ -210,4 +253,16 @@ net.Receive('lrp-muzzleFlash', function()
 		dlight.dietime = CurTime() + 0.2
 		dlight.nomodel = true
 	end
+
+	if not ( wep == LocalPlayer():GetActiveWeapon() and wep.SightPos
+		and wep.aimProgress and wep.aimProgress > 0 ) then
+
+		local ef = EffectData()
+		ef:SetEntity(wep)
+		ef:SetAttachment(wep:LookupAttachment('muzzle'))
+		ef:SetFlags(1)
+
+		util.Effect('MuzzleFlash', ef)
+	end
+
 end)

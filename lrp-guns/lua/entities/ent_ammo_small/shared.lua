@@ -1,15 +1,25 @@
-ENT.Type 				= "anim"
-ENT.Base 				= "ent_ammo_base"
-if CLIENT then
-    ENT.PrintName = 'Малый калибр'
+if SERVER then
+
+	AddCSLuaFile()
+
+else
+
+	ENT.PrintName		= language.GetPhrase('lrp_guns.ammo.small')
+	ENT.Category		= 'LocalRP - Ammo'
+
 end
 
+ENT.Type 				= 'anim'
+ENT.Base 				= 'ent_ammo_base'
 ENT.Spawnable 			= true
-ENT.AdminSpawnable		= false
-ENT.Category			= "LocalRP - Ammo"
+ENT.AdminOnly 			= false
 
-AddCSLuaFile()
-
-ENT.AmmoType 			= "ammo_small"
+ENT.AmmoType 			= 'ammo_small'
 ENT.AmmoAmount 			= 50
-ENT.AmmoModel			= "models/Items/BoxSRounds.mdl"
+ENT.AmmoModel			= 'models/Items/BoxSRounds.mdl'
+
+game.AddAmmoType({
+	name = ENT.AmmoType,
+	dmgtype = DMG_BULLET,
+	tracer = TRACER_LINE_AND_WHIZ,
+})

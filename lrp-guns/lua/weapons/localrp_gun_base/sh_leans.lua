@@ -23,21 +23,6 @@ local function MetaInitLean()
 		end
 	end
 
-	function PlayerMeta:GetShootPos()
-		if not IsValid(self) or not self.LeanGetShootPosOld then return end
-		local ply = self
-		local status = ply.TFALean or ply:GetNW2Int("TFALean")
-		local off = Vector(0, status * -LeanOffset, 0)
-		off:Rotate(self:EyeAngles())
-		local gud, ret = pcall(self.LeanGetShootPosOld, self)
-
-		if gud then
-			return ret + off
-		else
-			return off
-		end
-	end
-
 	function PlayerMeta:EyePos()
 		if not IsValid(self) then return end
 		local gud, pos, ang = pcall(self.GetShootPos, self)
@@ -67,15 +52,6 @@ hook.Add("PlayerSpawn", "TFALeanPlayerSpawn", function(ply)
 end)
 
 --[[Lean Calculations]]
-local targ
-local traceRes, traceResLeft, traceResRight
-
-local traceData = {
-	["mask"] = MASK_SOLID,
-	["collisiongroup"] = COLLISION_GROUP_DEBRIS,
-	["mins"] = Vector(-4, -4, -4),
-	["maxs"] = Vector(4, 4, 4)
-}
 
 local function AngleOffset(new, old)
 	local _, ang = WorldToLocal(vector_origin, new, vector_origin, old)
@@ -101,9 +77,11 @@ local function RollBone(ply, bone, roll)
 	end
 end
 
-function TFALeanModel()
-	for k, ply in ipairs(player.GetAll()) do
-		ply.TFALean = Lerp(FrameTime() * 5, ply.TFALean or 0, ply:GetNW2Int("TFALean")) --unpredicted lean which gets synched with our predicted lean status
+local function TFALeanModel()
+	for _, ply in pairs(player.GetAll()) do
+		-- unpredicted lean which gets synched with our predicted lean status
+		ply.TFALean = Lerp(FrameTime() * 5, ply.TFALean or 0, ply:GetNW2Int("TFALean"))
+
 		local lean = ply.TFALean
 		local bone = ply:LookupBone("ValveBiped.Bip01_Spine")
 
@@ -119,28 +97,48 @@ function TFALeanModel()
 	end
 end
 
+hook.Add("PlayerButtonDown", 'lrp-guns.leanbtndown', function(ply, button)
+	if button ~= KEY_Q and button ~= KEY_E then return end
+
+	local wep = ply:GetActiveWeapon()
+	if not IsValid(wep) or wep.Base ~= 'localrp_gun_base' then return end
+
+	if wep:GetReady() then
+		local targ = button == KEY_Q and -1 or 1
+
+		ply:SetNW2Int("TFALean", targ)
+	end
+end)
+
+hook.Add("PlayerButtonUp", 'lrp-guns.leanbtnup', function(ply, button)
+	if button ~= KEY_Q and button ~= KEY_E then return end
+
+	local wep = ply:GetActiveWeapon()
+	if not IsValid(wep) or wep.Base ~= 'localrp_gun_base' then return end
+
+	ply:SetNW2Int("TFALean", 0)
+end)
+
 if SERVER and not game.SinglePlayer() then
-	timer.Create("TFALeanSynch", 0.2, 0, function()
-		for k, v in ipairs(player.GetAll()) do
-			local lean = v:GetNW2Int("TFALean")
-			v.OldLean = v.OldLean or lean
+	for _, v in pairs(player.GetAll()) do
+		local lean = v:GetNW2Int("TFALean")
+		v.OldLean = v.OldLean or lean
 
-			if lean ~= v.OldLean then
-				v.OldLean = lean
-				local bone = v:LookupBone("ValveBiped.Bip01_Spine")
+		if lean ~= v.OldLean then
+			v.OldLean = lean
+			local bone = v:LookupBone("ValveBiped.Bip01_Spine")
 
-				if bone then
-					RollBone(v, bone, lean * 15)
-				end
+			if bone then
+				RollBone(v, bone, lean * 15)
+			end
 
-				bone = v:LookupBone("ValveBiped.Bip01_Spine1")
+			bone = v:LookupBone("ValveBiped.Bip01_Spine1")
 
-				if bone then
-					RollBone(v, bone, lean * 15)
-				end
+			if bone then
+				RollBone(v, bone, lean * 15)
 			end
 		end
-	end)
+	end
 end
 
 --[[Projectile Redirection]]
@@ -232,7 +230,7 @@ local function bestcase(pos, endpos, ply)
 	return pos + off:GetNormalized() * math.Clamp(traceres.Fraction, 0, 1) * off:Length()
 end
 
-function LeanCalcView(ply, pos, angles, fov)
+local function LeanCalcView(ply, pos, angles, fov)
 	local view = {}
 	view.origin = pos
 	view.angles = angles
@@ -247,16 +245,14 @@ function LeanCalcView(ply, pos, angles, fov)
 	return view
 end
 
-local ISLEANINGCV = false
+local isLeaningView = false
 
 hook.Add("CalcView", "TFALeanCalcView", function(ply, pos, angles, fov, ...)
-	if ISLEANINGCV then return end
-	if GetViewEntity() ~= ply then return end
-	if not ply:Alive() then return end
-	if ply:InVehicle() then return end
-	ISLEANINGCV = true
+	if isLeaningView or GetViewEntity() ~= ply or not ply:Alive() or ply:InVehicle() then return end
+
+	isLeaningView = true
 	local preTable = hook.Run("CalcView", ply, pos, angles, fov) or {}
-	ISLEANINGCV = false
+	isLeaningView = false
 	preTable.origin = preTable.origin or pos
 	preTable.angles = preTable.angles or angles
 	preTable.fov = preTable.fov or fov
@@ -282,7 +278,7 @@ end)
 
 local ISLEANINGCV_VM = false
 
-function LeanCalcVMView(wep, vm, oldPos, oldAng, pos, ang, ...)
+local function LeanCalcVMView(wep, vm, oldPos, oldAng, pos, ang, ...)
 	if ISLEANINGCV_VM then return end
 	local ply = LocalPlayer()
 	if GetViewEntity() ~= ply then return end
@@ -313,30 +309,3 @@ function LeanCalcVMView(wep, vm, oldPos, oldAng, pos, ang, ...)
 end
 
 hook.Add("CalcViewModelView", "TFALeanCalcVMView", LeanCalcVMView)
-
-hook.Add( "PlayerButtonDown", 'lrp-guns.leanbtndown', function(ply, button)
-	local wep = ply:GetActiveWeapon()
-	if button ~= KEY_Q and button ~= KEY_E then return end
-
-	if wep.Base == 'localrp_gun_base' then
-		if ply:KeyDown(IN_ATTACK2) and not wep:GetReloading() then
-			targ = (button == KEY_Q and -1 or (button == KEY_E and 1 or 0))
-
-			ply:SetNW2Int("TFALean", targ)
-		end
-		if SERVER then
-			for _, v in ipairs(player.GetAll()) do
-				v.TFALean = Lerp(FrameTime() * 10, v.TFALean or 0, v:GetNW2Int("TFALean")) --unpredicted lean which gets synched with our predicted lean status
-			end
-		end
-	end
-end)
-
-hook.Add("PlayerButtonUp", 'lrp-guns.leanbtnup', function(ply, button)
-	local wep = ply:GetActiveWeapon()
-	if button ~= KEY_Q and button ~= KEY_E then return end
-
-	if button == KEY_Q or button == KEY_E then
-		ply:SetNW2Int("TFALean", 0)
-	end
-end)

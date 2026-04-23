@@ -1,7 +1,11 @@
 SWEP.Base = 'localrp_gun_base'
 SWEP.Category = 'LocalRP - Guns'
 SWEP.Spawnable = true
-SWEP.PrintName = 'Пневмат. дробовик'
+if CLIENT then
+
+	SWEP.PrintName = language.GetPhrase('lrp_guns.weapons.air_shotgun')
+
+end
 SWEP.Slot = 1
 SWEP.SlotPos = 1
 
@@ -25,8 +29,8 @@ SWEP.VerticalRecoil = 4
 SWEP.HorizontalRecoil = 0.5
 
 SWEP.Silent = true
-SWEP.ReloadTime = 2.45
+SWEP.ReloadTime = 2.4
 
-SWEP.MuzzlePos = Vector(25, -0.9, 7.5)
-SWEP.MuzzleAng = Angle(-5.75, -1.2, -3)
-SWEP.AimPos = Vector(-5.3, -0.1, 6.4)
+SWEP.MuzzlePos = Vector(25.5, -0.7, 7.5)
+SWEP.MuzzleAng = Angle(-6.8, -0.65, -3)
+SWEP.AimPos = Vector(-5.3, -0.25, 6.1)
