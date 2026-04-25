@@ -234,6 +234,36 @@ hook.Add('lrp-view.chShouldDraw', 'lrp-guns', function(tr)
 	end
 end)
 
+hook.Add('ifp.chTraceOverride', 'lrp-guns', function()
+	local wep = LocalPlayer():GetActiveWeapon()
+	if not IsValid(wep) or wep.Base ~= 'localrp_gun_base' or not wep:GetReady() then return end
+
+	local pos, dir = wep:GetMuzzleInfo()
+	return util.TraceLine({
+		start = pos,
+		endpos = pos + dir * 1600,
+		filter = function(ent)
+			return ent ~= ply and ent:GetRenderMode() ~= RENDERMODE_TRANSALPHA
+		end
+	})
+end)
+
+hook.Add('ifp.chShouldDraw', 'lrp-guns', function(tr)
+	local ply = LocalPlayer()
+	local wep = ply:GetActiveWeapon()
+	if not IsValid(wep) or wep.Base ~= 'localrp_gun_base' then return end
+
+	local tr = util.TraceLine({
+        start = ply:GetShootPos(),
+        endpos = wep:GetMuzzleInfo(),
+        filter = ply
+    })
+
+	if wep.aimProgress <= 0.5 and wep:GetReady() and not tr.Hit then
+		return true
+	end
+end)
+
 net.Receive('lrp-guns.muzzleFlash', function()
 
 	local wep = net.ReadEntity()

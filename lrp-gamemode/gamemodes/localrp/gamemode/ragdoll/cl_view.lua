@@ -30,3 +30,15 @@ hook.Add('lrp-view.override', 'lrp-ragdoll', function()
 		return true
 	end
 end)
+
+hook.Add('ifp.chShouldDraw', 'lrp-ragdoll', function()
+	if LocalPlayer():GetRagdoll() then
+		return false
+	end
+end)
+
+hook.Add('ifp.override', 'lrp-ragdoll', function()
+	if LocalPlayer():GetRagdoll() then
+		return true
+	end
+end)
