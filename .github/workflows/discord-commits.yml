@@ -1,0 +1,13 @@
+name: Run Discord Commits
+
+on:
+  push:
+
+jobs:
+  run-discord-commits:
+    uses: f0rever512/discord-commits/.github/workflows/discord-commits.yml@main
+    with:
+      embed_color: '#056450' # Optional
+    secrets:
+      # Get the webhook secret from the current repository
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
