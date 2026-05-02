@@ -14,7 +14,7 @@ SWEP.Primary.ClipSize = 7
 SWEP.Primary.DefaultClip = 0
 SWEP.Primary.NumShots = 8
 SWEP.Primary.Spread = 0.1
-SWEP.Primary.Ammo = 'ammo_shot'
+SWEP.Primary.Ammo = 'ammo_shotgun'
 SWEP.Primary.Automatic = false
 
 SWEP.Passive = 'passive'
